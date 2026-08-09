@@ -239,6 +239,8 @@ function EntrySection() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [preview, setPreview] = useState<EntryData | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -267,9 +269,58 @@ function EntrySection() {
 
   useEffect(() => {
     if (!preview) return;
-    const close = (event: KeyboardEvent) => event.key === "Escape" && setPreview(null);
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
+    const dialog = dialogRef.current;
+    lastFocusedRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    document.body.classList.add("modal-open");
+
+    const focusableSelector = [
+      "a[href]",
+      "button:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(",");
+
+    const focusFirstControl = () => {
+      const first = dialog?.querySelector<HTMLElement>(focusableSelector);
+      (first ?? dialog)?.focus();
+    };
+    const frame = requestAnimationFrame(focusFirstControl);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setPreview(null);
+        return;
+      }
+      if (event.key !== "Tab" || !dialog) return;
+
+      const controls = Array.from(dialog.querySelectorAll<HTMLElement>(focusableSelector));
+      if (!controls.length) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.classList.remove("modal-open");
+      const lastFocused = lastFocusedRef.current;
+      requestAnimationFrame(() => lastFocused?.focus());
+    };
   }, [preview]);
 
   return (
@@ -295,9 +346,10 @@ function EntrySection() {
       </div>
       {preview && (
         <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setPreview(null)}>
-          <section className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+          <section ref={dialogRef} className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-description" tabIndex={-1}>
             <button className="modal-close" type="button" onClick={() => setPreview(null)} aria-label="確認画面を閉じる"><X /></button>
             <p className="eyebrow">CONFIRM</p><h2 id="confirm-title">入力内容の確認</h2>
+            <p id="confirm-description" className="modal-description">送信前の確認画面です。この公開デモでは情報は送信されません。</p>
             <dl><div><dt>お名前</dt><dd>{preview.name}</dd></div><div><dt>メールアドレス</dt><dd>{preview.email}</dd></div><div><dt>希望職種</dt><dd>{preview.role}</dd></div><div><dt>メッセージ</dt><dd>{preview.message}</dd></div></dl>
             <div className="modal-actions"><button type="button" onClick={() => setPreview(null)}>修正する</button><button type="button" disabled>送信する（未接続）</button></div>
           </section>
@@ -436,7 +488,7 @@ function App() {
         <EntrySection />
       </main>
 
-      <footer className="site-footer"><div><img src={logo} alt="INCURISE Consulting" /><p>Incubate (0↗1) + Rise (1↗100)</p></div><nav>{navItems.slice(0, 6).map(([label, href]) => <a key={href} href={href}>{label}</a>)}</nav><div className="footer-links"><a href="https://incurise.co.jp/" target="_blank" rel="noreferrer">Corporate <ArrowUpRight /></a><span>© INCURISE Consulting</span></div></footer>
+      <footer className="site-footer"><div><img src={logo} alt="INCURISE Consulting" /><p>Incubate (0↗1) + Rise (1↗100)</p></div><nav>{navItems.slice(0, 6).map(([label, href]) => <a key={href} href={href}>{label}</a>)}</nav><div className="footer-links"><a href="https://incurise.co.jp/" target="_blank" rel="noreferrer">Corporate <ArrowUpRight /></a><a href="https://www.wantedly.com/companies/company_4522961" target="_blank" rel="noreferrer">Wantedly <ArrowUpRight /></a><span>© INCURISE Consulting</span></div></footer>
     </>
   );
 }
