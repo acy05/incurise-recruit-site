@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.route(/\.(?:woff2?|ttf)(?:\?.*)?$/, (route) => route.abort());
@@ -40,11 +40,26 @@ for (const viewport of viewports) {
   });
 }
 
-test("static preview reuses the site without motion UI", async ({ page }) => {
+test("new information architecture replaces removed sections", async ({ page }) => {
+  await page.goto("./", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#preview-message, #people, #starting, #benefits")).toHaveCount(0);
+  await expect(page.locator("#about .pc-definition-list article")).toHaveCount(6);
+  await expect(page.getByText("技術力×人間力。IKETERU人材を育てる。")).toBeVisible();
+  await expect(page.locator("#support article")).toHaveCount(15);
+  await expect(page.locator(".pc-selection article")).toHaveCount(4);
+  await expect(page.locator(".pc-faq-list article")).toHaveCount(5);
+  await expect(page.locator(".pc-hero-actions button")).toHaveCount(0);
+  await expect(page.locator(".pc-nav")).not.toContainText("PEOPLE");
+  await expect(page.locator(".pc-nav")).not.toContainText("BENEFITS");
+});
+
+test("static preview reuses the same site without motion UI", async ({ page }) => {
   await page.goto("./preview/", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".pc-site")).toHaveAttribute("data-preview", "true");
   await expect(page.locator(".pc-scroll-progress")).toHaveCount(0);
   await expect(page.locator("#pc-hero-title")).toContainText("100の成長へ");
+  await expect(page.getByRole("heading", { level: 1, name: "0から1の挑戦を、1から100の成長へ。" })).toBeVisible();
+  await expect(page.locator(".pc-dna-orb")).toContainText("“IKETERU”の探求");
 });
 
 test("mobile menu traps focus, closes with Escape and restores focus", async ({ page }) => {
@@ -54,33 +69,89 @@ test("mobile menu traps focus, closes with Escape and restores focus", async ({ 
   await trigger.click();
   await expect(page.locator("#mobile-navigation")).toHaveClass(/is-open/);
   await expect(page.locator("body")).toHaveClass(/pc-menu-open/);
+  await expect(page.locator("#mobile-navigation")).toContainText("SUPPORT & BENEFIT");
   await page.keyboard.press("Escape");
   await expect(page.locator("#mobile-navigation")).not.toHaveClass(/is-open/);
   await expect(trigger).toBeFocused();
 });
 
-test("FAQ, validation and confirm dialog are keyboard operable", async ({ page }) => {
+test("support disclosures work with pointer and keyboard", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("./");
-  const secondFaq = page.getByRole("button", { name: /キャリアはどのように/ });
-  await secondFaq.click();
-  await expect(secondFaq).toHaveAttribute("aria-expanded", "true");
+  const first = page.locator("#support article").first();
+  await first.hover();
+  await expect(first.locator(".pc-support-detail")).toHaveCSS("opacity", "1");
 
-  await page.locator("#entry").scrollIntoViewIfNeeded();
-  await page.getByRole("button", { name: /入力内容を確認する/ }).click();
-  await expect(page.locator("input[name='name']")).toBeFocused();
+  const thirdButton = page.getByRole("button", { name: /コンサルタント研修/ });
+  await thirdButton.focus();
+  await expect(thirdButton).toHaveAttribute("aria-expanded", "true");
+  await page.keyboard.press("Enter");
+  await expect(thirdButton).toHaveAttribute("aria-expanded", "false");
+  await page.keyboard.press("Enter");
+  await expect(thirdButton).toHaveAttribute("aria-expanded", "true");
+  await expect(thirdButton.locator("xpath=..")).toHaveClass(/is-open/);
+});
+
+async function fillValidApplication(page: Page) {
   await page.locator("input[name='name']").fill("山田 太郎");
+  await page.locator("input[name='kana']").fill("やまだ たろう");
+  await page.locator("select[name='birthYear']").selectOption("1990");
+  await page.locator("select[name='birthMonth']").selectOption("4");
+  await page.locator("select[name='birthDay']").selectOption("15");
+  await page.locator("input[name='gender'][value='回答しない']").check();
+  await page.locator("input[name='phone']").fill("090-1234-5678");
   await page.locator("input[name='email']").fill("taro@example.com");
-  await page.locator("select[name='role']").selectOption({ label: "システムエンジニア" });
-  await page.locator("textarea[name='message']").fill("選考について相談したいです。");
+  await page.locator("input[name='address']").fill("東京都港区三田1-3-33");
+  await page.locator("input[name='resume']").setInputFiles({ name: "resume.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 resume") });
+  await page.locator("input[name='workHistory']").setInputFiles({ name: "work-history.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 work history") });
+  await page.locator("input[name='otherDocument']").setInputFiles({ name: "portfolio.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 portfolio") });
   await page.locator("input[name='privacy']").check();
-  await page.getByRole("button", { name: /入力内容を確認する/ }).click();
+}
+
+test("form validates required fields and PDF restrictions", async ({ page }) => {
+  await page.goto("./");
+  await page.locator("#entry").scrollIntoViewIfNeeded();
+  await expect(page.locator("select[name='birthYear']").getByRole("option", { name: "1900", exact: true })).toHaveCount(1);
+  await expect(page.locator("input[name='name']")).toHaveAttribute("required", "");
+  await expect(page.locator("input[name='resume']")).toHaveAttribute("required", "");
+  await expect(page.locator("input[name='privacy']")).toHaveAttribute("required", "");
+  await page.getByRole("button", { name: /同意して入力内容の確認へ/ }).click();
+  await expect(page.locator("input[name='name']")).toBeFocused();
+
+  await page.locator("input[name='resume']").setInputFiles({ name: "resume.txt", mimeType: "text/plain", buffer: Buffer.from("not pdf") });
+  await page.locator("input[name='resume']").blur();
+  await expect(page.locator("#resume-error")).toContainText("PDF形式");
+
+  await page.locator("input[name='resume']").setInputFiles({ name: "resume.pdf", mimeType: "application/pdf", buffer: Buffer.alloc(5 * 1024 * 1024 + 1, 0) });
+  await expect(page.locator("#resume-error")).toContainText("5MB以内");
+});
+
+test("confirmation lists files, traps focus and fails closed until CF7 is configured", async ({ page }) => {
+  await page.goto("./");
+  await page.locator("#entry").scrollIntoViewIfNeeded();
+  await fillValidApplication(page);
+  const confirm = page.getByRole("button", { name: /同意して入力内容の確認へ/ });
+  await confirm.click();
 
   const dialog = page.getByRole("dialog", { name: "入力内容の確認" });
   await expect(dialog).toBeVisible();
   await expect(page.locator("body")).toHaveClass(/pc-modal-open/);
+  await expect(dialog).toContainText("resume.pdf");
+  await expect(dialog).toContainText("work-history.pdf");
+  await expect(dialog).toContainText("portfolio.pdf");
+  await expect(dialog).toContainText("応募受付システムの準備中");
+  await expect(page.getByRole("button", { name: "応募する（準備中）" })).toBeDisabled();
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /入力内容を確認する/ })).toBeFocused();
+  await expect(confirm).toBeFocused();
+  expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length }))).toEqual({ local: 0, session: 0 });
+});
+
+test("privacy policy opens in a new tab", async ({ page }) => {
+  await page.goto("./");
+  const link = page.getByRole("link", { name: "個人情報の取り扱い" });
+  await expect(link).toHaveAttribute("href", "https://incurise.co.jp/privacy-policy/");
+  await expect(link).toHaveAttribute("target", "_blank");
 });
 
 test("reduced motion renders all content immediately", async ({ page }) => {
@@ -88,8 +159,7 @@ test("reduced motion renders all content immediately", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator(".pc-site")).toHaveAttribute("data-motion-ready", "reduced");
   await expect(page.locator(".pc-scroll-progress")).toBeHidden();
-  const reveal = page.locator(".pc-motion-reveal").first();
-  await expect(reveal).toHaveCSS("opacity", "1");
+  await expect(page.locator(".pc-motion-reveal").first()).toHaveCSS("opacity", "1");
 });
 
 test("motion mode reveals sections and advances scroll progress", async ({ page }) => {
@@ -98,13 +168,11 @@ test("motion mode reveals sections and advances scroll progress", async ({ page 
   await expect(page.locator(".pc-site")).toHaveAttribute("data-motion-ready", "true");
   await page.waitForTimeout(1_250);
   await expect(page.locator("#pc-hero-title")).toHaveCSS("opacity", "1");
-
   await page.locator("#career").scrollIntoViewIfNeeded();
   await page.waitForTimeout(800);
   await expect(page.locator("#career .pc-motion-heading")).toHaveCSS("opacity", "1");
   const lineTransform = await page.locator("#career .pc-career-line").first().evaluate((node) => getComputedStyle(node).transform);
   expect(lineTransform).not.toBe("none");
-
   const progressScale = await page.locator(".pc-scroll-progress-bar").evaluate((node) => new DOMMatrix(getComputedStyle(node).transform).d);
-  expect(progressScale).toBeGreaterThan(0.1);
+  expect(progressScale).toBeGreaterThan(.1);
 });

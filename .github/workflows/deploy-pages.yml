@@ -30,8 +30,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build unconfigured test artifact
         run: npm run build
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chrome
+
+      - name: Test unconfigured bundle
+        run: npm run test:e2e
+
+      - name: Build configured test artifact
+        run: npm run build
+        env:
+          VITE_RECRUIT_WPCF7_ENDPOINT: https://incurise.co.jp/wp-json/contact-form-7/v1/contact-forms/42/feedback
+          VITE_RECRUIT_TURNSTILE_SITE_KEY: configured-ci-site-key
+
+      - name: Test configured submission bundle
+        run: npm run test:e2e:configured
+
+      - name: Build production artifact
+        run: npm run build
+        env:
+          VITE_RECRUIT_WPCF7_ENDPOINT: ${{ vars.VITE_RECRUIT_WPCF7_ENDPOINT }}
+          VITE_RECRUIT_TURNSTILE_SITE_KEY: ${{ vars.VITE_RECRUIT_TURNSTILE_SITE_KEY }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
