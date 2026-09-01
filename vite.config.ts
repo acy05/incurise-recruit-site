@@ -9,6 +9,7 @@ export default defineConfig({
       input: {
         main: new URL("./index.html", import.meta.url).pathname,
         preview: new URL("./preview/index.html", import.meta.url).pathname,
+        commentRevision: new URL("./comment-revision/index.html", import.meta.url).pathname,
       },
     },
   },
