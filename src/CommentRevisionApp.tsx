@@ -141,21 +141,21 @@ const supportGroups = [
     key: "learn",
     number: "01",
     label: "LEARN & GROW",
-    title: "学び・キャリア",
+    title: "Learning & Career",
     itemNumbers: ["01", "02", "03", "04", "05", "06", "11"],
   },
   {
     key: "connect",
     number: "02",
     label: "CONNECT & CULTURE",
-    title: "つながり・文化",
+    title: "Connection & Culture",
     itemNumbers: ["08", "09", "10", "12", "13"],
   },
   {
     key: "life",
     number: "03",
     label: "LIFE & BENEFIT",
-    title: "休暇・暮らし",
+    title: "Time Off & Lifestyle",
     itemNumbers: ["07", "14", "15"],
   },
 ] as const;
@@ -355,19 +355,39 @@ function IketeruSection() {
         <header className="cr2-iketeru-intro">
           <OfficialLabel>ABOUT / IKETERU</OfficialLabel>
           <h2>さらなる成長と成功へ、<br />共に挑戦する</h2>
-          <p>技術だけでも、人間力だけでもない。クライアントと並走し、課題の本質へ向き合うために、私たちが大切にする6つの価値観です。</p>
+          <p className="cr2-iketeru-who">
+            インキュライズという社名には、「Incubate（育成・支援）」と「Rise（成長・向上）」の想いが込められています。<br />
+            課題をチャンスに変え、可能性を最大限に引き出す。その挑戦を、私たちが全力で支援します。
+          </p>
         </header>
-        <h3 className="cr2-iketeru-grid-intro">技術力×人間力。IKETERU人材を育てる。</h3>
-        <div className="cr2-iketeru-grid">
-          {iketeruValues.map((value) => (
-            <article key={value.number}>
-              <span>{value.number}</span>
-              <p>{value.en}</p>
-              <h3>{value.ja}</h3>
-              <strong>{value.title}</strong>
-              <div>{value.body}</div>
-            </article>
-          ))}
+
+        <div className="cr2-dna-visual" aria-label="Incurise DNA “IKETERU”の探求">
+          <div className="cr2-dna-orbit" aria-hidden="true">
+            <p>( Incurise DNA )</p>
+            <strong>“IKETERU”<br />の探求</strong>
+          </div>
+        </div>
+
+        <div className="cr2-definition">
+          <p className="cr2-definition-label">Definition <span>〜 IKETERUの定義 〜</span></p>
+          <h3>技術力×人間力。IKETERU人材を育てる。</h3>
+          <p className="cr2-definition-intro">テクニカルスキルとヒューマンスキルを兼ね備え、現場に前向きな変化を生み出す人材を「IKETERU」と定義しています。</p>
+          <div className="cr2-definition-list">
+            {iketeruValues.map((value) => (
+              <article key={value.number}>
+                <span>{value.number}</span>
+                <div className="cr2-definition-name">
+                  <small>{value.en}</small>
+                  <h4>{value.ja}</h4>
+                </div>
+                <div className="cr2-definition-copy">
+                  <strong>{value.title}</strong>
+                  <p>{value.body}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+          <p className="cr2-definition-closing">“IKETERU”を共通言語に、一人ひとりの成長をクライアントと事業の成功へつなげます。</p>
         </div>
       </div>
     </section>

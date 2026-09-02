@@ -27,7 +27,7 @@ test("comment revision fits all target viewports", async ({ page }) => {
   }
 });
 
-test("#37 uses the official centered ttl-01 structure and exact responsive type", async ({ page }) => {
+test("#37 keeps the official heading while #9 restores the full Definition composition", async ({ page }) => {
   for (const viewport of [
     { width: 1512, height: 982 },
     { width: 1440, height: 900 },
@@ -45,10 +45,13 @@ test("#37 uses the official centered ttl-01 structure and exact responsive type"
       const black = mark.querySelector<HTMLElement>("i")!;
       const red = mark.querySelector<HTMLElement>("b")!;
       const heading = intro.querySelector<HTMLElement>("h2")!;
-      const body = intro.querySelector<HTMLElement>("p")!;
-      const gridIntro = section.querySelector<HTMLElement>(".cr2-iketeru-grid-intro")!;
-      const grid = section.querySelector<HTMLElement>(".cr2-iketeru-grid")!;
+      const who = intro.querySelector<HTMLElement>(".cr2-iketeru-who")!;
+      const dna = section.querySelector<HTMLElement>(".cr2-dna-visual")!;
+      const orbit = dna.querySelector<HTMLElement>(".cr2-dna-orbit")!;
+      const definition = section.querySelector<HTMLElement>(".cr2-definition")!;
+      const definitionList = definition.querySelector<HTMLElement>(".cr2-definition-list")!;
       const style = (node: Element) => getComputedStyle(node);
+      const normalizedText = (node: Element) => node.textContent?.replace(/\s+/g, " ").trim();
       return {
         introTags: Array.from(intro.children, (node) => node.tagName),
         labelTags: Array.from(label.children, (node) => node.tagName),
@@ -74,10 +77,11 @@ test("#37 uses the official centered ttl-01 structure and exact responsive type"
           letterSpacing: style(heading).letterSpacing,
           marginBottom: style(heading).marginBottom,
         },
-        body: {
-          size: style(body).fontSize,
-          lineHeight: style(body).lineHeight,
-          letterSpacing: style(body).letterSpacing,
+        who: {
+          text: normalizedText(who),
+          size: style(who).fontSize,
+          lineHeight: style(who).lineHeight,
+          letterSpacing: style(who).letterSpacing,
         },
         section: {
           background: style(section).backgroundColor,
@@ -85,8 +89,16 @@ test("#37 uses the official centered ttl-01 structure and exact responsive type"
           paddingTop: style(section).paddingTop,
         },
         hazeCount: section.querySelectorAll(".cr2-haze").length,
-        gridIntroBackgroundImage: style(gridIntro).backgroundImage,
-        gridIntroIsImmediatelyBeforeGrid: gridIntro.nextElementSibling === grid,
+        legacyGridCount: section.querySelectorAll(".cr2-iketeru-grid, .cr2-iketeru-grid-intro").length,
+        compositionOrder: intro.nextElementSibling === dna && dna.nextElementSibling === definition,
+        dnaLabel: normalizedText(orbit.querySelector("p")!),
+        dnaTitle: normalizedText(orbit.querySelector("strong")!),
+        definitionLabel: normalizedText(definition.querySelector(".cr2-definition-label")!),
+        definitionTitle: normalizedText(definition.querySelector("h3")!),
+        definitionIntro: normalizedText(definition.querySelector(".cr2-definition-intro")!),
+        definitionClosing: normalizedText(definition.querySelector(".cr2-definition-closing")!),
+        definitionCount: definitionList.children.length,
+        definitionNames: Array.from(definitionList.querySelectorAll("h4"), normalizedText),
       };
     });
 
@@ -114,17 +126,26 @@ test("#37 uses the official centered ttl-01 structure and exact responsive type"
       letterSpacing: desktopType ? "5.76px" : "2.64px",
       marginBottom: "40px",
     });
-    expect(values.body).toEqual({
+    expect(values.who).toEqual({
+      text: "インキュライズという社名には、「Incubate（育成・支援）」と「Rise（成長・向上）」の想いが込められています。課題をチャンスに変え、可能性を最大限に引き出す。その挑戦を、私たちが全力で支援します。",
       size: desktopSection ? "20px" : "14px",
       lineHeight: desktopSection ? "40px" : "28px",
       letterSpacing: desktopSection ? "1.4px" : "0.98px",
     });
-    expect(values.section.background).toBe("rgb(241, 241, 241)");
+    expect(values.section.background).toBe("rgb(255, 255, 255)");
     expect(values.section.backgroundImage).toBe("none");
     expect(values.section.paddingTop).toBe(desktopSection ? "315px" : "100px");
     expect(values.hazeCount).toBe(0);
-    expect(values.gridIntroBackgroundImage).toContain("linear-gradient");
-    expect(values.gridIntroIsImmediatelyBeforeGrid).toBe(true);
+    expect(values.legacyGridCount).toBe(0);
+    expect(values.compositionOrder).toBe(true);
+    expect(values.dnaLabel).toBe("( Incurise DNA )");
+    expect(values.dnaTitle).toBe("“IKETERU”の探求");
+    expect(values.definitionLabel).toBe("Definition 〜 IKETERUの定義 〜");
+    expect(values.definitionTitle).toBe("技術力×人間力。IKETERU人材を育てる。");
+    expect(values.definitionIntro).toBe("テクニカルスキルとヒューマンスキルを兼ね備え、現場に前向きな変化を生み出す人材を「IKETERU」と定義しています。");
+    expect(values.definitionClosing).toBe("“IKETERU”を共通言語に、一人ひとりの成長をクライアントと事業の成功へつなげます。");
+    expect(values.definitionCount).toBe(6);
+    expect(values.definitionNames).toEqual(["自信", "誠実", "貪欲", "行動力", "柔軟性", "格好"]);
   }
 });
 
@@ -151,6 +172,12 @@ test("career tabs show one exact route and support uses the adopted editorial ch
   const support = page.locator("#cr2-support");
   const chapters = support.locator(".cr2-support-chapters > article");
   await expect(chapters).toHaveCount(3);
+  await expect(support.locator(".cr2-support-chapter-intro h3").filter({ hasText: /^Learning & Career$/ })).toBeVisible();
+  await expect(support.locator(".cr2-support-chapter-intro h3").filter({ hasText: /^Connection & Culture$/ })).toBeVisible();
+  await expect(support.locator(".cr2-support-chapter-intro h3").filter({ hasText: /^Time Off & Lifestyle$/ })).toBeVisible();
+  await expect(support).not.toContainText("学び・キャリア");
+  await expect(support).not.toContainText("つながり・文化");
+  await expect(support).not.toContainText("休暇・暮らし");
   await expect(support.locator(".cr2-support-chapter-toggle").first()).toBeHidden();
   await expect(support.getByRole("tabpanel")).toHaveCount(3);
   await expect(support.locator("#cr2-support-detail-learn")).toContainText("プログラミング研修");
@@ -191,6 +218,9 @@ test("support chapters collapse to one open editorial chapter on mobile", async 
   const learnToggle = toggles.nth(0);
   const connectToggle = toggles.nth(1);
   const lifeToggle = toggles.nth(2);
+  await expect(learnToggle.locator("strong")).toHaveText("Learning & Career");
+  await expect(connectToggle.locator("strong")).toHaveText("Connection & Culture");
+  await expect(lifeToggle.locator("strong")).toHaveText("Time Off & Lifestyle");
   await expect(learnToggle).toHaveAttribute("aria-expanded", "true");
   await expect(connectToggle).toHaveAttribute("aria-expanded", "false");
   await expect(lifeToggle).toHaveAttribute("aria-expanded", "false");

@@ -116,19 +116,34 @@ select:focus-visible,
 .cr2-official-mark i { top: 0; left: 0; width: 1px; height: 40px; background: var(--cr2-ink); }
 .cr2-official-mark b { bottom: -3px; left: 11px; width: 4px; height: 57px; background: var(--cr2-red); transform: rotate(60deg); transform-origin: center; }
 
-.cr2-iketeru { position: relative; overflow: hidden; padding-block: 100px 110px; background: #f1f1f1; }
+.cr2-iketeru { position: relative; overflow: hidden; padding-block: 100px 110px; background: var(--cr2-white); }
 .cr2-iketeru .cr2-container { position: relative; z-index: 1; }
 .cr2-iketeru-intro { width: min(980px, 100%); margin-inline: auto; text-align: center; }
 .cr2-iketeru-intro h2 { margin: 0 0 40px; color: var(--cr2-ink); font-size: 22px; font-weight: 700; line-height: 1.7; letter-spacing: .12em; text-wrap: balance; }
-.cr2-iketeru-intro > p { width: min(760px, 100%); margin: 0 auto 80px; color: var(--cr2-ink); font-size: 14px; line-height: 2; letter-spacing: .07em; }
-.cr2-iketeru-grid-intro { margin: 0 0 32px; color: transparent; background: var(--cr2-gradient); background-clip: text; font-size: 18px; font-weight: 700; line-height: 1.7; text-align: center; }
-.cr2-iketeru-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; margin-top: 0; border-top: 1px solid var(--cr2-ink); }
-.cr2-iketeru-grid article { position: relative; min-height: 330px; padding: 32px 6px 34px; border-bottom: 1px solid var(--cr2-line); }
-.cr2-iketeru-grid article > span { color: var(--cr2-red); font: 700 11px/1 "Roboto", sans-serif; }
-.cr2-iketeru-grid article > p { margin: 40px 0 0; color: var(--cr2-muted); font: italic 700 12px/1 "Roboto", sans-serif; letter-spacing: .08em; }
-.cr2-iketeru-grid h3 { margin: 10px 0 0; color: var(--cr2-ink); font-size: 38px; line-height: 1.2; }
-.cr2-iketeru-grid strong { display: block; margin-top: 18px; font-size: 15px; line-height: 1.7; }
-.cr2-iketeru-grid article > div { margin-top: 15px; color: var(--cr2-muted); font-size: 13px; line-height: 1.85; }
+.cr2-iketeru-who { width: min(820px, 100%); margin: 0 auto 90px; color: var(--cr2-ink); font-size: 14px; line-height: 2; letter-spacing: .07em; }
+.cr2-dna-visual { position: relative; width: min(1100px, 100%); min-height: 430px; display: grid; place-items: center; isolation: isolate; overflow: hidden; margin-inline: auto; }
+.cr2-dna-visual::before,
+.cr2-dna-visual::after { position: absolute; z-index: -2; content: ""; pointer-events: none; }
+.cr2-dna-visual::before { inset: 9% 3%; border-radius: 48% 52% 55% 45%; background: radial-gradient(circle at 24% 56%, rgba(239, 179, 3, .78) 0 11%, rgba(239, 90, 3, .68) 25%, rgba(255, 8, 48, .67) 45%, rgba(252, 0, 108, .58) 62%, rgba(253, 2, 168, .2) 76%, transparent 86%); filter: blur(24px); transform: rotate(-8deg) scale(1.06); }
+.cr2-dna-visual::after { width: 66%; height: 50%; right: -12%; bottom: 2%; border-radius: 50%; background: radial-gradient(circle, rgba(255, 8, 48, .48), rgba(252, 0, 108, .2) 45%, transparent 72%); filter: blur(30px); }
+.cr2-dna-orbit { width: min(300px, 78vw); aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 34px; border-radius: 50%; background: rgba(255, 255, 255, .94); box-shadow: 0 22px 70px rgba(7, 35, 35, .08); text-align: center; }
+.cr2-dna-orbit p { margin: 0; color: var(--cr2-muted); font: italic 700 11px/1 "Roboto", sans-serif; letter-spacing: .12em; }
+.cr2-dna-orbit strong { color: var(--cr2-ink); font-size: 28px; line-height: 1.45; letter-spacing: .08em; }
+.cr2-definition { width: min(1100px, 100%); margin: 104px auto 0; }
+.cr2-definition-label { margin: 0; color: var(--cr2-ink); font: italic 700 15px/1.5 "Roboto", sans-serif; letter-spacing: .06em; }
+.cr2-definition-label span { margin-left: 12px; font: 700 12px/1.5 "Noto Sans JP", sans-serif; letter-spacing: .08em; }
+.cr2-definition > h3 { margin: 24px 0 0; color: transparent; background: var(--cr2-gradient); background-clip: text; font-size: clamp(32px, 9vw, 48px); line-height: 1.45; letter-spacing: .02em; text-wrap: balance; }
+.cr2-definition-intro { width: min(760px, 100%); margin: 28px 0 0; color: var(--cr2-text); font-size: 14px; line-height: 2; letter-spacing: .04em; }
+.cr2-definition-list { margin-top: 64px; border-top: 1px solid var(--cr2-ink); }
+.cr2-definition-list article { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 8px 14px; padding: 28px 4px 30px; border-bottom: 1px solid var(--cr2-line); }
+.cr2-definition-list article > span { grid-row: 1 / span 2; padding-top: 3px; color: var(--cr2-red); font: 700 11px/1 "Roboto", sans-serif; }
+.cr2-definition-name { min-width: 0; }
+.cr2-definition-name small { display: block; color: var(--cr2-muted); font: italic 700 11px/1.2 "Roboto", sans-serif; letter-spacing: .08em; }
+.cr2-definition-name h4 { margin: 8px 0 0; color: var(--cr2-ink); font-size: 30px; line-height: 1.2; }
+.cr2-definition-copy { min-width: 0; }
+.cr2-definition-copy strong { display: block; color: var(--cr2-ink); font-size: 15px; line-height: 1.7; }
+.cr2-definition-copy p { margin: 12px 0 0; color: var(--cr2-muted); font-size: 13px; line-height: 1.9; }
+.cr2-definition-closing { width: min(760px, 100%); margin: 64px 0 0 auto; color: var(--cr2-ink); font-size: 18px; font-weight: 700; line-height: 2; letter-spacing: .05em; }
 
 .cr2-section-heading { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; margin-bottom: 54px; }
 .cr2-section-heading > p { margin: 0; color: var(--cr2-red); font: italic 700 12px/1 "Roboto", sans-serif; letter-spacing: .08em; }
@@ -305,10 +320,13 @@ select:focus-visible,
   .cr2-official-label { margin-bottom: 40px; }
   .cr2-official-label em { font-size: 20px; }
   .cr2-iketeru-intro h2 { font-size: 48px; }
-  .cr2-iketeru-grid-intro { margin-bottom: 40px; font-size: 22px; }
-  .cr2-iketeru-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cr2-iketeru-grid article { padding: 38px 28px 40px; }
-  .cr2-iketeru-grid article:nth-child(odd) { border-right: 1px solid var(--cr2-line); }
+  .cr2-dna-visual { min-height: 560px; }
+  .cr2-dna-orbit { width: 410px; padding: 58px; }
+  .cr2-dna-orbit strong { font-size: 38px; }
+  .cr2-definition-list article { grid-template-columns: 52px 190px minmax(0, 1fr); align-items: start; gap: 28px; padding: 36px 12px 38px; }
+  .cr2-definition-list article > span { grid-row: auto; }
+  .cr2-definition-name h4 { font-size: 36px; }
+  .cr2-definition-copy p { margin-top: 10px; font-size: 14px; }
   .cr2-section-heading h2 { font-size: clamp(48px, 5.4vw, 64px); }
   .cr2-career-panel { padding: 44px 52px 50px; }
   .cr2-career-panel li { grid-template-columns: 130px minmax(0, 1fr); padding-inline: 20px; }
@@ -329,14 +347,22 @@ select:focus-visible,
 
 @media (min-width: 992px) {
   .cr2-iketeru { padding-block: 315px 160px; }
-  .cr2-iketeru-intro > p { font-size: 20px; }
+  .cr2-iketeru-who { margin-bottom: 132px; font-size: 20px; }
 }
 
 @media (min-width: 1100px) {
-  .cr2-iketeru-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .cr2-iketeru-grid article { min-height: 350px; padding: 42px 36px; border-right: 1px solid var(--cr2-line); }
-  .cr2-iketeru-grid article:nth-child(3n) { border-right: 0; }
-  .cr2-iketeru-grid h3 { font-size: 42px; }
+  .cr2-dna-visual { min-height: 640px; }
+  .cr2-dna-orbit { width: 480px; }
+  .cr2-dna-orbit strong { font-size: 44px; }
+  .cr2-definition { margin-top: 132px; }
+  .cr2-definition > h3 { font-size: 54px; }
+  .cr2-definition-intro { font-size: 16px; }
+  .cr2-definition-list { margin-top: 78px; }
+  .cr2-definition-list article { grid-template-columns: 64px 240px minmax(0, 1fr); gap: 34px; padding: 42px 16px 44px; }
+  .cr2-definition-name h4 { font-size: 42px; }
+  .cr2-definition-copy strong { font-size: 17px; }
+  .cr2-definition-copy p { font-size: 15px; }
+  .cr2-definition-closing { margin-top: 80px; font-size: 22px; }
   .cr2-support-chapters { gap: 18px; }
   .cr2-support-chapters > article { min-height: 269px; display: grid; grid-template-columns: minmax(190px, 230px) minmax(0, 1fr); gap: 32px; padding: 32px; }
   .cr2-support-chapter-toggle { display: none; }
