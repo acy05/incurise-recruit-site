@@ -136,6 +136,32 @@ const supportItems: ReadonlyArray<{
   { number: "15", title: "ディズニー/USJ施設優待制度", body: ["「たくさん歩いて健康促進」を目標に、上記テーマパークの入園料の一部を負担する制度です。"] },
 ];
 
+const supportGroups = [
+  {
+    key: "learn",
+    number: "01",
+    label: "LEARN & GROW",
+    title: "学び・キャリア",
+    itemNumbers: ["01", "02", "03", "04", "05", "06", "11"],
+  },
+  {
+    key: "connect",
+    number: "02",
+    label: "CONNECT & CULTURE",
+    title: "つながり・文化",
+    itemNumbers: ["08", "09", "10", "12", "13"],
+  },
+  {
+    key: "life",
+    number: "03",
+    label: "LIFE & BENEFIT",
+    title: "休暇・暮らし",
+    itemNumbers: ["07", "14", "15"],
+  },
+] as const;
+
+type SupportGroupKey = (typeof supportGroups)[number]["key"];
+
 const faqItems: ReadonlyArray<{ question: string; answer: ReactNode }> = [
   {
     question: "Q1.未経験でも応募することはできますか",
@@ -422,9 +448,39 @@ function CareerSection() {
 }
 
 function SupportSection() {
-  const [active, setActive] = useState<number | null>(null);
-  const pointerFocusRef = useRef(false);
-  const supportsHover = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const [openChapter, setOpenChapter] = useState<SupportGroupKey>("learn");
+  const [selectedItems, setSelectedItems] = useState<Record<SupportGroupKey, string>>({
+    learn: "01",
+    connect: "08",
+    life: "07",
+  });
+  const itemRefs = useRef<Record<SupportGroupKey, Array<HTMLButtonElement | null>>>({
+    learn: [],
+    connect: [],
+    life: [],
+  });
+
+  const selectItem = (group: SupportGroupKey, number: string) => {
+    setSelectedItems((current) => ({ ...current, [group]: number }));
+  };
+
+  const onItemKeyDown = (
+    event: ReactKeyboardEvent<HTMLButtonElement>,
+    group: SupportGroupKey,
+    index: number,
+    items: typeof supportItems,
+  ) => {
+    let nextIndex = index;
+    if (event.key === "ArrowDown") nextIndex = (index + 1) % items.length;
+    else if (event.key === "ArrowUp") nextIndex = (index - 1 + items.length) % items.length;
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = items.length - 1;
+    else return;
+    event.preventDefault();
+    const next = items[nextIndex];
+    selectItem(group, next.number);
+    itemRefs.current[group][nextIndex]?.focus();
+  };
 
   return (
     <section className="cr2-support" id="cr2-support">
@@ -433,48 +489,82 @@ function SupportSection() {
           index="03"
           label="SUPPORT & BENEFIT"
           title={<>“IKETERU”あなたを<br />支える仕組み</>}
-          lead="制度名を選ぶと詳細を確認できます。PCではカーソル、スマホではタップ、キーボードではEnterまたはSpaceで操作できます。"
+          lead="15の制度を、目的別の3カテゴリーに整理しました。制度名を選ぶと詳細を確認できます。"
         />
-        <div className="cr2-support-grid">
-          {supportItems.map((item, index) => {
-            const open = active === index;
+        <div className="cr2-support-chapters">
+          {supportGroups.map((group) => {
+            const items = group.itemNumbers.map((number) => supportItems.find((item) => item.number === number)!);
+            const selectedNumber = selectedItems[group.key];
+            const selectedItem = items.find((item) => item.number === selectedNumber) ?? items[0];
+            const open = openChapter === group.key;
             return (
               <article
-                key={item.number}
+                key={group.key}
                 className={open ? "is-open" : ""}
-                onMouseEnter={() => supportsHover() && setActive(index)}
-                onMouseLeave={() => supportsHover() && setActive((current) => current === index ? null : current)}
-                onPointerDown={() => { pointerFocusRef.current = true; }}
-                onFocus={() => {
-                  if (!pointerFocusRef.current) setActive(index);
-                  pointerFocusRef.current = false;
-                }}
-                onBlur={(event) => {
-                  if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                    setActive((current) => current === index ? null : current);
-                  }
-                }}
+                data-chapter={group.key}
               >
                 <button
                   type="button"
+                  className="cr2-support-chapter-toggle"
                   aria-expanded={open}
-                  aria-controls={`cr2-support-detail-${index}`}
-                  onClick={() => setActive(open ? null : index)}
-                  onKeyDown={(event) => {
-                    if (event.key !== "Enter" && event.key !== " ") return;
-                    event.preventDefault();
-                    setActive(index);
-                  }}
+                  aria-controls={`cr2-support-chapter-${group.key}`}
+                  onClick={() => setOpenChapter(group.key)}
                 >
-                  <span>{item.number}</span>
-                  <h3>{item.title}</h3>
+                  <span className="cr2-support-chapter-copy">
+                    <small>{group.number} / {group.label}</small>
+                    <strong>{group.title}</strong>
+                  </span>
+                  <b>{items.length}件</b>
                   <i aria-hidden="true">{open ? "−" : "＋"}</i>
                 </button>
-                {open && (
-                  <div id={`cr2-support-detail-${index}`} className="cr2-support-detail">
-                    {item.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+
+                <header className="cr2-support-chapter-intro">
+                  <small>{group.number} / {group.label}</small>
+                  <h3>{group.title}</h3>
+                  <span>{items.length} SYSTEMS</span>
+                </header>
+
+                <div id={`cr2-support-chapter-${group.key}`} className="cr2-support-chapter-content">
+                  <div className="cr2-support-item-list" role="tablist" aria-orientation="vertical" aria-label={`${group.title}の制度`}>
+                    {items.map((item, index) => {
+                      const selected = selectedItem.number === item.number;
+                      return (
+                        <button
+                          key={item.number}
+                          ref={(node) => { itemRefs.current[group.key][index] = node; }}
+                          id={`cr2-support-item-${group.key}-${item.number}`}
+                          type="button"
+                          role="tab"
+                          className={selected ? "is-selected" : ""}
+                          aria-selected={selected}
+                          aria-controls={`cr2-support-detail-${group.key}`}
+                          tabIndex={selected ? 0 : -1}
+                          onClick={() => selectItem(group.key, item.number)}
+                          onFocus={() => selectItem(group.key, item.number)}
+                          onMouseEnter={() => {
+                            if (window.matchMedia("(min-width: 1100px) and (hover: hover) and (pointer: fine)").matches) {
+                              selectItem(group.key, item.number);
+                            }
+                          }}
+                          onKeyDown={(event) => onItemKeyDown(event, group.key, index, items)}
+                        >
+                          {item.title}
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
+                  <div
+                    id={`cr2-support-detail-${group.key}`}
+                    className="cr2-support-detail"
+                    role="tabpanel"
+                    aria-labelledby={`cr2-support-item-${group.key}-${selectedItem.number}`}
+                    tabIndex={0}
+                  >
+                    <span aria-hidden="true" />
+                    <h3>{selectedItem.title}</h3>
+                    {selectedItem.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                  </div>
+                </div>
               </article>
             );
           })}

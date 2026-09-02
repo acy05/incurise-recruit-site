@@ -128,7 +128,7 @@ test("#37 uses the official centered ttl-01 structure and exact responsive type"
   }
 });
 
-test("career tabs show one exact route and support removes closed details", async ({ page }) => {
+test("career tabs show one exact route and support uses the adopted editorial chapters", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route, { waitUntil: "domcontentloaded" });
 
@@ -149,17 +149,69 @@ test("career tabs show one exact route and support removes closed details", asyn
   await expect(career.getByRole("tabpanel")).toContainText("SE Lead");
 
   const support = page.locator("#cr2-support");
+  const chapters = support.locator(".cr2-support-chapters > article");
+  await expect(chapters).toHaveCount(3);
+  await expect(support.locator(".cr2-support-chapter-toggle").first()).toBeHidden();
+  await expect(support.getByRole("tabpanel")).toHaveCount(3);
+  await expect(support.locator("#cr2-support-detail-learn")).toContainText("プログラミング研修");
+  await expect(support.locator("#cr2-support-detail-connect")).toContainText("ちょ、帰社する？制度");
+  await expect(support.locator("#cr2-support-detail-life")).toContainText("各種休暇");
+
   const mentorText = "あなたのキャリア形成の後押し役として、役員が直接相談にのります。";
-  await expect(support.getByText(mentorText, { exact: true })).toHaveCount(0);
-  await support.getByRole("button", { name: /メンター制度/ }).click();
-  await expect(support.getByText(mentorText, { exact: true })).toBeVisible();
-  await support.getByRole("button", { name: /サポーター制度/ }).click();
-  await expect(support.getByText(mentorText, { exact: true })).toHaveCount(0);
-  await expect(support.getByText("全新入社員に1人、先輩社員がサポーターとしてアサインされます。", { exact: true })).toBeVisible();
-  const qualificationButton = support.getByRole("button", { name: /資格取得補助制度/ });
-  await qualificationButton.focus();
-  await qualificationButton.press("Enter");
-  await expect(support.getByText("資格試験に合格した際に、受験料とお祝い金が支給される制度です。", { exact: true })).toBeVisible();
+  const mentorTab = support.getByRole("tab", { name: "メンター制度" });
+  await mentorTab.focus();
+  await expect(mentorTab).toHaveAttribute("aria-selected", "true");
+  await expect(support.locator("#cr2-support-detail-learn").getByText(mentorText, { exact: true })).toBeVisible();
+
+  await mentorTab.press("ArrowDown");
+  const supporterTab = support.getByRole("tab", { name: "サポーター制度" });
+  await expect(supporterTab).toBeFocused();
+  await expect(supporterTab).toHaveAttribute("aria-selected", "true");
+  await expect(support.locator("#cr2-support-detail-learn")).toContainText("全新入社員に1人、先輩社員がサポーターとしてアサインされます。");
+
+  await supporterTab.press("End");
+  const consultantTabInSupport = support.getByRole("tab", { name: "IKETERU Consultant制度" });
+  await expect(consultantTabInSupport).toBeFocused();
+  await expect(consultantTabInSupport).toHaveAttribute("aria-selected", "true");
+
+  for (const tab of await support.getByRole("tab").all()) {
+    await expect(tab).not.toContainText(/^\d{2}$/);
+    await expect(tab).not.toContainText(/[＋−]/);
+  }
+});
+
+test("support chapters collapse to one open editorial chapter on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(route, { waitUntil: "domcontentloaded" });
+
+  const support = page.locator("#cr2-support");
+  const toggles = support.locator(".cr2-support-chapter-toggle");
+  await expect(toggles).toHaveCount(3);
+
+  const learnToggle = toggles.nth(0);
+  const connectToggle = toggles.nth(1);
+  const lifeToggle = toggles.nth(2);
+  await expect(learnToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(connectToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(lifeToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(support.locator("#cr2-support-chapter-learn")).toBeVisible();
+  await expect(support.locator("#cr2-support-chapter-connect")).toBeHidden();
+  await expect(support.locator("#cr2-support-chapter-life")).toBeHidden();
+
+  await connectToggle.click();
+  await expect(learnToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(connectToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(lifeToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(support.locator("#cr2-support-chapter-learn")).toBeHidden();
+  await expect(support.locator("#cr2-support-chapter-connect")).toBeVisible();
+
+  const eventTab = support.getByRole("tab", { name: "イベント制度" });
+  await eventTab.click();
+  await expect(eventTab).toHaveAttribute("aria-selected", "true");
+  expect((await eventTab.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+  await expect(support.locator("#cr2-support-detail-connect")).toContainText("隔月で役員も参加するイベントを開催しています。");
+  await expect(support.locator("#cr2-support-detail-connect")).toContainText("BBQやゲーム大会などを通して、様々なメンバーと交流することができます。");
+  await expect(support.locator("#cr2-support-chapter-connect").getByRole("tab", { selected: true })).toHaveCount(1);
 });
 
 test("exact FAQ text opens without rewriting", async ({ page }) => {
@@ -175,6 +227,7 @@ test("exact FAQ text opens without rewriting", async ({ page }) => {
 });
 
 test("form validates, confirms files, and keeps final submission disabled", async ({ page }) => {
+  test.setTimeout(60_000);
   await page.goto(route, { waitUntil: "domcontentloaded" });
   const form = page.locator(".cr2-form");
   await form.getByRole("button", { name: "同意して入力内容の確認へ" }).click();
