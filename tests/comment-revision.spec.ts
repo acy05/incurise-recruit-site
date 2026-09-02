@@ -94,6 +94,41 @@ test("#9 matches the official About Definition structure at desktop and mobile",
   }
 });
 
+test("#9 reproduces the official scroll motion and honors reduced motion", async ({ browser }) => {
+  const animatedContext = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "no-preference" });
+  const animatedPage = await animatedContext.newPage();
+  await animatedPage.goto(route, { waitUntil: "networkidle" });
+  await expect(animatedPage.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "enabled");
+
+  const definitionTop = await animatedPage.locator(".cr2-official-definition").evaluate((element) => element.getBoundingClientRect().top + scrollY);
+  await animatedPage.evaluate((top) => scrollTo(0, top + 650), definitionTop);
+  await animatedPage.waitForTimeout(550);
+  const animated = await animatedPage.evaluate(() => {
+    const circle = document.querySelector<HTMLElement>(".cr2-official-static")!;
+    const dna = document.querySelector<HTMLElement>(".cr2-official-definition-dna")!;
+    const blob = document.querySelector<HTMLElement>(".cr2-official-blob")!;
+    return {
+      circleY: circle.getBoundingClientRect().y,
+      dnaY: dna.getBoundingClientRect().y,
+      blobScale: Number.parseFloat(getComputedStyle(blob).getPropertyValue("--cr2-blob-scale")),
+      blobTravel: Number.parseFloat(getComputedStyle(blob).getPropertyValue("--cr2-blob-y")),
+    };
+  });
+  expect(animated.circleY).toBeCloseTo(190, 0);
+  expect(animated.dnaY).toBeCloseTo(190, 0);
+  expect(animated.blobScale).toBeCloseTo(1, 1);
+  expect(animated.blobTravel).toBeGreaterThan(0);
+  await animatedContext.close();
+
+  const reducedContext = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
+  const reducedPage = await reducedContext.newPage();
+  await reducedPage.goto(route, { waitUntil: "networkidle" });
+  await expect(reducedPage.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "reduced");
+  await expect(reducedPage.locator(".cr2-hero-copy")).toHaveCSS("opacity", "1");
+  await expect(reducedPage.locator(".cr2-official-blob")).toHaveCSS("opacity", "1");
+  await reducedContext.close();
+});
+
 test("career tabs show one exact route and support uses the adopted editorial chapters", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route, { waitUntil: "domcontentloaded" });

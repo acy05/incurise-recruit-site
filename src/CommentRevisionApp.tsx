@@ -7,6 +7,8 @@ import {
   type ReactNode,
 } from "react";
 import { Menu, X } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import logo from "./assets/preview/incurise-logo.png";
 import hero from "./assets/preview/hero.png";
@@ -933,9 +935,98 @@ function Footer() {
   );
 }
 
+function CommentRevisionMotion() {
+  useEffect(() => {
+    const site = document.querySelector<HTMLElement>(".cr2-site");
+    if (!site) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    site.dataset.motionReady = reducedMotion ? "reduced" : "enabled";
+    if (reducedMotion) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const context = gsap.context(() => {
+      const heroTimeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+      heroTimeline
+        .fromTo(".cr2-hero picture > img", { scale: 1.08 }, { scale: 1, duration: 1.35 })
+        .fromTo(".cr2-growth-sequence", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .65 }, "-=.85")
+        .fromTo(".cr2-hero-copy > *", { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .72, stagger: .09 }, "-=.55");
+
+      gsap.utils.toArray<HTMLElement>(
+        ".cr2-section-heading, .cr2-iketeru-intro, .cr2-iketeru-bridge, .cr2-career-shell, .cr2-support-chapters, .cr2-job-grid, .cr2-selection, .cr2-faq-list, .cr2-form",
+      ).forEach((element) => {
+        gsap.fromTo(element, { opacity: 0, y: 32 }, {
+          opacity: 1,
+          y: 0,
+          duration: .7,
+          ease: "power3.out",
+          scrollTrigger: { trigger: element, start: "top 88%", once: true },
+        });
+      });
+
+      const definition = document.querySelector<HTMLElement>(".cr2-official-definition");
+      const blob = definition?.querySelector<HTMLElement>(".cr2-official-blob");
+      const dna = definition?.querySelector<HTMLElement>(".cr2-official-definition-dna");
+      if (definition && blob) {
+        const desktop = window.matchMedia("(min-width: 1100px)").matches;
+        gsap.fromTo(blob, {
+          "--cr2-blob-scale": "0",
+          autoAlpha: 0,
+        }, {
+          "--cr2-blob-scale": desktop ? "1" : "1.25",
+          autoAlpha: 1,
+          duration: .5,
+          ease: "back.out(1.7)",
+          scrollTrigger: {
+            trigger: definition,
+            start: "top 78%",
+            toggleActions: "play none none reverse",
+          },
+        });
+
+        if (desktop) {
+          const blobTravel = () => Math.max(0, definition.offsetHeight - window.innerHeight);
+          gsap.to(blob, {
+            "--cr2-blob-y": () => `${blobTravel()}px`,
+            ease: "none",
+            scrollTrigger: {
+              trigger: definition,
+              start: "top center",
+              end: "bottom center",
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          });
+          if (dna) {
+            ScrollTrigger.create({
+              trigger: dna,
+              endTrigger: definition,
+              pin: dna,
+              pinSpacing: false,
+              start: "top 190px",
+              end: () => `+=${Math.max(0, definition.offsetHeight - dna.offsetHeight)}`,
+              invalidateOnRefresh: true,
+            });
+          }
+        }
+      }
+
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+    }, site);
+
+    return () => {
+      context.revert();
+      delete site.dataset.motionReady;
+    };
+  }, []);
+
+  return null;
+}
+
 export default function CommentRevisionApp() {
   return (
     <div className="cr2-site">
+      <CommentRevisionMotion />
       <a className="cr2-skip-link" href="#cr2-main">本文へ移動</a>
       <Header />
       <main id="cr2-main">
