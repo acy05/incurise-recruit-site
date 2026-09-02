@@ -116,36 +116,39 @@ select:focus-visible,
 .cr2-official-mark i { display: none; }
 .cr2-official-mark b { top: 5px; left: 0; width: 16px; height: 2px; background: var(--cr2-red); transform: rotate(45deg); transform-origin: center; }
 
-.cr2-iketeru { position: relative; overflow: hidden; padding-block: 74px 84px; background: var(--cr2-white); }
+.cr2-iketeru { position: relative; overflow: hidden; padding-block: 74px 0; background: #f1f1f1; }
 .cr2-iketeru .cr2-container { position: relative; z-index: 1; }
 .cr2-iketeru-intro { width: 100%; margin-inline: auto; text-align: center; }
 .cr2-iketeru-intro h2 { margin: 0 0 32px; color: var(--cr2-ink); font-size: 26px; font-weight: 700; line-height: 1.35; letter-spacing: 0; text-wrap: balance; }
-.cr2-iketeru-who { width: 100%; margin: 0 0 67px; color: #667171; font-size: 14px; line-height: 1.75; letter-spacing: 0; }
+.cr2-iketeru-who { width: 100%; margin: 0; color: #667171; font-size: 14px; line-height: 1.75; letter-spacing: 0; }
 .cr2-definition-desktop-copy { display: none; }
 .cr2-definition-mobile-copy { display: block; }
-.cr2-iketeru-body { min-width: 0; display: flex; flex-direction: column; }
-.cr2-iketeru-left,
-.cr2-definition { display: contents; }
-.cr2-iketeru-left > h3 { order: 3; margin: 22px 0 0; color: var(--cr2-ink); font-size: 27px; line-height: 1.35; letter-spacing: 0; text-align: center; text-wrap: balance; }
-.cr2-definition-intro { order: 4; margin: 16px 0 0; color: #667171; font-size: 13px; line-height: 1.75; letter-spacing: 0; text-align: center; }
-.cr2-dna-visual { position: relative; order: 1; width: 100%; min-height: 430px; display: block; isolation: isolate; overflow: visible; margin: 0; border-radius: 50%; background: rgba(249, 249, 246, .96); }
-.cr2-dna-visual::before,
-.cr2-dna-visual::after { position: absolute; z-index: -2; content: ""; pointer-events: none; }
-.cr2-dna-visual::before { top: -18px; right: 35%; bottom: -65px; left: -190px; border-radius: 50%; background: rgba(252, 0, 108, .88); filter: blur(54px); }
-.cr2-dna-visual::after { top: 53%; right: -200px; bottom: -40px; left: 42%; border-radius: 50%; background: rgba(239, 179, 3, .86); filter: blur(54px); }
-.cr2-dna-orbit { width: 100%; height: 100%; display: block; padding: 62px 42px; border-radius: inherit; text-align: left; }
-.cr2-dna-orbit p { margin: 0; color: var(--cr2-ink); font: italic 700 13px/1 "Roboto", sans-serif; letter-spacing: .06em; }
-.cr2-dna-orbit strong { display: block; margin-top: 56px; color: var(--cr2-ink); font-size: 34px; line-height: 1.35; letter-spacing: -.02em; }
-.cr2-definition-label { order: 2; margin: 44px 0 0; color: var(--cr2-red); font: 700 14px/1.4 "Noto Sans JP", sans-serif; letter-spacing: .04em; text-align: center; }
-.cr2-definition-label span { margin-left: 0; font: inherit; }
-.cr2-definition-list { order: 5; margin-top: 19px; border-top: 0; }
-.cr2-definition-list article { min-height: 174px; display: block; padding: 20px 0 25px; border-bottom: 1px solid var(--cr2-line); }
-.cr2-definition-name { min-width: 0; }
-.cr2-definition-name small { display: block; color: var(--cr2-red); font: italic 700 12px/1 "Roboto", sans-serif; letter-spacing: 0; }
-.cr2-definition-name h4 { margin: 6px 0 0; color: var(--cr2-ink); font-size: 22px; line-height: 1.3; }
-.cr2-definition-copy { min-width: 0; }
-.cr2-definition-copy p { margin: 14px 0 0; color: #667171; font-size: 13px; line-height: 1.75; }
-.cr2-definition-closing { order: 6; width: 100%; margin: 23px 0 0; color: var(--cr2-ink); font-size: 14px; font-weight: 700; line-height: 1.7; letter-spacing: 0; text-align: center; }
+.cr2-iketeru-bridge { margin: 50px auto 0; color: var(--cr2-ink); font-size: 24px; line-height: 1.6; letter-spacing: .04em; text-align: center; }
+
+.cr2-official-definition { position: relative; z-index: 0; margin-top: 250px; color: var(--cr2-ink); }
+.cr2-official-definition-dna { display: none; }
+.cr2-official-blob { position: absolute; z-index: -1; top: 0; left: 50%; width: min(1132px, 140vw); aspect-ratio: 1132 / 970; pointer-events: none; transform: translate(-50%, -50%) scale(1.25); filter: blur(30px); background: url("./assets/official/definition-blob.svg") center / contain no-repeat; }
+.cr2-official-definition-wrap { width: 100%; max-width: 1280px; display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: center; gap: 58px; margin-inline: auto; padding-inline: 20px; }
+.cr2-official-static { position: relative; width: 100%; max-width: 440px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 50px auto; }
+.cr2-official-static::before { position: absolute; z-index: -1; inset: 0; border-radius: 50%; content: ""; background: rgba(255, 255, 255, .3); }
+.cr2-official-static p { margin: 0; color: var(--cr2-ink); font: italic 700 72px/1 "Roboto", sans-serif; text-align: center; transform: rotate(-20deg); }
+.cr2-official-static p span,
+.cr2-official-definition-title em b { color: transparent; background: linear-gradient(270deg, #fd02a8 0%, #fc006c 20%, #ff0830 100%); background-clip: text; text-transform: uppercase; }
+.cr2-official-static strong { width: 100%; display: block; padding-right: 80px; color: var(--cr2-ink); font-size: 20px; line-height: 1.8; text-align: right; }
+.cr2-official-definition-content { width: 100%; max-width: 685px; padding: 70px 10px 0; }
+.cr2-official-definition-content > h3 { margin: 0; color: var(--cr2-ink); font: italic 800 42px/1 "Roboto", sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.cr2-official-definition-content > h3 span { display: block; margin-top: 20px; font: normal 500 20px/1.2 "Noto Sans JP", sans-serif; letter-spacing: .1em; text-transform: none; }
+.cr2-official-definition-content ul { margin: 0; padding: 0; list-style: none; }
+.cr2-official-definition-content li { margin-top: 80px; }
+.cr2-official-definition-title { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-start; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--cr2-ink); }
+.cr2-official-definition-title > span { color: var(--cr2-ink); font-size: 16px; font-weight: 500; line-height: 2; letter-spacing: .1em; }
+.cr2-official-definition-key { position: relative; padding-inline: 43px 12px; border-radius: 4px; background: rgba(255, 255, 255, .5); }
+.cr2-official-definition-key::before { position: absolute; top: 50%; left: 12px; content: "#"; font-size: 32px; font-weight: 700; transform: translateY(-50%); }
+.cr2-official-definition-title em { color: var(--cr2-ink); font: italic 700 32px/1.6 "Roboto", sans-serif; letter-spacing: .04em; transform: translateY(5px); }
+.cr2-official-definition-title em b { font: inherit; }
+.cr2-official-definition-content li > p { position: relative; margin: 0; padding-left: 35px; color: var(--cr2-ink); font-size: 20px; font-weight: 400; line-height: 2; letter-spacing: .01em; }
+.cr2-official-definition-content li > p::before { position: absolute; top: 20px; left: 20px; width: 7px; height: 7px; border-radius: 50%; content: ""; background: var(--cr2-ink); }
+.cr2-official-definition-content li > p:first-of-type { margin-top: 32px; }
 
 .cr2-section-heading { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; margin-bottom: 54px; }
 .cr2-section-heading > p { margin: 0; color: var(--cr2-red); font: italic 700 12px/1 "Roboto", sans-serif; letter-spacing: .08em; }
@@ -319,22 +322,15 @@ select:focus-visible,
   .cr2-jobs,
   .cr2-faq,
   .cr2-entry { padding-block: 128px 136px; }
-  .cr2-iketeru { padding-block: 96px 120px; }
+  .cr2-iketeru { padding-block: 96px 0; }
   .cr2-definition-mobile-break { display: none; }
   .cr2-definition-desktop-copy { display: block; }
   .cr2-definition-mobile-copy { display: none; }
   .cr2-official-label { margin-bottom: 30px; }
   .cr2-official-label em { font-size: 13px; }
   .cr2-iketeru-intro h2 { margin-bottom: 30px; font-size: 38px; line-height: 1.35; }
-  .cr2-iketeru-who { width: min(820px, 100%); margin-inline: auto; margin-bottom: 78px; font-size: 16px; }
-  .cr2-iketeru-left > h3 { font-size: 32px; }
-  .cr2-dna-visual { width: min(500px, 100%); min-height: 610px; margin-inline: auto; }
-  .cr2-dna-orbit { padding: 80px 84px; }
-  .cr2-dna-orbit p { font-size: 16px; }
-  .cr2-dna-orbit strong { margin-top: 60px; font-size: 46px; line-height: 1.25; }
-  .cr2-definition-list article { min-height: 150px; display: grid; grid-template-columns: 180px minmax(0, 1fr); align-items: start; gap: 32px; padding: 28px 0; }
-  .cr2-definition-name h4 { font-size: 24px; }
-  .cr2-definition-copy p { margin-top: 0; font-size: 14px; line-height: 1.8; }
+  .cr2-iketeru-who { width: min(820px, 100%); margin-inline: auto; font-size: 16px; }
+  .cr2-iketeru-bridge { margin-top: 64px; font-size: 30px; }
   .cr2-section-heading h2 { font-size: clamp(48px, 5.4vw, 64px); }
   .cr2-career-panel { padding: 44px 52px 50px; }
   .cr2-career-panel li { grid-template-columns: 130px minmax(0, 1fr); padding-inline: 20px; }
@@ -354,28 +350,21 @@ select:focus-visible,
 }
 
 @media (min-width: 1100px) {
-  .cr2-iketeru { padding-block: 112px 129px; }
+  .cr2-iketeru { padding-block: 112px 0; }
   .cr2-official-label { margin-bottom: 26px; }
   .cr2-official-label em { font-size: 13px; }
   .cr2-iketeru-intro h2 { margin-bottom: 27px; font-size: 52px; line-height: 1.25; }
-  .cr2-iketeru-who { width: 980px; margin: 0 0 74px; font-size: 17px; line-height: 1.8; }
-  .cr2-iketeru-body { display: grid; grid-template-columns: 400px 760px; align-items: start; column-gap: 80px; }
-  .cr2-iketeru-left,
-  .cr2-definition { display: block; min-width: 0; }
-  .cr2-iketeru-left > h3 { margin: 2px 0 0; color: var(--cr2-ink); background: none; font-size: 32px; line-height: 1.3; text-align: center; }
-  .cr2-definition-intro { margin: 22px 0 0; font-size: 16px; line-height: 1.75; text-align: center; }
-  .cr2-dna-visual { width: 500px; min-height: 610px; margin: 16px 0 0 -42px; overflow: visible; }
-  .cr2-dna-orbit { padding: 80px 84px; }
-  .cr2-dna-orbit p { font-size: 16px; }
-  .cr2-dna-orbit strong { margin-top: 60px; font-size: 46px; line-height: 1.25; }
-  .cr2-definition-label { margin: 0; font: italic 700 13px/1 "Roboto", sans-serif; letter-spacing: 0; }
-  .cr2-definition-label span { font: inherit; }
-  .cr2-definition-list { margin-top: 25px; border-top: 0; }
-  .cr2-definition-list article { min-height: 132px; grid-template-columns: 180px 548px; gap: 32px; padding: 24px 0; }
-  .cr2-definition-name small { font-size: 12px; }
-  .cr2-definition-name h4 { margin-top: 8px; font-size: 24px; line-height: 1.25; }
-  .cr2-definition-copy p { margin: 0; font-size: 14px; line-height: 1.8; }
-  .cr2-definition-closing { width: 780px; margin: 48px 0 0; font-size: 18px; line-height: 1.7; }
+  .cr2-iketeru-who { width: 980px; margin: 0 auto; font-size: 17px; line-height: 1.8; }
+  .cr2-iketeru-bridge { margin-top: 70px; font-size: 32px; }
+  .cr2-official-definition-dna { position: absolute; z-index: 3; top: 30px; left: 40px; display: block; font: 700 20px/1.2 "Roboto", sans-serif; letter-spacing: .03em; }
+  .cr2-official-definition-wrap { flex-wrap: nowrap; padding-inline: 40px; }
+  .cr2-official-static { position: sticky; top: 190px; flex: 0 0 440px; margin: 150px 0 0; }
+  .cr2-official-definition-content { flex: 0 0 685px; padding-inline: 0; }
+  .cr2-official-definition-content > h3 { font-size: 64px; }
+  .cr2-official-definition-title > span { font-size: 20px; letter-spacing: .01em; }
+  .cr2-official-definition-title > span:nth-child(2) { letter-spacing: .1em; }
+  .cr2-official-definition-title em { font-size: 56px; }
+  .cr2-official-blob { transform: translate(-50%, -50%); }
   .cr2-support-chapters { gap: 18px; }
   .cr2-support-chapters > article { min-height: 269px; display: grid; grid-template-columns: minmax(190px, 230px) minmax(0, 1fr); gap: 32px; padding: 32px; }
   .cr2-support-chapter-toggle { display: none; }
@@ -395,25 +384,11 @@ select:focus-visible,
 
 @media (min-width: 1500px) {
   .cr2-iketeru .cr2-container { width: min(1323px, calc(100% - var(--cr2-gutter) * 2)); }
-  .cr2-iketeru { padding-block: 117.6px 135.45px; }
+  .cr2-iketeru { padding-block: 117.6px 0; }
   .cr2-official-label { height: 13.65px; margin-bottom: 27.3px; }
   .cr2-official-label em { font-size: 13.65px; }
   .cr2-iketeru-intro h2 { margin-bottom: 28.35px; font-size: 54.6px; }
-  .cr2-iketeru-who { width: 1029px; margin-bottom: 77.7px; font-size: 17.85px; }
-  .cr2-iketeru-body { grid-template-columns: 420px 798px; column-gap: 84px; }
-  .cr2-iketeru-left > h3 { margin-top: 2.1px; font-size: 33.6px; }
-  .cr2-definition-intro { margin-top: 23.1px; font-size: 16.8px; }
-  .cr2-dna-visual { width: 525px; min-height: 640.5px; margin-top: 16.8px; margin-left: -44.1px; }
-  .cr2-dna-orbit { padding: 84px 88.2px; }
-  .cr2-dna-orbit p { font-size: 16.8px; }
-  .cr2-dna-orbit strong { margin-top: 63px; font-size: 48.3px; }
-  .cr2-definition-label { font-size: 13.65px; }
-  .cr2-definition-list { margin-top: 26.25px; }
-  .cr2-definition-list article { min-height: 138.6px; grid-template-columns: 189px 575.4px; gap: 33.6px; padding-block: 25.2px; }
-  .cr2-definition-name small { font-size: 12.6px; }
-  .cr2-definition-name h4 { margin-top: 8.4px; font-size: 25.2px; }
-  .cr2-definition-copy p { font-size: 14.7px; }
-  .cr2-definition-closing { width: 819px; margin-top: 50.4px; font-size: 18.9px; }
+  .cr2-iketeru-who { width: 1029px; font-size: 17.85px; }
 }
 
 @media (min-width: 1200px) {

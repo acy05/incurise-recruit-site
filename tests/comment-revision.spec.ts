@@ -27,163 +27,69 @@ test("comment revision fits all target viewports", async ({ page }) => {
   }
 });
 
-test("#37 keeps the official heading while #9 restores the full Definition composition", async ({ page }) => {
-  for (const viewport of [
-    { width: 1512, height: 982 },
-    { width: 1440, height: 900 },
-    { width: 820, height: 1180 },
-    { width: 390, height: 844 },
-  ]) {
+test("#9 matches the official About Definition structure at desktop and mobile", async ({ page }) => {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await page.goto(route, { waitUntil: "domcontentloaded" });
-
     const values = await page.locator("#cr2-about").evaluate((section) => {
-      const intro = section.querySelector<HTMLElement>(".cr2-iketeru-intro")!;
-      const label = intro.querySelector<HTMLElement>(".cr2-official-label")!;
-      const labelText = label.querySelector<HTMLElement>("em")!;
-      const mark = label.querySelector<HTMLElement>(".cr2-official-mark")!;
-      const black = mark.querySelector<HTMLElement>("i")!;
-      const red = mark.querySelector<HTMLElement>("b")!;
-      const heading = intro.querySelector<HTMLElement>("h2")!;
-      const who = Array.from(intro.querySelectorAll<HTMLElement>(".cr2-iketeru-who")).find((node) => getComputedStyle(node).display !== "none")!;
-      const bodyLayout = section.querySelector<HTMLElement>(".cr2-iketeru-body")!;
-      const left = bodyLayout.querySelector<HTMLElement>(".cr2-iketeru-left")!;
-      const dna = left.querySelector<HTMLElement>(".cr2-dna-visual")!;
-      const orbit = dna.querySelector<HTMLElement>(".cr2-dna-orbit")!;
-      const definition = bodyLayout.querySelector<HTMLElement>(".cr2-definition")!;
-      const definitionList = definition.querySelector<HTMLElement>(".cr2-definition-list")!;
-      const definitionIntro = Array.from(left.querySelectorAll<HTMLElement>(".cr2-definition-intro")).find((node) => getComputedStyle(node).display !== "none")!;
-      const definitionClosing = Array.from(definition.querySelectorAll<HTMLElement>(".cr2-definition-closing")).find((node) => getComputedStyle(node).display !== "none")!;
-      const style = (node: Element) => getComputedStyle(node);
-      const normalizedText = (node: Element) => node.textContent?.replace(/\s+/g, " ").trim();
-      const containerRect = section.querySelector<HTMLElement>(".cr2-container")!.getBoundingClientRect();
-      const leftRect = left.getBoundingClientRect();
-      const dnaRect = dna.getBoundingClientRect();
-      const definitionRect = definition.getBoundingClientRect();
-      const firstDefinition = definitionList.querySelector<HTMLElement>("article")!;
+      const exact = section.querySelector<HTMLElement>(".cr2-official-definition")!;
+      const wrap = exact.querySelector<HTMLElement>(".cr2-official-definition-wrap")!;
+      const circle = exact.querySelector<HTMLElement>(".cr2-official-static")!;
+      const content = exact.querySelector<HTMLElement>(".cr2-official-definition-content")!;
+      const heading = content.querySelector<HTMLElement>("h3")!;
+      const rect = (node: Element) => node.getBoundingClientRect();
+      const normalized = (node: Element) => node.textContent?.replace(/\s+/g, " ").trim();
       return {
-        introTags: Array.from(intro.children, (node) => node.tagName),
-        labelTags: Array.from(label.children, (node) => node.tagName),
-        label: {
-          size: style(labelText).fontSize,
-          weight: style(labelText).fontWeight,
-          fontStyle: style(labelText).fontStyle,
-          lineHeight: style(labelText).lineHeight,
-          letterSpacing: style(labelText).letterSpacing,
-          marginBottom: style(label).marginBottom,
-        },
-        accent: {
-          blackDisplay: style(black).display,
-          redWidth: style(red).width,
-          redHeight: style(red).height,
-          redTransform: style(red).transform,
-        },
-        heading: {
-          size: style(heading).fontSize,
-          weight: style(heading).fontWeight,
-          lineHeight: style(heading).lineHeight,
-          letterSpacing: style(heading).letterSpacing,
-          marginBottom: style(heading).marginBottom,
-        },
-        who: {
-          text: normalizedText(who),
-          size: style(who).fontSize,
-          lineHeight: style(who).lineHeight,
-          letterSpacing: style(who).letterSpacing,
-        },
-        section: {
-          background: style(section).backgroundColor,
-          backgroundImage: style(section).backgroundImage,
-          paddingTop: style(section).paddingTop,
-        },
-        hazeCount: section.querySelectorAll(".cr2-haze").length,
-        legacyGridCount: section.querySelectorAll(".cr2-iketeru-grid, .cr2-iketeru-grid-intro").length,
-        compositionOrder:
-          intro.nextElementSibling === bodyLayout
-          && bodyLayout.firstElementChild === left
-          && left.nextElementSibling === definition
-          && left.children[0]?.tagName === "H3"
-          && left.lastElementChild === dna,
-        desktopLayout: {
-          display: style(bodyLayout).display,
-          columns: style(bodyLayout).gridTemplateColumns,
-          gap: style(bodyLayout).columnGap,
-          leftX: leftRect.left - containerRect.left,
-          definitionX: definitionRect.left - containerRect.left,
-          dnaX: dnaRect.left - containerRect.left,
-          dnaWidth: dnaRect.width,
-          dnaHeight: dnaRect.height,
-        },
-        dnaLabel: normalizedText(orbit.querySelector("p")!),
-        dnaTitle: normalizedText(orbit.querySelector("strong")!),
-        definitionLabel: normalizedText(definition.querySelector(".cr2-definition-label")!),
-        definitionTitle: normalizedText(left.querySelector("h3")!),
-        definitionTitleColor: style(left.querySelector("h3")!).color,
-        definitionIntro: normalizedText(definitionIntro),
-        definitionClosing: normalizedText(definitionClosing),
-        definitionCount: definitionList.children.length,
-        definitionNames: Array.from(definitionList.querySelectorAll("h4"), normalizedText),
-        definitionNumbers: definitionList.querySelectorAll("article > span").length,
-        definitionSubheads: definitionList.querySelectorAll(".cr2-definition-copy > strong").length,
-        definitionRowHeight: firstDefinition.getBoundingClientRect().height,
+        sectionBackground: getComputedStyle(section).backgroundColor,
+        exactHeight: rect(exact).height,
+        wrap: { x: rect(wrap).x, width: rect(wrap).width },
+        circle: { x: rect(circle).x, width: rect(circle).width, height: rect(circle).height },
+        content: { x: rect(content).x, width: rect(content).width },
+        heading: normalized(heading),
+        headingSize: getComputedStyle(heading).fontSize,
+        headingStyle: getComputedStyle(heading).fontStyle,
+        dna: normalized(circle),
+        itemCount: content.querySelectorAll("li").length,
+        titles: Array.from(content.querySelectorAll(".cr2-official-definition-title"), normalized),
+        paragraphs: Array.from(content.querySelectorAll("li > p"), normalized),
+        oldCompositionCount: section.querySelectorAll(".cr2-iketeru-body, .cr2-definition-list, .cr2-dna-visual").length,
       };
     });
 
-    const isMacBook = viewport.width >= 1500;
-    const isDesktop = viewport.width >= 1100;
-    const isTablet = viewport.width >= 768 && !isDesktop;
-    expect(values.introTags).toEqual(["DIV", "H2", "P", "P"]);
-    expect(values.labelTags).toEqual(["EM", "SPAN"]);
-    expect(values.label.weight).toBe("700");
-    expect(values.label.fontStyle).toBe("italic");
-    expect(values.accent.blackDisplay).toBe("none");
-    expect(values.accent.redWidth).toBe("16px");
-    expect(values.accent.redHeight).toBe("2px");
-    expect(values.accent.redTransform).toContain("0.707107");
-    expect(values.heading.weight).toBe("700");
-    expect(["0px", "normal"]).toContain(values.heading.letterSpacing);
-    expect(values.section.background).toBe("rgb(255, 255, 255)");
-    expect(values.section.backgroundImage).toBe("none");
-    expect(values.hazeCount).toBe(0);
-    expect(values.legacyGridCount).toBe(0);
-    expect(values.compositionOrder).toBe(true);
-    expect(values.dnaLabel).toBe("( Incurise DNA )");
-    expect(values.dnaTitle).toBe("“IKETERU”の探求");
-    expect(values.definitionLabel).toBe("Definition 〜 IKETERUの定義 〜");
-    expect(values.definitionTitle).toBe("技術力×人間力。IKETERU人材を育てる。");
-    expect(values.definitionTitleColor).toBe("rgb(13, 43, 43)");
-    expect(values.definitionCount).toBe(6);
-    expect(values.definitionNames).toEqual(["自信", "誠実", "貪欲", "行動力", "柔軟性", "格好"]);
-    expect(values.definitionNumbers).toBe(0);
-    expect(values.definitionSubheads).toBe(0);
-    if (isDesktop) {
-      expect(values.who.text).toBe("インキュライズという社名には、「Incubate（育成・支援）」と「Rise（成長・向上）」の想いが込められています。課題をチャンスに変え、可能性を最大限に引き出す。その挑戦を、私たちが全力で支援します。");
-      expect(values.definitionIntro).toBe("テクニカルスキルとヒューマンスキルを兼ね備え、現場に前向きな変化を生み出す人材を「IKETERU」と定義しています。");
-      expect(values.definitionClosing).toBe("“IKETERU”を共通言語に、一人ひとりの成長をクライアントと事業の成功へつなげます。");
-      expect(parseFloat(values.section.paddingTop)).toBeCloseTo(isMacBook ? 117.6 : 112, 1);
-      expect(parseFloat(values.heading.size)).toBeCloseTo(isMacBook ? 54.6 : 52, 1);
-      expect(values.desktopLayout.display).toBe("grid");
-      expect(values.desktopLayout.columns).toBe(isMacBook ? "420px 798px" : "400px 760px");
-      expect(values.desktopLayout.gap).toBe(isMacBook ? "84px" : "80px");
-      expect(values.desktopLayout.leftX).toBeCloseTo(0, 1);
-      expect(values.desktopLayout.definitionX).toBeCloseTo(isMacBook ? 504 : 480, 1);
-      expect(values.desktopLayout.dnaX).toBeCloseTo(isMacBook ? -44.1 : -42, 1);
-      expect(values.desktopLayout.dnaWidth).toBeCloseTo(isMacBook ? 525 : 500, 1);
-      expect(values.desktopLayout.dnaHeight).toBeCloseTo(isMacBook ? 640.5 : 610, 1);
-      expect(values.definitionRowHeight).toBeCloseTo(isMacBook ? 138.6 : 132, 1);
+    expect(values.sectionBackground).toBe("rgb(241, 241, 241)");
+    expect(values.heading).toBe("DEFINITION 〜 IKETERUの定義 〜");
+    expect(values.headingStyle).toBe("italic");
+    expect(values.dna).toBe("“IKETERU”の探求");
+    expect(values.itemCount).toBe(6);
+    expect(values.titles).toEqual([
+      "自信(Confidence)がある人が“IKETERU”",
+      "誠実(Integrity)な人が“IKETERU”",
+      "貪欲(Hungry)な人が“IKETERU”",
+      "行動力(Proactivity)がある人が“IKETERU”",
+      "柔軟性(Flexibility)がある人が“IKETERU”",
+      "格好(Style)がいい人が“IKETERU”",
+    ]);
+    expect(values.paragraphs).toHaveLength(12);
+    expect(values.oldCompositionCount).toBe(0);
+
+    if (viewport.width === 1440) {
+      expect(values.exactHeight).toBeCloseTo(2129.6, -1);
+      expect(values.wrap.x).toBeCloseTo(80, 0);
+      expect(values.wrap.width).toBeCloseTo(1280, 0);
+      expect(values.circle.x).toBeCloseTo(128.5, 0);
+      expect(values.circle.width).toBeCloseTo(440, 0);
+      expect(values.content.x).toBeCloseTo(626.5, 0);
+      expect(values.content.width).toBeCloseTo(685, 0);
+      expect(values.headingSize).toBe("64px");
     } else {
-      expect(values.desktopLayout.display).toBe("flex");
-      if (isTablet) {
-        expect(values.who.text).toContain("インキュライズという社名には");
-      } else {
-        expect(values.who.text).toBe("「Incubate（育成・支援）」と「Rise（成長・向上）」の想いを社名に込め、課題をチャンスに変える挑戦を全力で支援します。");
-        expect(values.definitionIntro).toBe("テクニカルスキルとヒューマンスキルを兼ね備え、現場へ前向きな変化を生み出す人材を「IKETERU」と定義しています。");
-        expect(values.definitionClosing).toBe("“IKETERU”を共通言語に、成長をクライアントと事業の成功へつなげます。");
-        expect(parseFloat(values.section.paddingTop)).toBeCloseTo(74, 1);
-        expect(parseFloat(values.heading.size)).toBeCloseTo(26, 1);
-        expect(values.definitionRowHeight).toBeGreaterThanOrEqual(174);
-        expect(values.definitionRowHeight).toBeLessThan(180);
-      }
+      expect(values.exactHeight).toBeCloseTo(3317.1, -1);
+      expect(values.wrap.x).toBeCloseTo(0, 0);
+      expect(values.wrap.width).toBeCloseTo(390, 0);
+      expect(values.circle.x).toBeCloseTo(20, 0);
+      expect(values.circle.width).toBeCloseTo(350, 0);
+      expect(values.content.x).toBeCloseTo(20, 0);
+      expect(values.content.width).toBeCloseTo(350, 0);
+      expect(values.headingSize).toBe("42px");
     }
   }
 });

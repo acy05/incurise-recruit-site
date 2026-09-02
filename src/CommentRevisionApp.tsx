@@ -31,43 +31,61 @@ const iketeruValues = [
     number: "01",
     ja: "自信",
     en: "Confidence",
-    title: "自信がある人が “IKETERU”",
-    body: "自然体で堂々とした姿勢を持ち、他人の前で自分の意見やアイデアをしっかりと伝えれる人。ボディランゲージや表情にも自信が溢れ、その自信が周囲にも影響を与える人。",
+    qualifier: "がある人が",
+    body: [
+      "自然体で堂々とした姿勢を持ち、他人の前で自分の意見やアイデアをしっかりと伝えれる人。",
+      "ボディランゲージや表情にも自信が溢れ、その自信が周囲にも影響を与える人。",
+    ],
   },
   {
     number: "02",
     ja: "誠実",
     en: "Integrity",
-    title: "誠実な人が “IKETERU”",
-    body: "自分の言葉や行動に一貫性があり、周囲からも信頼される人。公平な態度で接し、他人の気持ちを共感することで、周囲と信頼関係を築ける人。",
+    qualifier: "な人が",
+    body: [
+      "自分の言葉や行動に一貫性があり、周囲からも信頼される人。",
+      "公平な態度で接し、他人の気持ちを共感することで、周囲と信頼関係を築ける人。",
+    ],
   },
   {
     number: "03",
     ja: "貪欲",
     en: "Hungry",
-    title: "貪欲な人が “IKETERU”",
-    body: "現状に満足することなく、絶えず目標に向かって努力できる人。目標達成のためには、泥臭いことや他社がやりたがらない業務も前向きに望める人。",
+    qualifier: "な人が",
+    body: [
+      "現状に満足することなく、絶えず目標に向かって努力できる人。",
+      "目標達成のためには、泥臭いことや他社がやりたがらない業務も前向きに望める人。",
+    ],
   },
   {
     number: "04",
     ja: "行動力",
     en: "Proactivity",
-    title: "行動力がある人が “IKETERU”",
-    body: "新しい機会や挑戦に対して、前向きに積極的に取り組める人。困難な障害があっても、目標に向かって粘り強く努力出来る人。",
+    qualifier: "がある人が",
+    body: [
+      "新しい機会や挑戦に対して、前向きに積極的に取り組める人。",
+      "困難な障害があっても、目標に向かって粘り強く努力出来る人。",
+    ],
   },
   {
     number: "05",
     ja: "柔軟性",
     en: "Flexibility",
-    title: "柔軟性がある人が “IKETERU”",
-    body: "困難や失敗に対して冷静に対処し、前向きな姿勢を持ち、成長機会と捉え努力出来る人。他人との協力や協調を重んじ、チームワークを大切にできる人。",
+    qualifier: "がある人が",
+    body: [
+      "困難や失敗に対して冷静に対処し、前向きな姿勢を持ち、成長機会と捉え努力出来る人。",
+      "他人との協力や協調を重んじ、チームワークを大切にできる人。",
+    ],
   },
   {
     number: "06",
     ja: "格好",
     en: "Style",
-    title: "格好がいい人が “IKETERU”",
-    body: "第一印象を大切にし、常に清潔で整った外見を保つ人。自信に満ち溢れた表情や、明るく親しみやすい言動が出来る人。",
+    qualifier: "がいい人が",
+    body: [
+      "第一印象を大切にし、常に清潔で整った外見を保つ人。",
+      "自信に満ち溢れた表情や、明るく親しみやすい言動が出来る人。",
+    ],
   },
 ] as const;
 
@@ -362,36 +380,32 @@ function IketeruSection() {
           <p className="cr2-iketeru-who cr2-definition-mobile-copy">「Incubate（育成・支援）」と「Rise（成長・向上）」の想いを社名に込め、課題をチャンスに変える挑戦を全力で支援します。</p>
         </header>
 
-        <div className="cr2-iketeru-body">
-          <div className="cr2-iketeru-left">
-            <h3>技術力×人間力。IKETERU人材を育てる。</h3>
-            <p className="cr2-definition-intro cr2-definition-desktop-copy">テクニカルスキルとヒューマンスキルを兼ね備え、現場に前向きな変化を生み出す人材を「IKETERU」と定義しています。</p>
-            <p className="cr2-definition-intro cr2-definition-mobile-copy">テクニカルスキルとヒューマンスキルを兼ね備え、現場へ前向きな変化を生み出す人材を「IKETERU」と定義しています。</p>
-            <div className="cr2-dna-visual" aria-label="Incurise DNA “IKETERU”の探求">
-              <div className="cr2-dna-orbit" aria-hidden="true">
-                <p>( Incurise DNA )</p>
-                <strong>“IKETERU”<br />の探求</strong>
-              </div>
-            </div>
+        <h3 className="cr2-iketeru-bridge">技術力×人間力。IKETERU人材を育てる。</h3>
+      </div>
+
+      <div className="cr2-official-definition">
+        <span className="cr2-official-definition-dna">( Incurise DNA )</span>
+        <div className="cr2-official-blob" aria-hidden="true" />
+        <div className="cr2-official-definition-wrap">
+          <div className="cr2-official-static" aria-label="“IKETERU”の探求">
+            <p>“<span>IKETERU</span>”</p>
+            <strong>の探求</strong>
           </div>
 
-          <div className="cr2-definition">
-            <p className="cr2-definition-label">Definition <span>〜 IKETERUの定義 〜</span></p>
-            <div className="cr2-definition-list">
+          <div className="cr2-official-definition-content">
+            <h3>DEFINITION <span>〜 IKETERUの定義 〜</span></h3>
+            <ul>
               {iketeruValues.map((value) => (
-                <article key={value.number}>
-                  <div className="cr2-definition-name">
-                    <small>{value.en}</small>
-                    <h4>{value.ja}</h4>
+                <li key={value.number}>
+                  <div className="cr2-official-definition-title">
+                    <span className="cr2-official-definition-key">{value.ja}({value.en})</span>
+                    <span>{value.qualifier}</span>
+                    <em>“<b>IKETERU</b>”</em>
                   </div>
-                  <div className="cr2-definition-copy">
-                    <p>{value.body}</p>
-                  </div>
-                </article>
+                  {value.body.map((line) => <p key={line}>{line}</p>)}
+                </li>
               ))}
-            </div>
-            <p className="cr2-definition-closing cr2-definition-desktop-copy">“IKETERU”を共通言語に、一人ひとりの成長をクライアントと事業の成功へつなげます。</p>
-            <p className="cr2-definition-closing cr2-definition-mobile-copy">“IKETERU”を共通言語に、成長をクライアントと事業の成功へつなげます。</p>
+            </ul>
           </div>
         </div>
       </div>
