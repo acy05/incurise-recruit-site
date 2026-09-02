@@ -354,40 +354,45 @@ function IketeruSection() {
       <div className="cr2-container">
         <header className="cr2-iketeru-intro">
           <OfficialLabel>ABOUT / IKETERU</OfficialLabel>
-          <h2>さらなる成長と成功へ、<br />共に挑戦する</h2>
-          <p className="cr2-iketeru-who">
+          <h2>さらなる成長と成功へ、<br className="cr2-definition-mobile-break" />共に挑戦する</h2>
+          <p className="cr2-iketeru-who cr2-definition-desktop-copy">
             インキュライズという社名には、「Incubate（育成・支援）」と「Rise（成長・向上）」の想いが込められています。<br />
             課題をチャンスに変え、可能性を最大限に引き出す。その挑戦を、私たちが全力で支援します。
           </p>
+          <p className="cr2-iketeru-who cr2-definition-mobile-copy">「Incubate（育成・支援）」と「Rise（成長・向上）」の想いを社名に込め、課題をチャンスに変える挑戦を全力で支援します。</p>
         </header>
 
-        <div className="cr2-dna-visual" aria-label="Incurise DNA “IKETERU”の探求">
-          <div className="cr2-dna-orbit" aria-hidden="true">
-            <p>( Incurise DNA )</p>
-            <strong>“IKETERU”<br />の探求</strong>
+        <div className="cr2-iketeru-body">
+          <div className="cr2-iketeru-left">
+            <h3>技術力×人間力。IKETERU人材を育てる。</h3>
+            <p className="cr2-definition-intro cr2-definition-desktop-copy">テクニカルスキルとヒューマンスキルを兼ね備え、現場に前向きな変化を生み出す人材を「IKETERU」と定義しています。</p>
+            <p className="cr2-definition-intro cr2-definition-mobile-copy">テクニカルスキルとヒューマンスキルを兼ね備え、現場へ前向きな変化を生み出す人材を「IKETERU」と定義しています。</p>
+            <div className="cr2-dna-visual" aria-label="Incurise DNA “IKETERU”の探求">
+              <div className="cr2-dna-orbit" aria-hidden="true">
+                <p>( Incurise DNA )</p>
+                <strong>“IKETERU”<br />の探求</strong>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="cr2-definition">
-          <p className="cr2-definition-label">Definition <span>〜 IKETERUの定義 〜</span></p>
-          <h3>技術力×人間力。IKETERU人材を育てる。</h3>
-          <p className="cr2-definition-intro">テクニカルスキルとヒューマンスキルを兼ね備え、現場に前向きな変化を生み出す人材を「IKETERU」と定義しています。</p>
-          <div className="cr2-definition-list">
-            {iketeruValues.map((value) => (
-              <article key={value.number}>
-                <span>{value.number}</span>
-                <div className="cr2-definition-name">
-                  <small>{value.en}</small>
-                  <h4>{value.ja}</h4>
-                </div>
-                <div className="cr2-definition-copy">
-                  <strong>{value.title}</strong>
-                  <p>{value.body}</p>
-                </div>
-              </article>
-            ))}
+          <div className="cr2-definition">
+            <p className="cr2-definition-label">Definition <span>〜 IKETERUの定義 〜</span></p>
+            <div className="cr2-definition-list">
+              {iketeruValues.map((value) => (
+                <article key={value.number}>
+                  <div className="cr2-definition-name">
+                    <small>{value.en}</small>
+                    <h4>{value.ja}</h4>
+                  </div>
+                  <div className="cr2-definition-copy">
+                    <p>{value.body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <p className="cr2-definition-closing cr2-definition-desktop-copy">“IKETERU”を共通言語に、一人ひとりの成長をクライアントと事業の成功へつなげます。</p>
+            <p className="cr2-definition-closing cr2-definition-mobile-copy">“IKETERU”を共通言語に、成長をクライアントと事業の成功へつなげます。</p>
           </div>
-          <p className="cr2-definition-closing">“IKETERU”を共通言語に、一人ひとりの成長をクライアントと事業の成功へつなげます。</p>
         </div>
       </div>
     </section>

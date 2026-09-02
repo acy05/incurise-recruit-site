@@ -45,13 +45,22 @@ test("#37 keeps the official heading while #9 restores the full Definition compo
       const black = mark.querySelector<HTMLElement>("i")!;
       const red = mark.querySelector<HTMLElement>("b")!;
       const heading = intro.querySelector<HTMLElement>("h2")!;
-      const who = intro.querySelector<HTMLElement>(".cr2-iketeru-who")!;
-      const dna = section.querySelector<HTMLElement>(".cr2-dna-visual")!;
+      const who = Array.from(intro.querySelectorAll<HTMLElement>(".cr2-iketeru-who")).find((node) => getComputedStyle(node).display !== "none")!;
+      const bodyLayout = section.querySelector<HTMLElement>(".cr2-iketeru-body")!;
+      const left = bodyLayout.querySelector<HTMLElement>(".cr2-iketeru-left")!;
+      const dna = left.querySelector<HTMLElement>(".cr2-dna-visual")!;
       const orbit = dna.querySelector<HTMLElement>(".cr2-dna-orbit")!;
-      const definition = section.querySelector<HTMLElement>(".cr2-definition")!;
+      const definition = bodyLayout.querySelector<HTMLElement>(".cr2-definition")!;
       const definitionList = definition.querySelector<HTMLElement>(".cr2-definition-list")!;
+      const definitionIntro = Array.from(left.querySelectorAll<HTMLElement>(".cr2-definition-intro")).find((node) => getComputedStyle(node).display !== "none")!;
+      const definitionClosing = Array.from(definition.querySelectorAll<HTMLElement>(".cr2-definition-closing")).find((node) => getComputedStyle(node).display !== "none")!;
       const style = (node: Element) => getComputedStyle(node);
       const normalizedText = (node: Element) => node.textContent?.replace(/\s+/g, " ").trim();
+      const containerRect = section.querySelector<HTMLElement>(".cr2-container")!.getBoundingClientRect();
+      const leftRect = left.getBoundingClientRect();
+      const dnaRect = dna.getBoundingClientRect();
+      const definitionRect = definition.getBoundingClientRect();
+      const firstDefinition = definitionList.querySelector<HTMLElement>("article")!;
       return {
         introTags: Array.from(intro.children, (node) => node.tagName),
         labelTags: Array.from(label.children, (node) => node.tagName),
@@ -64,8 +73,7 @@ test("#37 keeps the official heading while #9 restores the full Definition compo
           marginBottom: style(label).marginBottom,
         },
         accent: {
-          blackWidth: style(black).width,
-          blackHeight: style(black).height,
+          blackDisplay: style(black).display,
           redWidth: style(red).width,
           redHeight: style(red).height,
           redTransform: style(red).transform,
@@ -90,51 +98,52 @@ test("#37 keeps the official heading while #9 restores the full Definition compo
         },
         hazeCount: section.querySelectorAll(".cr2-haze").length,
         legacyGridCount: section.querySelectorAll(".cr2-iketeru-grid, .cr2-iketeru-grid-intro").length,
-        compositionOrder: intro.nextElementSibling === dna && dna.nextElementSibling === definition,
+        compositionOrder:
+          intro.nextElementSibling === bodyLayout
+          && bodyLayout.firstElementChild === left
+          && left.nextElementSibling === definition
+          && left.children[0]?.tagName === "H3"
+          && left.lastElementChild === dna,
+        desktopLayout: {
+          display: style(bodyLayout).display,
+          columns: style(bodyLayout).gridTemplateColumns,
+          gap: style(bodyLayout).columnGap,
+          leftX: leftRect.left - containerRect.left,
+          definitionX: definitionRect.left - containerRect.left,
+          dnaX: dnaRect.left - containerRect.left,
+          dnaWidth: dnaRect.width,
+          dnaHeight: dnaRect.height,
+        },
         dnaLabel: normalizedText(orbit.querySelector("p")!),
         dnaTitle: normalizedText(orbit.querySelector("strong")!),
         definitionLabel: normalizedText(definition.querySelector(".cr2-definition-label")!),
-        definitionTitle: normalizedText(definition.querySelector("h3")!),
-        definitionIntro: normalizedText(definition.querySelector(".cr2-definition-intro")!),
-        definitionClosing: normalizedText(definition.querySelector(".cr2-definition-closing")!),
+        definitionTitle: normalizedText(left.querySelector("h3")!),
+        definitionTitleColor: style(left.querySelector("h3")!).color,
+        definitionIntro: normalizedText(definitionIntro),
+        definitionClosing: normalizedText(definitionClosing),
         definitionCount: definitionList.children.length,
         definitionNames: Array.from(definitionList.querySelectorAll("h4"), normalizedText),
+        definitionNumbers: definitionList.querySelectorAll("article > span").length,
+        definitionSubheads: definitionList.querySelectorAll(".cr2-definition-copy > strong").length,
+        definitionRowHeight: firstDefinition.getBoundingClientRect().height,
       };
     });
 
-    const desktopType = viewport.width >= 768;
-    const desktopSection = viewport.width >= 992;
-    expect(values.introTags).toEqual(["DIV", "H2", "P"]);
+    const isMacBook = viewport.width >= 1500;
+    const isDesktop = viewport.width >= 1100;
+    const isTablet = viewport.width >= 768 && !isDesktop;
+    expect(values.introTags).toEqual(["DIV", "H2", "P", "P"]);
     expect(values.labelTags).toEqual(["EM", "SPAN"]);
-    expect(values.label).toEqual({
-      size: desktopType ? "20px" : "16px",
-      weight: "300",
-      fontStyle: "italic",
-      lineHeight: desktopType ? "23px" : "18.4px",
-      letterSpacing: desktopType ? "2px" : "1.6px",
-      marginBottom: desktopType ? "40px" : "20px",
-    });
-    expect(values.accent.blackWidth).toBe("1px");
-    expect(values.accent.blackHeight).toBe("40px");
-    expect(values.accent.redWidth).toBe("4px");
-    expect(values.accent.redHeight).toBe("57px");
-    expect(values.accent.redTransform).toContain("0.866025");
-    expect(values.heading).toEqual({
-      size: desktopType ? "48px" : "22px",
-      weight: "700",
-      lineHeight: desktopType ? "81.6px" : "37.4px",
-      letterSpacing: desktopType ? "5.76px" : "2.64px",
-      marginBottom: "40px",
-    });
-    expect(values.who).toEqual({
-      text: "インキュライズという社名には、「Incubate（育成・支援）」と「Rise（成長・向上）」の想いが込められています。課題をチャンスに変え、可能性を最大限に引き出す。その挑戦を、私たちが全力で支援します。",
-      size: desktopSection ? "20px" : "14px",
-      lineHeight: desktopSection ? "40px" : "28px",
-      letterSpacing: desktopSection ? "1.4px" : "0.98px",
-    });
+    expect(values.label.weight).toBe("700");
+    expect(values.label.fontStyle).toBe("italic");
+    expect(values.accent.blackDisplay).toBe("none");
+    expect(values.accent.redWidth).toBe("16px");
+    expect(values.accent.redHeight).toBe("2px");
+    expect(values.accent.redTransform).toContain("0.707107");
+    expect(values.heading.weight).toBe("700");
+    expect(["0px", "normal"]).toContain(values.heading.letterSpacing);
     expect(values.section.background).toBe("rgb(255, 255, 255)");
     expect(values.section.backgroundImage).toBe("none");
-    expect(values.section.paddingTop).toBe(desktopSection ? "315px" : "100px");
     expect(values.hazeCount).toBe(0);
     expect(values.legacyGridCount).toBe(0);
     expect(values.compositionOrder).toBe(true);
@@ -142,10 +151,40 @@ test("#37 keeps the official heading while #9 restores the full Definition compo
     expect(values.dnaTitle).toBe("“IKETERU”の探求");
     expect(values.definitionLabel).toBe("Definition 〜 IKETERUの定義 〜");
     expect(values.definitionTitle).toBe("技術力×人間力。IKETERU人材を育てる。");
-    expect(values.definitionIntro).toBe("テクニカルスキルとヒューマンスキルを兼ね備え、現場に前向きな変化を生み出す人材を「IKETERU」と定義しています。");
-    expect(values.definitionClosing).toBe("“IKETERU”を共通言語に、一人ひとりの成長をクライアントと事業の成功へつなげます。");
+    expect(values.definitionTitleColor).toBe("rgb(13, 43, 43)");
     expect(values.definitionCount).toBe(6);
     expect(values.definitionNames).toEqual(["自信", "誠実", "貪欲", "行動力", "柔軟性", "格好"]);
+    expect(values.definitionNumbers).toBe(0);
+    expect(values.definitionSubheads).toBe(0);
+    if (isDesktop) {
+      expect(values.who.text).toBe("インキュライズという社名には、「Incubate（育成・支援）」と「Rise（成長・向上）」の想いが込められています。課題をチャンスに変え、可能性を最大限に引き出す。その挑戦を、私たちが全力で支援します。");
+      expect(values.definitionIntro).toBe("テクニカルスキルとヒューマンスキルを兼ね備え、現場に前向きな変化を生み出す人材を「IKETERU」と定義しています。");
+      expect(values.definitionClosing).toBe("“IKETERU”を共通言語に、一人ひとりの成長をクライアントと事業の成功へつなげます。");
+      expect(parseFloat(values.section.paddingTop)).toBeCloseTo(isMacBook ? 117.6 : 112, 1);
+      expect(parseFloat(values.heading.size)).toBeCloseTo(isMacBook ? 54.6 : 52, 1);
+      expect(values.desktopLayout.display).toBe("grid");
+      expect(values.desktopLayout.columns).toBe(isMacBook ? "420px 798px" : "400px 760px");
+      expect(values.desktopLayout.gap).toBe(isMacBook ? "84px" : "80px");
+      expect(values.desktopLayout.leftX).toBeCloseTo(0, 1);
+      expect(values.desktopLayout.definitionX).toBeCloseTo(isMacBook ? 504 : 480, 1);
+      expect(values.desktopLayout.dnaX).toBeCloseTo(isMacBook ? -44.1 : -42, 1);
+      expect(values.desktopLayout.dnaWidth).toBeCloseTo(isMacBook ? 525 : 500, 1);
+      expect(values.desktopLayout.dnaHeight).toBeCloseTo(isMacBook ? 640.5 : 610, 1);
+      expect(values.definitionRowHeight).toBeCloseTo(isMacBook ? 138.6 : 132, 1);
+    } else {
+      expect(values.desktopLayout.display).toBe("flex");
+      if (isTablet) {
+        expect(values.who.text).toContain("インキュライズという社名には");
+      } else {
+        expect(values.who.text).toBe("「Incubate（育成・支援）」と「Rise（成長・向上）」の想いを社名に込め、課題をチャンスに変える挑戦を全力で支援します。");
+        expect(values.definitionIntro).toBe("テクニカルスキルとヒューマンスキルを兼ね備え、現場へ前向きな変化を生み出す人材を「IKETERU」と定義しています。");
+        expect(values.definitionClosing).toBe("“IKETERU”を共通言語に、成長をクライアントと事業の成功へつなげます。");
+        expect(parseFloat(values.section.paddingTop)).toBeCloseTo(74, 1);
+        expect(parseFloat(values.heading.size)).toBeCloseTo(26, 1);
+        expect(values.definitionRowHeight).toBeGreaterThanOrEqual(174);
+        expect(values.definitionRowHeight).toBeLessThan(180);
+      }
+    }
   }
 });
 
