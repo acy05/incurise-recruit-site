@@ -285,7 +285,7 @@ function Header() {
 }
 
 function OfficialLabel({ children }: { children: ReactNode }) {
-  return <div className="cr2-official-label"><span className="cr2-official-mark" aria-hidden="true"><i /><b /></span><em>{children}</em></div>;
+  return <div className="cr2-official-label"><em>{children}</em><span className="cr2-official-mark" aria-hidden="true"><i /><b /></span></div>;
 }
 
 function SectionHeading({ index, label, title, lead }: { index: string; label: string; title: ReactNode; lead: string }) {
@@ -331,9 +331,9 @@ function IketeruSection() {
         <header className="cr2-iketeru-intro">
           <OfficialLabel>ABOUT / IKETERU</OfficialLabel>
           <h2>さらなる成長と成功へ、<br />共に挑戦する</h2>
-          <p>技術力×人間力。IKETERU人材を育てる。</p>
-          <div>技術だけでも、人間力だけでもない。クライアントと並走し、課題の本質へ向き合うために、私たちが大切にする6つの価値観です。</div>
+          <p>技術だけでも、人間力だけでもない。クライアントと並走し、課題の本質へ向き合うために、私たちが大切にする6つの価値観です。</p>
         </header>
+        <h3 className="cr2-iketeru-grid-intro">技術力×人間力。IKETERU人材を育てる。</h3>
         <div className="cr2-iketeru-grid">
           {iketeruValues.map((value) => (
             <article key={value.number}>

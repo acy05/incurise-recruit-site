@@ -27,6 +27,95 @@ test("comment revision fits all target viewports", async ({ page }) => {
   }
 });
 
+test("#37 uses the official centered ttl-01 structure and exact responsive type", async ({ page }) => {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+
+    const values = await page.locator("#cr2-about").evaluate((section) => {
+      const intro = section.querySelector<HTMLElement>(".cr2-iketeru-intro")!;
+      const label = intro.querySelector<HTMLElement>(".cr2-official-label")!;
+      const labelText = label.querySelector<HTMLElement>("em")!;
+      const mark = label.querySelector<HTMLElement>(".cr2-official-mark")!;
+      const black = mark.querySelector<HTMLElement>("i")!;
+      const red = mark.querySelector<HTMLElement>("b")!;
+      const heading = intro.querySelector<HTMLElement>("h2")!;
+      const body = intro.querySelector<HTMLElement>("p")!;
+      const gridIntro = section.querySelector<HTMLElement>(".cr2-iketeru-grid-intro")!;
+      const grid = section.querySelector<HTMLElement>(".cr2-iketeru-grid")!;
+      const style = (node: Element) => getComputedStyle(node);
+      return {
+        introTags: Array.from(intro.children, (node) => node.tagName),
+        labelTags: Array.from(label.children, (node) => node.tagName),
+        label: {
+          size: style(labelText).fontSize,
+          weight: style(labelText).fontWeight,
+          fontStyle: style(labelText).fontStyle,
+          lineHeight: style(labelText).lineHeight,
+          letterSpacing: style(labelText).letterSpacing,
+          marginBottom: style(label).marginBottom,
+        },
+        accent: {
+          blackWidth: style(black).width,
+          blackHeight: style(black).height,
+          redWidth: style(red).width,
+          redHeight: style(red).height,
+          redTransform: style(red).transform,
+        },
+        heading: {
+          size: style(heading).fontSize,
+          weight: style(heading).fontWeight,
+          lineHeight: style(heading).lineHeight,
+          letterSpacing: style(heading).letterSpacing,
+          marginBottom: style(heading).marginBottom,
+        },
+        body: {
+          size: style(body).fontSize,
+          lineHeight: style(body).lineHeight,
+          letterSpacing: style(body).letterSpacing,
+        },
+        section: {
+          background: style(section).backgroundColor,
+          paddingTop: style(section).paddingTop,
+        },
+        gridIntroIsImmediatelyBeforeGrid: gridIntro.nextElementSibling === grid,
+      };
+    });
+
+    const desktop = viewport.width === 1440;
+    expect(values.introTags).toEqual(["DIV", "H2", "P"]);
+    expect(values.labelTags).toEqual(["EM", "SPAN"]);
+    expect(values.label).toEqual({
+      size: desktop ? "20px" : "16px",
+      weight: "300",
+      fontStyle: "italic",
+      lineHeight: desktop ? "23px" : "18.4px",
+      letterSpacing: desktop ? "2px" : "1.6px",
+      marginBottom: desktop ? "40px" : "20px",
+    });
+    expect(values.accent.blackWidth).toBe("1px");
+    expect(values.accent.blackHeight).toBe("40px");
+    expect(values.accent.redWidth).toBe("4px");
+    expect(values.accent.redHeight).toBe("57px");
+    expect(values.accent.redTransform).toContain("0.866025");
+    expect(values.heading).toEqual({
+      size: desktop ? "48px" : "22px",
+      weight: "700",
+      lineHeight: desktop ? "81.6px" : "37.4px",
+      letterSpacing: desktop ? "5.76px" : "2.64px",
+      marginBottom: "40px",
+    });
+    expect(values.body).toEqual({
+      size: desktop ? "20px" : "14px",
+      lineHeight: desktop ? "40px" : "28px",
+      letterSpacing: desktop ? "1.4px" : "0.98px",
+    });
+    expect(values.section.background).toBe("rgb(241, 241, 241)");
+    expect(values.section.paddingTop).toBe(desktop ? "315px" : "100px");
+    expect(values.gridIntroIsImmediatelyBeforeGrid).toBe(true);
+  }
+});
+
 test("career tabs show one exact route and support removes closed details", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route, { waitUntil: "domcontentloaded" });

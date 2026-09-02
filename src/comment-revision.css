@@ -1,5 +1,6 @@
 @import "@fontsource/noto-sans-jp/japanese-400.css";
 @import "@fontsource/noto-sans-jp/japanese-700.css";
+@import "@fontsource/roboto/latin-300-italic.css";
 @import "@fontsource/roboto/latin-500.css";
 @import "@fontsource/roboto/latin-700.css";
 @import "@fontsource/roboto/latin-700-italic.css";
@@ -106,24 +107,24 @@ select:focus-visible,
 .cr2-hero-lead { margin-top: 22px; font-size: 13px; font-weight: 700; line-height: 1.95; }
 .cr2-hero-copy > a { min-height: 44px; display: inline-flex; align-items: center; gap: 14px; margin-top: 20px; padding-bottom: 6px; border-bottom: 1px solid currentColor; font-size: 12px; font-weight: 700; }
 
-.cr2-official-label { display: inline-flex; align-items: center; justify-content: center; gap: 16px; color: var(--cr2-ink); }
-.cr2-official-label em { font: italic 700 12px/1 "Roboto", sans-serif; letter-spacing: .08em; text-transform: uppercase; }
-.cr2-official-mark { position: relative; width: 18px; height: 31px; display: inline-block; }
+.cr2-official-label { display: inline-flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; color: var(--cr2-ink); }
+.cr2-official-label em { font: italic 300 16px/1.15 "Roboto", sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.cr2-official-mark { position: relative; width: 1px; height: 40px; display: inline-block; flex: 0 0 1px; overflow: visible; }
 .cr2-official-mark i,
-.cr2-official-mark b { position: absolute; left: 8px; width: 2px; height: 24px; content: ""; }
-.cr2-official-mark i { top: 0; background: var(--cr2-ink); }
-.cr2-official-mark b { bottom: 0; background: var(--cr2-gradient); transform: rotate(48deg); transform-origin: center; }
+.cr2-official-mark b { position: absolute; display: block; content: ""; }
+.cr2-official-mark i { top: 0; left: 0; width: 1px; height: 40px; background: var(--cr2-ink); }
+.cr2-official-mark b { bottom: -3px; left: 11px; width: 4px; height: 57px; background: var(--cr2-red); transform: rotate(60deg); transform-origin: center; }
 
-.cr2-iketeru { position: relative; overflow: hidden; padding-block: 100px 110px; background: var(--cr2-white); }
+.cr2-iketeru { position: relative; overflow: hidden; padding-block: 100px 110px; background: #f1f1f1; }
 .cr2-haze { position: absolute; z-index: 0; width: 420px; height: 420px; border-radius: 50%; filter: blur(78px); opacity: .34; pointer-events: none; }
 .cr2-haze-left { top: 250px; left: -250px; background: radial-gradient(circle at 70% 40%, rgba(255, 8, 48, .78), rgba(239, 179, 3, .48) 45%, rgba(255, 255, 255, 0) 72%); }
 .cr2-haze-right { right: -270px; bottom: 120px; background: radial-gradient(circle at 35% 50%, rgba(253, 2, 168, .65), rgba(239, 90, 3, .38) 45%, rgba(255, 255, 255, 0) 72%); }
 .cr2-iketeru .cr2-container { position: relative; z-index: 1; }
 .cr2-iketeru-intro { width: min(980px, 100%); margin-inline: auto; text-align: center; }
-.cr2-iketeru-intro h2 { margin: 30px 0 0; color: var(--cr2-ink); font-size: clamp(38px, 10vw, 54px); line-height: 1.38; letter-spacing: .015em; text-wrap: balance; }
-.cr2-iketeru-intro > p { margin: 26px 0 0; color: transparent; background: var(--cr2-gradient); background-clip: text; font-size: clamp(18px, 5vw, 22px); font-weight: 700; line-height: 1.7; }
-.cr2-iketeru-intro > div:last-child { width: min(760px, 100%); margin: 24px auto 0; color: var(--cr2-muted); font-size: 14px; line-height: 2; }
-.cr2-iketeru-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; margin-top: 82px; border-top: 1px solid var(--cr2-ink); }
+.cr2-iketeru-intro h2 { margin: 0 0 40px; color: var(--cr2-ink); font-size: 22px; font-weight: 700; line-height: 1.7; letter-spacing: .12em; text-wrap: balance; }
+.cr2-iketeru-intro > p { width: min(760px, 100%); margin: 0 auto 80px; color: var(--cr2-ink); font-size: 14px; line-height: 2; letter-spacing: .07em; }
+.cr2-iketeru-grid-intro { margin: 0 0 32px; color: transparent; background: var(--cr2-gradient); background-clip: text; font-size: 18px; font-weight: 700; line-height: 1.7; text-align: center; }
+.cr2-iketeru-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; margin-top: 0; border-top: 1px solid var(--cr2-ink); }
 .cr2-iketeru-grid article { position: relative; min-height: 330px; padding: 32px 6px 34px; border-bottom: 1px solid var(--cr2-line); }
 .cr2-iketeru-grid article > span { color: var(--cr2-red); font: 700 11px/1 "Roboto", sans-serif; }
 .cr2-iketeru-grid article > p { margin: 40px 0 0; color: var(--cr2-muted); font: italic 700 12px/1 "Roboto", sans-serif; letter-spacing: .08em; }
@@ -287,13 +288,15 @@ select:focus-visible,
   .cr2-hero-copy h1 { font-size: clamp(54px, 6vw, 74px); line-height: 1.15; }
   .cr2-hero-copy h1 > img { width: 22px; height: 22px; }
   .cr2-hero-lead { font-size: 16px; }
-  .cr2-iketeru,
   .cr2-career,
   .cr2-support,
   .cr2-jobs,
   .cr2-faq,
   .cr2-entry { padding-block: 128px 136px; }
-  .cr2-iketeru-intro h2 { font-size: clamp(50px, 6vw, 64px); }
+  .cr2-official-label { margin-bottom: 40px; }
+  .cr2-official-label em { font-size: 20px; }
+  .cr2-iketeru-intro h2 { font-size: 48px; }
+  .cr2-iketeru-grid-intro { margin-bottom: 40px; font-size: 22px; }
   .cr2-iketeru-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cr2-iketeru-grid article { padding: 38px 28px 40px; }
   .cr2-iketeru-grid article:nth-child(odd) { border-right: 1px solid var(--cr2-line); }
@@ -314,6 +317,11 @@ select:focus-visible,
   .cr2-footer-top > a img { width: 160px; height: 82px; }
   .cr2-footer-bottom { min-height: 64px; flex-direction: row; justify-content: space-between; }
   .cr2-footer-bottom nav { justify-content: flex-end; }
+}
+
+@media (min-width: 992px) {
+  .cr2-iketeru { padding-block: 315px 160px; }
+  .cr2-iketeru-intro > p { font-size: 20px; }
 }
 
 @media (min-width: 1100px) {
@@ -340,14 +348,11 @@ select:focus-visible,
   .cr2-mobile-menu { display: none !important; }
   .cr2-hero { min-height: 850px; }
   .cr2-hero-copy { bottom: 92px; }
-  .cr2-iketeru,
   .cr2-career,
   .cr2-support,
   .cr2-jobs,
   .cr2-faq,
   .cr2-entry { padding-block: 150px 160px; }
-  .cr2-iketeru-intro > div:last-child { font-size: 16px; }
-  .cr2-iketeru-grid { margin-top: 108px; }
   .cr2-section-heading { margin-bottom: 68px; }
   .cr2-career-tabs button { min-height: 76px; padding-inline: 28px 62px; font-size: 16px; }
   .cr2-career-panel { padding: 52px 72px 58px; }
