@@ -325,8 +325,6 @@ function Hero() {
 function IketeruSection() {
   return (
     <section className="cr2-iketeru" id="cr2-about">
-      <div className="cr2-haze cr2-haze-left" aria-hidden="true" />
-      <div className="cr2-haze cr2-haze-right" aria-hidden="true" />
       <div className="cr2-container">
         <header className="cr2-iketeru-intro">
           <OfficialLabel>ABOUT / IKETERU</OfficialLabel>

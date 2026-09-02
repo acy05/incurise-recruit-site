@@ -116,9 +116,6 @@ select:focus-visible,
 .cr2-official-mark b { bottom: -3px; left: 11px; width: 4px; height: 57px; background: var(--cr2-red); transform: rotate(60deg); transform-origin: center; }
 
 .cr2-iketeru { position: relative; overflow: hidden; padding-block: 100px 110px; background: #f1f1f1; }
-.cr2-haze { position: absolute; z-index: 0; width: 420px; height: 420px; border-radius: 50%; filter: blur(78px); opacity: .34; pointer-events: none; }
-.cr2-haze-left { top: 250px; left: -250px; background: radial-gradient(circle at 70% 40%, rgba(255, 8, 48, .78), rgba(239, 179, 3, .48) 45%, rgba(255, 255, 255, 0) 72%); }
-.cr2-haze-right { right: -270px; bottom: 120px; background: radial-gradient(circle at 35% 50%, rgba(253, 2, 168, .65), rgba(239, 90, 3, .38) 45%, rgba(255, 255, 255, 0) 72%); }
 .cr2-iketeru .cr2-container { position: relative; z-index: 1; }
 .cr2-iketeru-intro { width: min(980px, 100%); margin-inline: auto; text-align: center; }
 .cr2-iketeru-intro h2 { margin: 0 0 40px; color: var(--cr2-ink); font-size: 22px; font-weight: 700; line-height: 1.7; letter-spacing: .12em; text-wrap: balance; }

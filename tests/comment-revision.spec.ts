@@ -28,7 +28,12 @@ test("comment revision fits all target viewports", async ({ page }) => {
 });
 
 test("#37 uses the official centered ttl-01 structure and exact responsive type", async ({ page }) => {
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  for (const viewport of [
+    { width: 1512, height: 982 },
+    { width: 1440, height: 900 },
+    { width: 820, height: 1180 },
+    { width: 390, height: 844 },
+  ]) {
     await page.setViewportSize(viewport);
     await page.goto(route, { waitUntil: "domcontentloaded" });
 
@@ -76,22 +81,26 @@ test("#37 uses the official centered ttl-01 structure and exact responsive type"
         },
         section: {
           background: style(section).backgroundColor,
+          backgroundImage: style(section).backgroundImage,
           paddingTop: style(section).paddingTop,
         },
+        hazeCount: section.querySelectorAll(".cr2-haze").length,
+        gridIntroBackgroundImage: style(gridIntro).backgroundImage,
         gridIntroIsImmediatelyBeforeGrid: gridIntro.nextElementSibling === grid,
       };
     });
 
-    const desktop = viewport.width === 1440;
+    const desktopType = viewport.width >= 768;
+    const desktopSection = viewport.width >= 992;
     expect(values.introTags).toEqual(["DIV", "H2", "P"]);
     expect(values.labelTags).toEqual(["EM", "SPAN"]);
     expect(values.label).toEqual({
-      size: desktop ? "20px" : "16px",
+      size: desktopType ? "20px" : "16px",
       weight: "300",
       fontStyle: "italic",
-      lineHeight: desktop ? "23px" : "18.4px",
-      letterSpacing: desktop ? "2px" : "1.6px",
-      marginBottom: desktop ? "40px" : "20px",
+      lineHeight: desktopType ? "23px" : "18.4px",
+      letterSpacing: desktopType ? "2px" : "1.6px",
+      marginBottom: desktopType ? "40px" : "20px",
     });
     expect(values.accent.blackWidth).toBe("1px");
     expect(values.accent.blackHeight).toBe("40px");
@@ -99,19 +108,22 @@ test("#37 uses the official centered ttl-01 structure and exact responsive type"
     expect(values.accent.redHeight).toBe("57px");
     expect(values.accent.redTransform).toContain("0.866025");
     expect(values.heading).toEqual({
-      size: desktop ? "48px" : "22px",
+      size: desktopType ? "48px" : "22px",
       weight: "700",
-      lineHeight: desktop ? "81.6px" : "37.4px",
-      letterSpacing: desktop ? "5.76px" : "2.64px",
+      lineHeight: desktopType ? "81.6px" : "37.4px",
+      letterSpacing: desktopType ? "5.76px" : "2.64px",
       marginBottom: "40px",
     });
     expect(values.body).toEqual({
-      size: desktop ? "20px" : "14px",
-      lineHeight: desktop ? "40px" : "28px",
-      letterSpacing: desktop ? "1.4px" : "0.98px",
+      size: desktopSection ? "20px" : "14px",
+      lineHeight: desktopSection ? "40px" : "28px",
+      letterSpacing: desktopSection ? "1.4px" : "0.98px",
     });
     expect(values.section.background).toBe("rgb(241, 241, 241)");
-    expect(values.section.paddingTop).toBe(desktop ? "315px" : "100px");
+    expect(values.section.backgroundImage).toBe("none");
+    expect(values.section.paddingTop).toBe(desktopSection ? "315px" : "100px");
+    expect(values.hazeCount).toBe(0);
+    expect(values.gridIntroBackgroundImage).toContain("linear-gradient");
     expect(values.gridIntroIsImmediatelyBeforeGrid).toBe(true);
   }
 });
