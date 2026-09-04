@@ -633,7 +633,11 @@ function JobsSection() {
           <p>SELECTION FLOW</p>
           <ol>
             {["応募", "書類選考", "一次選考", "最終選考"].map((step, index) => (
-              <li key={step}><span>{String(index + 1).padStart(2, "0")}</span><strong>{step}</strong></li>
+              <li key={step}>
+                <span className="cr2-selection-number">{String(index + 1).padStart(2, "0")}</span>
+                <strong>{step}</strong>
+                {index < 3 && <span className="cr2-selection-arrow" aria-hidden="true" />}
+              </li>
             ))}
           </ol>
         </div>
@@ -654,9 +658,15 @@ function FaqSection() {
             return (
               <article key={item.question} className={open ? "is-open" : ""}>
                 <button type="button" aria-expanded={open} aria-controls={`cr2-faq-answer-${index}`} onClick={() => setActive(open ? null : index)}>
-                  <b>{item.question}</b><i aria-hidden="true">{open ? "−" : "＋"}</i>
+                  <b>{item.question}</b><i className="cr2-faq-icon" aria-hidden="true" />
                 </button>
-                {open && <div id={`cr2-faq-answer-${index}`} className="cr2-faq-answer">{item.answer}</div>}
+                <div
+                  id={`cr2-faq-answer-${index}`}
+                  className="cr2-faq-answer-shell"
+                  aria-hidden={!open}
+                >
+                  <div className="cr2-faq-answer">{item.answer}</div>
+                </div>
               </article>
             );
           })}

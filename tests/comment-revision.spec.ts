@@ -227,13 +227,29 @@ test("support chapters collapse to one open editorial chapter on mobile", async 
 test("exact FAQ text opens without rewriting", async ({ page }) => {
   await page.goto(route, { waitUntil: "domcontentloaded" });
   const faq = page.locator("#cr2-faq");
-  await faq.getByRole("button", { name: "Q1.未経験でも応募することはできますか" }).click();
+  const firstQuestion = faq.getByRole("button", { name: "Q1.未経験でも応募することはできますか" });
+  const firstAnswer = faq.locator("#cr2-faq-answer-0");
+  await firstQuestion.click();
+  await expect(firstQuestion).toHaveAttribute("aria-expanded", "true");
+  await expect(firstAnswer).toHaveCSS("grid-template-rows", /[^0].*px/);
   await expect(faq.getByText("はい。インキュライズでは、まずSEとして経験を積み、そこからコンサルタントへとキャリアアップしていく道を用意しています", { exact: true })).toBeVisible();
   await expect(faq.getByText("入社後はJavaを中心とした3ヶ月間の研修に集中できる環境が整っており、業界未経験の方でも着実にステップを踏んでいただけます", { exact: true })).toBeVisible();
 
   await faq.getByRole("button", { name: "Q3.配属やプロジェクトはどのように決まりますか？" }).click();
+  await expect(firstQuestion).toHaveAttribute("aria-expanded", "false");
+  await expect(firstAnswer).toHaveAttribute("aria-hidden", "true");
   await expect(faq.getByText("営業担当が、希望に沿った案件情報を集めます", { exact: true })).toBeVisible();
   await expect(faq.getByText("クライアント企業との面談を経て、アサイン先が決まります", { exact: true })).toBeVisible();
+});
+
+test("comment 38 label, header spacing, and selection arrows are present", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(route, { waitUntil: "domcontentloaded" });
+  const label = page.locator(".cr2-official-label");
+  await expect(label).toContainText("ABOUT / IKETERU");
+  await expect(label.locator(".cr2-official-mark i")).toHaveCSS("display", "block");
+  await expect(page.locator(".cr2-desktop-nav button").first()).toHaveCSS("font-size", "13px");
+  await expect(page.locator(".cr2-selection-arrow")).toHaveCount(3);
 });
 
 test("form validates, confirms files, and keeps final submission disabled", async ({ page }) => {
