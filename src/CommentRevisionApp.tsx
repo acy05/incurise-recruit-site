@@ -297,10 +297,10 @@ function Header() {
   return (
     <>
       <header className="cr2-header">
-        <button type="button" className="cr2-brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="ページ上部へ">
+        <a className="cr2-brand" href="https://incurise.co.jp/" aria-label="インキュライズ公式サイト">
           <img src={logo} width="390" height="302" alt="INCURISE Consulting" />
           <span>RECRUIT 2026</span>
-        </button>
+        </a>
         <nav className="cr2-desktop-nav" aria-label="主要ナビゲーション">
           {navItems.slice(0, -1).map(([label, target]) => (
             <button type="button" key={target} onClick={() => scrollToSection(target)}>{label}</button>
@@ -337,7 +337,7 @@ function OfficialLabel({ children }: { children: ReactNode }) {
 function SectionHeading({ index, label, title, lead }: { index: string; label: string; title: ReactNode; lead: string }) {
   return (
     <header className="cr2-section-heading">
-      <p>{label} / {index}</p>
+      <OfficialLabel>{label} / {index}</OfficialLabel>
       <h2>{title}</h2>
       <div>{lead}</div>
     </header>

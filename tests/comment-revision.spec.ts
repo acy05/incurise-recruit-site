@@ -242,14 +242,50 @@ test("exact FAQ text opens without rewriting", async ({ page }) => {
   await expect(faq.getByText("クライアント企業との面談を経て、アサイン先が決まります", { exact: true })).toBeVisible();
 });
 
-test("comment 38 label, header spacing, and selection arrows are present", async ({ page }) => {
+test("comment 38 labels, header spacing, logo link, and selection arrows are present", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route, { waitUntil: "domcontentloaded" });
-  const label = page.locator(".cr2-official-label");
-  await expect(label).toContainText("ABOUT / IKETERU");
-  await expect(label.locator(".cr2-official-mark i")).toHaveCSS("display", "block");
+  const labels = page.locator(".cr2-official-label");
+  await expect(labels).toHaveCount(6);
+  await expect(labels).toContainText([
+    "ABOUT / IKETERU",
+    "CAREER PATH / 02",
+    "SUPPORT & BENEFIT / 03",
+    "JOBS / 04",
+    "FAQ / 05",
+    "ENTRY / 06",
+  ]);
+  await expect(labels.locator(".cr2-official-mark i")).toHaveCount(6);
   await expect(page.locator(".cr2-desktop-nav button").first()).toHaveCSS("font-size", "13px");
+  const navCenters = await page.locator(".cr2-desktop-nav button").evaluateAll((buttons) => buttons.map((button) => {
+    const rect = button.getBoundingClientRect();
+    return rect.x + rect.width / 2;
+  }));
+  const navGaps = navCenters.slice(1).map((center, index) => center - navCenters[index]);
+  expect(Math.max(...navGaps) - Math.min(...navGaps)).toBeLessThanOrEqual(.5);
+  const brand = page.locator(".cr2-brand");
+  await expect(brand).toHaveAttribute("href", "https://incurise.co.jp/");
+  await expect(brand.locator("img")).toHaveCSS("width", "142px");
+  await expect(brand.locator("span")).toHaveCSS("font-size", "13px");
   await expect(page.locator(".cr2-selection-arrow")).toHaveCount(3);
+});
+
+test("hero growth arrows match the Figma sizes and angle", async ({ page }) => {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    const expected = viewport.width === 1440
+      ? { sequence: "14px", heading: "22px" }
+      : { sequence: "10px", heading: "15px" };
+    const sequenceArrow = page.locator(".cr2-growth-sequence img").first();
+    await expect(sequenceArrow).toHaveCSS("width", expected.sequence);
+    const angle = await sequenceArrow.evaluate((node) => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(node).transform);
+      return Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+    });
+    expect(angle).toBeCloseTo(-40, 1);
+    await expect(page.locator(".cr2-hero-copy h1 > img").first()).toHaveCSS("width", expected.heading);
+  }
 });
 
 test("form validates, confirms files, and keeps final submission disabled", async ({ page }) => {
