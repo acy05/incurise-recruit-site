@@ -270,7 +270,7 @@ test("comment 38 labels, header spacing, logo link, and selection arrows are pre
   await expect(page.locator(".cr2-selection-arrow")).toHaveCount(3);
 });
 
-test("hero growth arrows match the Figma sizes and angle", async ({ page }) => {
+test("hero growth marks match the Figma asset, weight, sizes, and angle", async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await page.goto(route, { waitUntil: "domcontentloaded" });
@@ -279,12 +279,21 @@ test("hero growth arrows match the Figma sizes and angle", async ({ page }) => {
       : { sequence: "10px", heading: "15px" };
     const sequenceArrow = page.locator(".cr2-growth-sequence img").first();
     await expect(sequenceArrow).toHaveCSS("width", expected.sequence);
+    await expect(sequenceArrow).toHaveCSS("filter", "none");
+    await expect(page.locator(".cr2-growth-sequence strong").first()).toHaveCSS("font-weight", "900");
     const angle = await sequenceArrow.evaluate((node) => {
       const matrix = new DOMMatrixReadOnly(getComputedStyle(node).transform);
       return Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
     });
     expect(angle).toBeCloseTo(-40, 1);
-    await expect(page.locator(".cr2-hero-copy h1 > img").first()).toHaveCSS("width", expected.heading);
+    const headingArrow = page.locator(".cr2-hero-copy h1 > img").first();
+    await expect(headingArrow).toHaveCSS("width", expected.heading);
+    await expect(headingArrow).toHaveCSS("filter", "none");
+    const headingAngle = await headingArrow.evaluate((node) => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(node).transform);
+      return Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+    });
+    expect(headingAngle).toBeCloseTo(-40, 1);
   }
 });
 
