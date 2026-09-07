@@ -2,5 +2,11 @@
 .sc-D .lc-shade{background:radial-gradient(ellipse at center,#051417df 0%,#05141770 46%,transparent 75%)}
 .sc-page .lc-copy{pointer-events:none}.sc-page .lc-copy a{pointer-events:auto}
 .sc-E .lc-shade{background:radial-gradient(ellipse at center,#051417bb 0%,#05141755 36%,transparent 72%)}
+.sc-E .lc-label{animation:sc-text-enter .8s .25s both cubic-bezier(.22,1,.36,1)}
+.sc-E .lc-title-line{animation:sc-text-enter 1s .45s both cubic-bezier(.22,1,.36,1)}
+.sc-E .lc-title-line+.lc-title-line{animation-delay:.65s}
+.sc-E .lc-bottom{animation:sc-text-enter .85s .95s both cubic-bezier(.22,1,.36,1)}
+@keyframes sc-text-enter{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.sc-E .lc-copy *{animation:none!important}}
 .sc-page .hc-toolbar{flex-wrap:wrap}.sc-page .hc-tabs{flex-wrap:wrap}
 @media(max-width:767px){.sc-page .lc-shade{background:radial-gradient(ellipse at 50% 56%,#051417eb 0%,#051417ae 35%,transparent 85%)}}

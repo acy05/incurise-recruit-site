@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 export function GeometricHero({ centerShift = 0, motion = "default", space = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D"; space?: "default" | "flow" | "rings" | "facets" | "scatter" }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeRef = useRef(0);
+  const displacementRef = useRef(new Float32Array(4600));
   const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
 
@@ -31,8 +32,16 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       pointer.x = event.clientX - box.left; pointer.y = event.clientY - box.top;
       pointer.targetTilt = pointer.x >= 0 && pointer.x <= box.width && pointer.y >= 0 && pointer.y <= box.height ? (pointer.x / box.width - .5) * .45 : 0;
     };
-    if (motion === "C") window.addEventListener("pointermove", move, { passive: true });
-    if (motion === "C") window.addEventListener("pointerdown", move, { passive: true });
+    const interactive = motion === "C" || space === "scatter";
+    const leave = () => { pointer.x = -10000; pointer.y = -10000; pointer.targetTilt = 0; };
+    if (interactive) {
+      window.addEventListener("pointermove", move, { passive: true });
+      window.addEventListener("pointerdown", move, { passive: true });
+      window.addEventListener("pointerup", leave, { passive: true });
+      window.addEventListener("blur", leave);
+      window.addEventListener("scroll", leave, { passive: true });
+      document.addEventListener("pointerleave", leave);
+    }
     const still = paused || reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
     // Deterministic sampling avoids a flashing/random composition on resize.
     const points = Array.from({ length: 12000 }, (_, i) => ({
@@ -47,14 +56,28 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       if (space === "scatter") {
         // Distributed depth layers, not points constrained to a central sculpture.
         const count = mobile ? 850 : 2300;
+        const reduceMotion = reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const entrance = reduceMotion ? 1 : 1 - Math.pow(1 - Math.min(time / 2.2, 1), 3);
+        const displacement = displacementRef.current;
         for (let i = 0; i < count; i++) {
           const seed = points[i].seed;
           const depth = .2 + seed * .8;
           const baseX = (i * .61803398875) % 1;
           const baseY = (i * .41421356237) % 1;
-          const x = ((baseX * (width + 80) + time * (2 + depth * 5) + Math.sin(time * .12 + i) * 12) % (width + 80)) - 40;
-          const y = ((baseY * (height + 80) + time * (1 + depth * 2) + Math.cos(time * .1 + i * 1.3) * 18) % (height + 80)) - 40;
-          const alpha = .22 + depth * .58;
+          let x = ((baseX * (width + 80) + time * (2 + depth * 5) + Math.sin(time * .12 + i) * 12) % (width + 80)) - 40;
+          let y = ((baseY * (height + 80) + time * (1 + depth * 2) + Math.cos(time * .1 + i * 1.3) * 18) % (height + 80)) - 40;
+          x = width / 2 + (x - width / 2) * (.55 + entrance * .45);
+          y = height / 2 + (y - height / 2) * (.55 + entrance * .45);
+          const dx = x - pointer.x, dy = y - pointer.y;
+          const distance = Math.hypot(dx, dy);
+          const influence = Math.max(0, 1 - distance / (mobile ? 120 : 200));
+          const push = influence * influence * (45 + depth * 65);
+          if (!still) {
+            displacement[i * 2] += (dx / Math.max(distance, 1) * push - displacement[i * 2]) * .12;
+            displacement[i * 2 + 1] += (dy / Math.max(distance, 1) * push - displacement[i * 2 + 1]) * .12;
+          }
+          if (!reduceMotion) { x += displacement[i * 2]; y += displacement[i * 2 + 1]; }
+          const alpha = (.22 + depth * .58) * (.15 + entrance * .85);
           context.fillStyle = i % 5 === 0 ? `rgba(255,153,109,${alpha})` : i % 3 === 0 ? `rgba(190,225,220,${alpha})` : `rgba(255,42,126,${alpha})`;
           context.beginPath();
           context.arc(x, y, .45 + depth * (i % 29 === 0 ? 2.2 : 1.05), 0, Math.PI * 2);
@@ -220,6 +243,10 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       document.removeEventListener("visibilitychange", sync);
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerdown", move);
+      window.removeEventListener("pointerup", leave);
+      window.removeEventListener("blur", leave);
+      window.removeEventListener("scroll", leave);
+      document.removeEventListener("pointerleave", leave);
     };
   }, [paused, reduced, centerShift, motion, space]);
 
