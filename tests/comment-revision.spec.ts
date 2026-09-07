@@ -2,6 +2,38 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const route = "comment-revision/";
+// Verbatim copy checked against comments in source Figma 6QM5lCn22AJzsbZPUpV9Sj, 2026-09-07.
+test("support descriptions match the original Figma comments without paraphrasing", async ({ page }) => {
+  const comments = [
+    [11, "learn", "01", ["プログラミングスキルを継続的に学ぶ環境を提供しています。"]],
+    [15, "learn", "03", ["コンサルタントに求められる基礎・実践スキルを早期習得するための研修が整っています。"]],
+    [16, "learn", "04", ["あなたのキャリア形成の後押し役として、役員が直接相談にのります。"]],
+    [17, "learn", "05", ["全新入社員に1人、先輩社員がサポーターとしてアサインされます。", "入社直後から立ち上がりまでの支援を行います。"]],
+    [18, "learn", "06", ["資格試験に合格した際に、受験料とお祝い金が支給される制度です。"]],
+    [29, "learn", "11", ["コンサルタントへのキャリアチェンジを成功させた方に、スーツ一式をプレゼントする制度です。"]],
+    [24, "connect", "08", ["メンバーと一緒に本社に帰社した際に、飲食代を補助する制度です。食事やゲームをしながら社員同士で交流を深めることができます。"]],
+    [25, "connect", "09", ["紹介された候補者が入社すると一定の報奨金が支給される制度です。"]],
+    [27, "connect", "10", ["隔月で役員も参加するイベントを開催しています。", "BBQやゲーム大会などを通して、様々なメンバーと交流することができます。"]],
+    [30, "connect", "12", ["経営層から全社員に向けて理念を伝え、新入社員の紹介などを行う、隔月の集会です。"]],
+    [30, "connect", "13", ["年に1度全社員が集まり、経営層から翌年に向けた重要な発表があります。豪華な景品が出るビンゴ大会も開催される、特別な集会です。"]],
+    [21, "life", "07", ["夏季冬期、産前・産後休暇/育児休暇が利用いただけます。"]],
+    [31, "life", "14", ["住宅の賃貸・売買の際、会社と提供している不動産仲介会社を通して成約した場合、不動産仲介手数料が割引となる制度です。"]],
+    [32, "life", "15", ["「たくさん歩いて健康促進」を目標に、上記テーマパークの入園料の一部を負担する制度"]],
+  ] as const;
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(route);
+    for (const [number, group, item, paragraphs] of comments) {
+      const chapter = page.locator(`[data-chapter="${group}"]`);
+      const toggle = chapter.locator(".cr2-support-chapter-toggle");
+      if (width === 390 && await toggle.getAttribute("aria-expanded") === "false") await toggle.click();
+      await page.locator(`#cr2-support-item-${group}-${item}`).click();
+      await expect(chapter.locator(".cr2-support-detail-copy p"), `Figma comment #${number}`).toHaveText([...paragraphs]);
+    }
+  }
+});
+
 test("header, footer and mobile menu land headings at the same offset", async ({ page }) => {
   test.setTimeout(90_000);
   const names = ["ABOUT", "CAREER", "SUPPORT & BENEFIT", "JOBS", "FAQ", "ENTRY"];
