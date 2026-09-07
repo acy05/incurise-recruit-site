@@ -14,7 +14,7 @@ const options = [
   {id:"B",name:"ORBITAL SPACE",space:"rings",description:"画面端からはみ出す巨大リング。左右に奥行きをつくり、空間の中に文字が浮かぶ構成です。"},
   {id:"C",name:"GEOMETRIC FIELD",space:"facets",description:"左右を覆う三角形の幾何学面。頂点がゆっくり動き、構造的でシャープな印象をつくります。"},
   {id:"D",name:"BEFORE",space:"default",description:"比較用の元の背景。文字位置・サイズは新しい3案と同じです。"},
-  {id:"E",name:"PARTICLE FIELD",space:"scatter",description:"開くと粒子が広がり、文字が順に登場。マウスの近くでは粒子がふわっと避けます。「最初から再生」で見直せます。"},
+  {id:"E",name:"PARTICLE FIELD",space:"scatter",description:"大きく明るい粒子雲＋手前のぼけた粒子。マウスで3層が異なる速度で動き、近くの粒子がふわっと避けます。「最初から再生」で見直せます。"},
 ] as const;
 function App(){
  const initial=new URLSearchParams(location.search).get("space");

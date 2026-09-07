@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 export function GeometricHero({ centerShift = 0, motion = "default", space = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D"; space?: "default" | "flow" | "rings" | "facets" | "scatter" }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeRef = useRef(0);
-  const displacementRef = useRef(new Float32Array(48000));
+  const displacementRef = useRef(new Float32Array(72000));
+  const parallaxRef = useRef({ x: 0, y: 0 });
   const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
 
@@ -45,7 +46,7 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
     const still = paused || reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
     const random = (n: number) => { const value = Math.sin(n * 127.1 + 311.7) * 43758.5453; return value - Math.floor(value); };
     // Deterministic sampling avoids a flashing/random composition on resize.
-    const points = Array.from({ length: space === "scatter" ? 24000 : 12000 }, (_, i) => ({
+    const points = Array.from({ length: space === "scatter" ? 36000 : 12000 }, (_, i) => ({
       u: (i / 12000) * Math.PI * 2,
       v: ((i * .61803398875) % 1) * Math.PI * 2,
       seed: ((i * .754877666) % 1),
@@ -58,21 +59,30 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       const mobile = width < 768;
       if (space === "scatter") {
         // Distributed depth layers, not points constrained to a central sculpture.
-        const count = mobile ? 9500 : 24000;
+        const count = mobile ? 14000 : 36000;
         const reduceMotion = reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
         const entrance = reduceMotion ? 1 : 1 - Math.pow(1 - Math.min(time / 2.2, 1), 3);
         const displacement = displacementRef.current;
+        const inside = pointer.x >= 0 && pointer.x <= width && pointer.y >= 0 && pointer.y <= height;
+        const parallax = parallaxRef.current;
+        if (!still) {
+          parallax.x += ((inside ? (pointer.x / width - .5) * 2 : 0) - parallax.x) * .055;
+          parallax.y += ((inside ? (pointer.y / height - .5) * 2 : 0) - parallax.y) * .055;
+        }
+        const cameraX = reduceMotion ? 0 : parallax.x;
+        const cameraY = reduceMotion ? 0 : parallax.y;
         for (let i = 0; i < count; i++) {
           const seed = points[i].seed;
           const depth = .2 + seed * .8;
           const t = points[i].cloudT;
           const branch = i % 6;
-          const phase = time * .085;
+          const backLayer = i % 5 === 0;
+          const phase = time * (backLayer ? .045 : .085);
           const gaussian = points[i].cloudNoise;
-          const thickness = .014 + .048 * Math.pow(.5 + .5 * Math.sin(t * 16 + branch * 2), 2);
+          const thickness = .035 + .10 * Math.pow(.5 + .5 * Math.sin(t * 16 + branch * 2), 2);
           // Coherent, folded wisps: dense cores, diffuse edges and large negative spaces.
-          let x = width * (branch / 5 + .16 * Math.sin(t * 7 + branch * 1.3 + phase) + .055 * Math.sin(t * 21 - branch + phase * .6) + gaussian * thickness);
-          let y = height * (t * 1.24 - .12 + .055 * Math.sin(t * 12 + branch + phase) + gaussian * .012);
+          let x = width * (branch / 5 + .16 * Math.sin(t * 7 + branch * 1.3 + phase) + .055 * Math.sin(t * 21 - branch + phase * .6) + gaussian * thickness) + cameraX * (backLayer ? 5 : 20);
+          let y = height * (t * 1.24 - .12 + .055 * Math.sin(t * 12 + branch + phase) + gaussian * .027) + cameraY * (backLayer ? 3 : 12);
           if (i % 9 === 0) {
             x = ((t * (width + 80) + time * 2) % (width + 80)) - 40;
             y = (((i * .41421356237) % 1) * (height + 80) + time) % (height + 80) - 40;
@@ -88,11 +98,25 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
             displacement[i * 2 + 1] += (dy / Math.max(distance, 1) * push - displacement[i * 2 + 1]) * .12;
           }
           if (!reduceMotion) { x += displacement[i * 2]; y += displacement[i * 2 + 1]; }
-          const alpha = (.24 + depth * .58) * (.15 + entrance * .85) * (i % 9 === 0 ? .25 : 1);
+          const alpha = (.35 + depth * .6) * (.15 + entrance * .85) * (i % 9 === 0 ? .25 : backLayer ? .42 : 1);
           const warmth = Math.sin(t * 9 + branch * 1.2 + phase);
           context.fillStyle = warmth > .1 ? `rgba(236,160,113,${alpha})` : warmth < -.65 ? `rgba(235,220,196,${alpha})` : `rgba(237,76,131,${alpha * .8})`;
-          const size = (mobile ? .55 : .6) + depth * .65;
+          const size = backLayer ? .65 : (mobile ? .65 : .8) + depth * .85;
           context.fillRect(x, y, size, size);
+        }
+        // A few defocused foreground motes give the cloud scale without covering the copy.
+        for (let i = 0; i < (mobile ? 12 : 28); i++) {
+          const p = points[i * 127];
+          const x = ((p.cloudT * (width + 160) + time * (5 + p.seed * 6)) % (width + 160)) - 80 + cameraX * 45;
+          const y = ((p.seed * (height + 160) + time * 3) % (height + 160)) - 80 + cameraY * 30;
+          const radius = (mobile ? 5 : 8) + p.seed * 12;
+          const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+          const color = i % 3 === 0 ? "255,180,126" : "255,54,124";
+          gradient.addColorStop(0, `rgba(${color},${entrance * .24})`);
+          gradient.addColorStop(.3, `rgba(${color},${entrance * .12})`);
+          gradient.addColorStop(1, `rgba(${color},0)`);
+          context.fillStyle = gradient;
+          context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
         }
         return;
       }
