@@ -343,11 +343,12 @@ function SectionHeading({ index, label, title, lead }: { index: string; label: s
   );
 }
 
-function Hero() {
+export function Hero({ children, centerShift = 0 }: { children?: ReactNode; centerShift?: number } = {}) {
   return (
     <section className="cr2-hero" aria-labelledby="cr2-hero-title">
-      <GeometricHero />
+      <GeometricHero centerShift={centerShift} />
       <div className="cr2-hero-shade" aria-hidden="true" />
+      {children}
       <div className="cr2-growth-sequence" aria-hidden="true">
         <span>0</span><img src={growthArrow} width="39" height="16" alt="" /><strong>1</strong><img src={growthArrow} width="39" height="16" alt="" /><strong>100</strong>
       </div>

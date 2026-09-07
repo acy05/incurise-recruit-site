@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /** A locally rendered particle sculpture: no video download or external runtime. */
-export function GeometricHero() {
+export function GeometricHero({ centerShift = 0 }: { centerShift?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeRef = useRef(0);
   const [paused, setPaused] = useState(false);
@@ -37,7 +37,7 @@ export function GeometricHero() {
       context.clearRect(0, 0, width, height);
       const mobile = width < 768;
       const scale = Math.min(width * (mobile ? .49 : .27), height * .43);
-      const cx = width * (mobile ? .64 : .74);
+      const cx = width * ((mobile ? .64 : .74) + centerShift);
       const cy = height * (mobile ? .30 : .46);
       const spin = time * .085 + .3;
       const tilt = .65 + Math.sin(time * .12) * .16;
@@ -116,7 +116,7 @@ export function GeometricHero() {
       resize.disconnect(); observer.disconnect();
       document.removeEventListener("visibilitychange", sync);
     };
-  }, [paused, reduced]);
+  }, [paused, reduced, centerShift]);
 
   return <>
     <div className="cr2-geometric-background" aria-hidden="true">
