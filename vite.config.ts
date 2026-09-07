@@ -13,6 +13,7 @@ export default defineConfig({
         heroComparison: new URL("./hero-comparison/index.html", import.meta.url).pathname,
         layoutComparison: new URL("./layout-comparison/index.html", import.meta.url).pathname,
         motionComparison: new URL("./motion-comparison/index.html", import.meta.url).pathname,
+        spaceComparison: new URL("./space-comparison/index.html", import.meta.url).pathname,
       },
     },
   },

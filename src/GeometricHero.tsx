@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /** A locally rendered particle sculpture: no video download or external runtime. */
-export function GeometricHero({ centerShift = 0, motion = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D" }) {
+export function GeometricHero({ centerShift = 0, motion = "default", space = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D"; space?: "default" | "flow" | "rings" | "facets" }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeRef = useRef(0);
   const [paused, setPaused] = useState(false);
@@ -54,6 +54,57 @@ export function GeometricHero({ centerShift = 0, motion = "default" }: { centerS
       const cos = Math.cos(spin), sin = Math.sin(spin);
       const ct = Math.cos(tilt), st = Math.sin(tilt);
       const stride = mobile ? 2 : 1;
+      // Edge-to-edge studies. A single canvas clock keeps pause/reduced motion consistent.
+      context.save();
+      if (space === "flow") {
+        for (let row = 0; row < 32; row++) {
+          for (let col = 0; col < 150; col++) {
+            const t = col / 149;
+            const x = t * width;
+            const y = height * (.5 + .26 * Math.sin(t * 7 + time * .22 + row * .035)) + (row - 16) * 7;
+            const edge = Math.pow(Math.abs(t - .5) * 2, .5);
+            context.fillStyle = `rgba(255,${80 + row * 3},${130 + row * 2},${.18 + edge * .55})`;
+            context.fillRect(x, y, 1.5, 1.5);
+          }
+        }
+      }
+      if (space === "rings") {
+        for (const side of [-1, 1]) {
+          context.save();
+          context.translate(side < 0 ? width * .035 : width * .965, height * (side < 0 ? .43 : .57));
+          context.rotate(side * .45 + time * .045);
+          for (let r = 0; r < 20; r++) {
+            context.strokeStyle = r % 4 === 0 ? "rgba(255,55,125,.65)" : "rgba(179,223,219,.25)";
+            context.lineWidth = r % 4 === 0 ? 1.3 : .65;
+            context.beginPath();
+            context.ellipse(0, 0, height * (.24 + r * .016), height * (.13 + r * .01), r * .025, 0, Math.PI * 2);
+            context.stroke();
+          }
+          context.restore();
+        }
+      }
+      if (space === "facets") {
+        for (const side of [-1, 1]) {
+          const vertices = Array.from({length: 42}, (_, i) => {
+            const row = Math.floor(i / 6), col = i % 6;
+            const x = (col / 5 * width * .33 - width * .06) + Math.sin(row * .8 + time * .14) * 16;
+            return [side < 0 ? x : width - x, row / 6 * height + Math.cos(col + time * .18) * 35];
+          });
+          for (let row = 0; row < 6; row++) for (let col = 0; col < 5; col++) {
+            const i = row * 6 + col;
+            for (const ids of [[i,i+1,i+6],[i+1,i+7,i+6]]) {
+              context.beginPath();
+              ids.forEach((id,j)=>j ? context.lineTo(vertices[id][0],vertices[id][1]) : context.moveTo(vertices[id][0],vertices[id][1]));
+              context.closePath();
+              context.fillStyle = `rgba(255,${45+row*13},${110+col*10},${.025 + (Math.sin(i + time * .2) + 1) * .035})`;
+              context.fill(); context.strokeStyle = "rgba(232,130,158,.3)"; context.lineWidth = .8; context.stroke();
+            }
+          }
+          context.fillStyle="rgba(255,143,164,.85)";
+          vertices.forEach(([x,y])=>context.fillRect(x-1.5,y-1.5,3,3));
+        }
+      }
+      context.restore();
       for (let i = 0; i < points.length; i += stride) {
         const { u, v, seed } = points[i];
         const wave = Math.sin(u * 3 + time * .22);
@@ -152,7 +203,7 @@ export function GeometricHero({ centerShift = 0, motion = "default" }: { centerS
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerdown", move);
     };
-  }, [paused, reduced, centerShift, motion]);
+  }, [paused, reduced, centerShift, motion, space]);
 
   return <>
     <div className="cr2-geometric-background" aria-hidden="true">

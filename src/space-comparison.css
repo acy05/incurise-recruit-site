@@ -1,0 +1,4 @@
+.sc-page .lc-shade{background:radial-gradient(ellipse at center,#051417e8 0%,#051417ad 28%,#05141730 57%,transparent 76%)}
+.sc-D .lc-shade{background:radial-gradient(ellipse at center,#051417df 0%,#05141770 46%,transparent 75%)}
+.sc-page .lc-copy{pointer-events:none}.sc-page .lc-copy a{pointer-events:auto}
+@media(max-width:767px){.sc-page .lc-shade{background:radial-gradient(ellipse at 50% 56%,#051417eb 0%,#051417ae 35%,transparent 85%)}}
