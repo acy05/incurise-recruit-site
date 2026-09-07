@@ -2,10 +2,12 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const route = "comment-revision/";
-// Verbatim copy checked against comments in source Figma 6QM5lCn22AJzsbZPUpV9Sj, 2026-09-07.
-test("support descriptions match the original Figma comments without paraphrasing", async ({ page }) => {
+// Comments take priority; uncommented copy matches the design itself.
+// Source: Figma 6QM5lCn22AJzsbZPUpV9Sj, checked 2026-09-07.
+test("support descriptions match Figma and its comments without paraphrasing", async ({ page }) => {
   const comments = [
     [11, "learn", "01", ["プログラミングスキルを継続的に学ぶ環境を提供しています。"]],
+    [null, "learn", "02", ["待テラコヤを活用し、場所を選ばずオンラインで学べる環境を提供します。"]], // Desktop 345:348 / Mobile 349:518
     [15, "learn", "03", ["コンサルタントに求められる基礎・実践スキルを早期習得するための研修が整っています。"]],
     [16, "learn", "04", ["あなたのキャリア形成の後押し役として、役員が直接相談にのります。"]],
     [17, "learn", "05", ["全新入社員に1人、先輩社員がサポーターとしてアサインされます。", "入社直後から立ち上がりまでの支援を行います。"]],
@@ -20,6 +22,11 @@ test("support descriptions match the original Figma comments without paraphrasin
     [31, "life", "14", ["住宅の賃貸・売買の際、会社と提供している不動産仲介会社を通して成約した場合、不動産仲介手数料が割引となる制度です。"]],
     [32, "life", "15", ["「たくさん歩いて健康促進」を目標に、上記テーマパークの入園料の一部を負担する制度"]],
   ] as const;
+  const titles = [
+    "プログラミング研修", "eラーニング", "コンサルタント研修", "メンター制度", "サポーター制度",
+    "資格取得補助制度", "各種休暇", "ちょ、帰社する？制度", "リファラル採用制度", "イベント制度",
+    "IKETERU Consultant制度", "全社員集会", "決起集会", "住宅仲介手数料補助制度", "ディズニー/USJ施設優待制度",
+  ];
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -28,8 +35,11 @@ test("support descriptions match the original Figma comments without paraphrasin
       const chapter = page.locator(`[data-chapter="${group}"]`);
       const toggle = chapter.locator(".cr2-support-chapter-toggle");
       if (width === 390 && await toggle.getAttribute("aria-expanded") === "false") await toggle.click();
-      await page.locator(`#cr2-support-item-${group}-${item}`).click();
-      await expect(chapter.locator(".cr2-support-detail-copy p"), `Figma comment #${number}`).toHaveText([...paragraphs]);
+      const tab = page.locator(`#cr2-support-item-${group}-${item}`);
+      await expect(tab).toHaveText(titles[Number(item) - 1]);
+      await tab.click();
+      await expect(chapter.locator(".cr2-support-detail-copy h3")).toHaveText(titles[Number(item) - 1]);
+      await expect(chapter.locator(".cr2-support-detail-copy p"), number === null ? "Figma design (no comment)" : `Figma comment #${number}`).toHaveText([...paragraphs]);
     }
   }
 });
