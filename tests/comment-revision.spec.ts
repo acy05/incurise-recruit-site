@@ -270,7 +270,7 @@ test("comment 38 labels, header spacing, logo link, and selection arrows are pre
     }));
     const gaps = labels.slice(1).map((label, index) => label.left - labels[index].right);
     expect(Math.max(...gaps) - Math.min(...gaps)).toBeLessThanOrEqual(.5);
-    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(28);
+    for (const gap of gaps) expect(Math.abs(gap - 40)).toBeLessThanOrEqual(.5);
   }
   const brand = page.locator(".cr2-brand");
   await expect(brand).toHaveAttribute("href", "https://incurise.co.jp/");
