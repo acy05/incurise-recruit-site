@@ -6,6 +6,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -250,14 +251,36 @@ function ArrowAsset({ light = false }: { light?: boolean }) {
   return <img className="cr2-arrow-asset" src={light ? buttonArrowWhite : buttonArrowDark} width="61" height="15" alt="" aria-hidden="true" />;
 }
 
+function lockPageScroll(className: string) {
+  const previousPadding = document.body.style.paddingRight;
+  const gap = window.innerWidth - document.documentElement.clientWidth;
+  const padding = Number.parseFloat(getComputedStyle(document.body).paddingRight) || 0;
+  document.body.style.paddingRight = `${padding + gap}px`;
+  document.body.classList.add(className);
+  return () => {
+    document.body.classList.remove(className);
+    document.body.style.paddingRight = previousPadding;
+  };
+}
+
 function Header() {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const pendingTarget = useRef<string | null>(null);
 
   useEffect(() => {
-    document.body.classList.toggle("cr2-menu-open", open);
+    const desktop = window.matchMedia("(min-width: 1200px)");
+    const closeOnDesktop = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
+    const unlock = lockPageScroll("cr2-menu-open");
+    const background = Array.from(document.querySelectorAll<HTMLElement>("#cr2-main, .cr2-footer, .cr2-brand, .cr2-skip-link"));
+    background.forEach((element) => { element.inert = true; });
     const menu = dialogRef.current;
     const selector = "button:not([disabled]),a[href]";
     const frame = requestAnimationFrame(() => menu?.querySelector<HTMLElement>(selector)?.focus());
@@ -268,7 +291,7 @@ function Header() {
         return;
       }
       if (event.key !== "Tab" || !menu) return;
-      const controls = Array.from(menu.querySelectorAll<HTMLElement>(selector));
+      const controls = [triggerRef.current, ...menu.querySelectorAll<HTMLElement>(selector)].filter((element): element is HTMLElement => Boolean(element));
       const first = controls[0];
       const last = controls.at(-1);
       if (!first || !last) return;
@@ -284,14 +307,26 @@ function Header() {
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("keydown", onKeyDown);
-      document.body.classList.remove("cr2-menu-open");
-      requestAnimationFrame(() => triggerRef.current?.focus());
+      unlock();
+      background.forEach((element) => { element.inert = false; });
+      requestAnimationFrame(() => {
+        const target = pendingTarget.current;
+        pendingTarget.current = null;
+        if (target) {
+          const section = document.querySelector<HTMLElement>(target);
+          section?.setAttribute("tabindex", "-1");
+          section?.focus({ preventScroll: true });
+          scrollToSection(target);
+        } else if (triggerRef.current?.getClientRects().length) {
+          triggerRef.current.focus({ preventScroll: true });
+        }
+      });
     };
   }, [open]);
 
   const navigate = (target: string) => {
+    pendingTarget.current = target;
     setOpen(false);
-    requestAnimationFrame(() => scrollToSection(target));
   };
 
   return (
@@ -487,7 +522,7 @@ function CareerSection() {
 }
 
 function SupportSection() {
-  const [openChapter, setOpenChapter] = useState<SupportGroupKey>("learn");
+  const [openChapter, setOpenChapter] = useState<SupportGroupKey | null>("learn");
   const [selectedItems, setSelectedItems] = useState<Record<SupportGroupKey, string>>({
     learn: "01",
     connect: "08",
@@ -547,7 +582,7 @@ function SupportSection() {
                   className="cr2-support-chapter-toggle"
                   aria-expanded={open}
                   aria-controls={`cr2-support-chapter-${group.key}`}
-                  onClick={() => setOpenChapter(group.key)}
+                  onClick={() => setOpenChapter((current) => current === group.key ? null : group.key)}
                 >
                   <span className="cr2-support-chapter-copy">
                     <small>{group.number} / {group.label}</small>
@@ -563,7 +598,8 @@ function SupportSection() {
                   <span>{items.length} SYSTEMS</span>
                 </header>
 
-                <div id={`cr2-support-chapter-${group.key}`} className="cr2-support-chapter-content">
+                <div id={`cr2-support-chapter-${group.key}`} className="cr2-support-chapter-shell">
+                <div className="cr2-support-chapter-content">
                   <div className="cr2-support-item-list" role="tablist" aria-orientation="vertical" aria-label={`${group.title}の制度`}>
                     {items.map((item, index) => {
                       const selected = selectedItem.number === item.number;
@@ -593,6 +629,7 @@ function SupportSection() {
                     })}
                   </div>
                   <div
+                    key={selectedItem.number}
                     id={`cr2-support-detail-${group.key}`}
                     className="cr2-support-detail"
                     role="tabpanel"
@@ -603,6 +640,7 @@ function SupportSection() {
                     <h3>{selectedItem.title}</h3>
                     {selectedItem.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   </div>
+                </div>
                 </div>
               </article>
             );
@@ -795,7 +833,9 @@ function EntrySection() {
 
   useEffect(() => {
     if (!preview) return;
-    document.body.classList.add("cr2-modal-open");
+    const unlock = lockPageScroll("cr2-modal-open");
+    const site = document.querySelector<HTMLElement>(".cr2-site");
+    if (site) site.inert = true;
     const dialog = dialogRef.current;
     const selector = "button:not([disabled]),a[href],[tabindex]:not([tabindex='-1'])";
     const frame = requestAnimationFrame(() => (dialog?.querySelector<HTMLElement>(selector) ?? dialog)?.focus());
@@ -824,7 +864,8 @@ function EntrySection() {
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("keydown", onKeyDown);
-      document.body.classList.remove("cr2-modal-open");
+      unlock();
+      if (site) site.inert = false;
       requestAnimationFrame(() => lastFocused.current?.focus());
     };
   }, [preview]);
@@ -897,7 +938,7 @@ function EntrySection() {
           <p className="cr2-preview-notice">プレビューのため応募情報は送信されません</p>
         </form>
       </div>
-      {preview && (
+      {preview && createPortal(
         <div className="cr2-modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setPreview(null)}>
           <div ref={dialogRef} className="cr2-modal" role="dialog" aria-modal="true" aria-labelledby="cr2-modal-title" aria-describedby="cr2-modal-description" tabIndex={-1}>
             <button type="button" className="cr2-modal-close" onClick={() => setPreview(null)} aria-label="確認画面を閉じる"><X aria-hidden="true" /></button>
@@ -919,7 +960,7 @@ function EntrySection() {
             <p className="cr2-modal-notice">プレビューのため応募情報は送信されません</p>
             <div className="cr2-modal-actions"><button type="button" onClick={() => setPreview(null)}>修正する</button><button type="button" disabled>応募する（プレビュー）</button></div>
           </div>
-        </div>
+        </div>, document.body
       )}
     </section>
   );
@@ -948,22 +989,26 @@ function CommentRevisionMotion() {
     const site = document.querySelector<HTMLElement>(".cr2-site");
     if (!site) return;
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    site.dataset.motionReady = reducedMotion ? "reduced" : "enabled";
-    if (reducedMotion) return;
-
     gsap.registerPlugin(ScrollTrigger);
-    const context = gsap.context(() => {
+    const media = gsap.matchMedia(site);
+    const revealed = new WeakSet<HTMLElement>();
+    media.add({ desktop: "(min-width: 1100px)", mobile: "(max-width: 1099px)", reduced: "(prefers-reduced-motion: reduce)" }, (context) => {
+      const { desktop, reduced } = context.conditions!;
+      site.dataset.motionReady = reduced ? "reduced" : "enabled";
+      if (reduced) return;
       // The adopted Hero owns its entrance; keep section scroll motion independent.
 
       gsap.utils.toArray<HTMLElement>(
         ".cr2-section-heading, .cr2-iketeru-intro, .cr2-iketeru-bridge, .cr2-career-shell, .cr2-support-chapters, .cr2-job-grid, .cr2-selection, .cr2-faq-list, .cr2-form",
       ).forEach((element) => {
+        // Do not hide already-read content when rotating a device or resizing.
+        if (revealed.has(element) || element.getBoundingClientRect().bottom < 0) return;
         gsap.fromTo(element, { opacity: 0, y: 32 }, {
           opacity: 1,
           y: 0,
           duration: .7,
           ease: "power3.out",
+          onComplete: () => { revealed.add(element); },
           scrollTrigger: { trigger: element, start: "top 88%", once: true },
         });
       });
@@ -972,7 +1017,6 @@ function CommentRevisionMotion() {
       const blob = definition?.querySelector<HTMLElement>(".cr2-official-blob");
       const dna = definition?.querySelector<HTMLElement>(".cr2-official-definition-dna");
       if (definition && blob) {
-        const desktop = window.matchMedia("(min-width: 1100px)").matches;
         gsap.fromTo(blob, {
           "--cr2-blob-scale": "0",
           autoAlpha: 0,
@@ -1015,11 +1059,27 @@ function CommentRevisionMotion() {
         }
       }
 
-      requestAnimationFrame(() => ScrollTrigger.refresh());
-    }, site);
+    });
+
+    // Re-measure after font loading, tab changes, FAQ expansion and form errors.
+    // Observe layout size, not transforms; debounce accordion transitions.
+    let disposed = false;
+    let refreshTimer: ReturnType<typeof setTimeout>;
+    const refresh = () => {
+      if (disposed) return;
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 120);
+    };
+    const observer = new ResizeObserver(refresh);
+    observer.observe(site);
+    document.fonts.ready.then(refresh);
+    refresh();
 
     return () => {
-      context.revert();
+      disposed = true;
+      clearTimeout(refreshTimer);
+      observer.disconnect();
+      media.revert();
       delete site.dataset.motionReady;
     };
   }, []);

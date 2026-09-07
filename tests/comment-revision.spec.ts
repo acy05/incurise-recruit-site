@@ -333,7 +333,107 @@ test("form validates, confirms files, and keeps final submission disabled", asyn
   await expect(dialog).toContainText("work-history.pdf");
   await expect(dialog.getByText("プレビューのため応募情報は送信されません", { exact: true })).toBeVisible();
   await expect(dialog.getByRole("button", { name: "応募する（プレビュー）" })).toBeDisabled();
+  await expect(page.locator(".cr2-site")).toHaveJSProperty("inert", true);
+  expect(await dialog.evaluate((element) => element.parentElement?.parentElement === document.body)).toBe(true);
+  await dialog.getByRole("button", { name: "修正する", exact: true }).focus();
+  await page.keyboard.press("Tab");
+  await expect(dialog.getByRole("button", { name: "確認画面を閉じる" })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
+  await expect(page.locator(".cr2-site")).toHaveJSProperty("inert", false);
   await expect(form.getByRole("button", { name: "同意して入力内容の確認へ" })).toBeFocused();
+});
+
+test("reviewed typography fits narrow cards and desktop side headings", async ({ page }) => {
+  test.setTimeout(60_000);
+  for (const width of [320, 390, 820, 1100, 1199, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(route, { waitUntil: "networkidle" });
+    await page.locator("#cr2-career-tab-consultant").click();
+    const measurements = await page.evaluate(() => {
+      const nodes = [...document.querySelectorAll<HTMLElement>(".cr2-career-panel li strong, .cr2-support-chapter-content, .cr2-support-detail, .cr2-form")];
+      const heading = (selector: string) => {
+        const el = document.querySelector<HTMLElement>(selector)!;
+        return el.getBoundingClientRect().height / Number.parseFloat(getComputedStyle(el).lineHeight);
+      };
+      return {
+        overflow: nodes.filter(el => el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1).map(el => el.className || el.textContent),
+        careerLines: heading("#cr2-career h2"), supportLines: heading("#cr2-support h2"),
+        faqLines: heading("#cr2-faq h2"), entryLines: heading("#cr2-entry h2"),
+        inputSize: getComputedStyle(document.querySelector("input[name='name']")!).fontSize,
+      };
+    });
+    expect(measurements.overflow).toEqual([]);
+    expect(measurements.careerLines).toBeLessThanOrEqual(2.1);
+    expect(measurements.supportLines).toBeLessThanOrEqual(2.1);
+    expect(measurements.entryLines).toBeLessThanOrEqual(2.1);
+    if (width === 1440) expect(measurements.faqLines).toBeLessThanOrEqual(1.1);
+    expect(measurements.inputSize).toBe("16px");
+  }
+});
+
+test("mobile menu traps focus, restores scroll and closes on desktop resize", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(route);
+  const trigger = page.locator(".cr2-menu-button");
+  const menu = page.locator("#cr2-mobile-navigation");
+  await trigger.click();
+  await expect(page.locator("#cr2-main")).toHaveJSProperty("inert", true);
+  await expect(menu.getByRole("button").first()).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(trigger).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(menu.getByRole("button").last()).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(page.locator("#cr2-main")).toHaveJSProperty("inert", false);
+  await trigger.click();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.locator("body")).not.toHaveClass(/cr2-menu-open/);
+  await expect(page.locator("#cr2-main")).toHaveJSProperty("inert", false);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await trigger.click();
+  await menu.getByRole("button", { name: "03 SUPPORT & BENEFIT", exact: true }).click();
+  await expect(page.locator("#cr2-support")).toBeFocused();
+  await expect.poll(() => page.locator("#cr2-support").evaluate(el => Math.round(el.getBoundingClientRect().top))).toBe(86);
+});
+
+test("mobile support can close completely without an empty detail area", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(route);
+  const toggle = page.locator(".cr2-support-chapter-toggle").first();
+  const shell = page.locator("#cr2-support-chapter-learn");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(shell).toBeHidden();
+  await expect.poll(() => shell.evaluate(el => el.getBoundingClientRect().height)).toBe(0);
+  await toggle.press("Enter");
+  await expect(shell).toBeVisible();
+  await expect(shell.getByRole("tabpanel")).toContainText("プログラミングスキルを継続的に学ぶ環境を提供しています。");
+  const footerLinks = await page.locator(".cr2-footer-bottom nav a").evaluateAll(nodes => nodes.map(el => ({y: Math.round(el.getBoundingClientRect().y), height:el.getBoundingClientRect().height})));
+  expect(new Set(footerLinks.map(link => link.y)).size).toBe(2);
+  expect(footerLinks.every(link => link.height >= 44)).toBe(true);
+});
+
+test("scroll motion responds to live reduced-motion and breakpoint changes", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(route, { waitUntil: "networkidle" });
+  await expect(page.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "enabled");
+  await expect(page.locator(".pin-spacer")).toHaveCount(1);
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await expect(page.locator(".pin-spacer")).toHaveCount(0);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.locator(".pin-spacer")).toHaveCount(1);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.locator(".pin-spacer")).toHaveCount(0);
+  await expect(page.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "reduced");
+  for (const selector of [".cr2-iketeru-intro", ".cr2-career-shell", ".cr2-faq-list", ".cr2-form"]) {
+    await expect(page.locator(selector)).toHaveCSS("opacity", "1");
+    await expect(page.locator(selector)).toHaveCSS("transform", "none");
+  }
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(page.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "enabled");
 });
