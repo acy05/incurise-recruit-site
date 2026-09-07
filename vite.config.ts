@@ -11,6 +11,7 @@ export default defineConfig({
         preview: new URL("./preview/index.html", import.meta.url).pathname,
         commentRevision: new URL("./comment-revision/index.html", import.meta.url).pathname,
         heroComparison: new URL("./hero-comparison/index.html", import.meta.url).pathname,
+        layoutComparison: new URL("./layout-comparison/index.html", import.meta.url).pathname,
       },
     },
   },
