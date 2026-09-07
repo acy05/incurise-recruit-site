@@ -27,10 +27,11 @@
 
 - 実画面：PC・390px・320px・1100pxのHero、見出し、カード、フォーム、Footerを確認。ナビ・FAQ・制度選択を操作。
 - 既存のコメント・Hero E・公式Definition・応募確認テストは保持。狭幅の改行、閉じた説明枠、高さ変更、メニューとモーダルのフォーカス、動的Reduced Motion／幅変更の回帰テストを追加。
-- `npm run build`成功。公開前にGitHub Actionsの既存全テストを必須とし、合格後だけPagesを更新する。
+- `npm run build`成功。[GitHub Actions 34103178338](https://github.com/acy05/incurise-recruit-site/actions/runs/34103178338)で未設定版35件・設定版6件、計41件のテストが合格し、デプロイ完了。設定版送信テストはモックを使用し、実応募は送信していない。
+- Pages APIの`built / public=true`、正式トップ・既存プレビュー・修正版ページと生成JS/CSSのHTTP 200を確認。公開修正版で画像読込エラー0件、ブラウザーエラー0件、横スクロールなし。
 - 正式トップ・既存プレビューのソースは未編集。公開中の共通プレビューCSSとビルド出力のSHA-256は一致。JSのファイル名は共通チャンク再生成で変わり得るため、JSの同一ハッシュは主張しない。
 - 実機Safari／VoiceOverでの検証や応募メール送信は実施していない。
 
 ## レビュー指針
 
-Lazyweb経由で取得した[ImpeccableのPolish指針](https://raw.githubusercontent.com/pbakaus/impeccable/main/.agents/skills/reference/polish.md)と[Craft floor](https://raw.githubusercontent.com/pbakaus/impeccable/main/.agents/skills/reference/craft-floor.md)を使用。承認済みの構図を維持し、共通原因を直した後に確認する方針を適用した。
+Lazyweb経由で取得した[ImpeccableのPolish指針](https://raw.githubusercontent.com/pbakaus/impeccable/main/.agents/skills/impeccable/reference/polish.md)と[Craft floor](https://raw.githubusercontent.com/pbakaus/impeccable/main/.agents/skills/impeccable/reference/craft-floor.md)を使用。承認済みの構図を維持し、共通原因を直した後に確認する方針を適用した。
