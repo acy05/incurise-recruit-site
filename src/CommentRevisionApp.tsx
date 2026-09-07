@@ -11,8 +11,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import logo from "./assets/preview/incurise-logo.png";
-import hero from "./assets/preview/hero.png";
-import heroMobile from "./assets/preview/hero-mobile.png";
+import { GeometricHero } from "./GeometricHero";
 import growthArrow from "./assets/preview/growth-arrow.png";
 import buttonArrowDark from "./assets/preview/button-arrow-dark.png";
 import buttonArrowWhite from "./assets/preview/button-arrow-white.png";
@@ -347,10 +346,7 @@ function SectionHeading({ index, label, title, lead }: { index: string; label: s
 function Hero() {
   return (
     <section className="cr2-hero" aria-labelledby="cr2-hero-title">
-      <picture>
-        <source media="(max-width: 767px)" srcSet={heroMobile} />
-        <img src={hero} width="1586" height="992" alt="プロジェクトについて話し合うチーム" fetchPriority="high" />
-      </picture>
+      <GeometricHero />
       <div className="cr2-hero-shade" aria-hidden="true" />
       <div className="cr2-growth-sequence" aria-hidden="true">
         <span>0</span><img src={growthArrow} width="39" height="16" alt="" /><strong>1</strong><img src={growthArrow} width="39" height="16" alt="" /><strong>100</strong>
@@ -958,7 +954,7 @@ function CommentRevisionMotion() {
     const context = gsap.context(() => {
       const heroTimeline = gsap.timeline({ defaults: { ease: "power3.out" } });
       heroTimeline
-        .fromTo(".cr2-hero picture > img", { scale: 1.08 }, { scale: 1, duration: 1.35 })
+        .fromTo(".cr2-geometric-background", { opacity: .35 }, { opacity: 1, duration: 1.35 })
         .fromTo(".cr2-growth-sequence", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .65 }, "-=.85")
         .fromTo(".cr2-hero-copy > *", { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .72, stagger: .09 }, "-=.55");
 
