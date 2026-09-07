@@ -523,7 +523,7 @@ function CareerSection() {
             <p>{route.label}</p>
             <ol>
               {route.roles.map((role, index) => (
-                <li key={role} style={{ "--cr2-step-delay": `${index * 55}ms` } as CSSProperties}>
+                <li key={role} style={{ "--cr2-step-delay": `${index * 90}ms` } as CSSProperties}>
                   <span>Step {index + 1}</span>
                   <strong>{role}</strong>
                 </li>
@@ -644,7 +644,6 @@ function SupportSection() {
                     })}
                   </div>
                   <div
-                    key={selectedItem.number}
                     id={`cr2-support-detail-${group.key}`}
                     className="cr2-support-detail"
                     role="tabpanel"
@@ -652,8 +651,10 @@ function SupportSection() {
                     tabIndex={0}
                   >
                     <span aria-hidden="true" />
-                    <h3>{selectedItem.title}</h3>
-                    {selectedItem.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                    <div key={selectedItem.number} className="cr2-support-detail-copy">
+                      <h3>{selectedItem.title}</h3>
+                      {selectedItem.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                    </div>
                   </div>
                 </div>
                 </div>

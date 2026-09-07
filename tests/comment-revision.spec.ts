@@ -2,6 +2,31 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const route = "comment-revision/";
+test("support changes fade text only while retaining the panel and accent", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(route);
+  const chapter = page.locator('[data-chapter="learn"]');
+  const panel = chapter.getByRole("tabpanel");
+  await chapter.scrollIntoViewIfNeeded();
+  const originalPanel = await panel.elementHandle();
+  const originalAccent = await panel.locator(":scope > span").elementHandle();
+  await chapter.getByRole("tab", { name: "サポーター制度", exact: true }).click();
+  expect(await panel.evaluate((node, original) => node === original, originalPanel)).toBe(true);
+  expect(await panel.locator(":scope > span").evaluate((node, original) => node === original, originalAccent)).toBe(true);
+  await expect(panel).toHaveCSS("animation-name", "none");
+  const copy = panel.locator(".cr2-support-detail-copy");
+  await expect(copy).toHaveCSS("animation-name", "cr2-support-copy-fade");
+  await expect(copy).toHaveCSS("animation-duration", "0.7s");
+  await expect(copy).toHaveCSS("transform", "none");
+  await expect(copy).toHaveCSS("opacity", "1");
+  await expect(copy).toContainText("入社直後から立ち上がりまでの支援を行います。");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await chapter.getByRole("tab", { name: "メンター制度", exact: true }).click();
+  await expect(copy).toHaveCSS("animation-name", "none");
+  await expect(copy).toHaveCSS("opacity", "1");
+});
+
 test("career steps animate in order on entry and route changes, respecting reduced motion", async ({ page }) => {
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
@@ -23,7 +48,7 @@ test("career steps animate in order on entry and route changes, respecting reduc
       expect(motion).toHaveLength(index === 1 ? 7 : 6);
       motion.forEach((value, step) => {
         expect(value.name).toBe("cr2-career-step-enter");
-        expect(value.delay).toBeCloseTo(step * .055, 3);
+        expect(value.delay).toBeCloseTo(step * .09, 3);
         expect(value.line).toBe("cr2-career-line-enter");
       });
       await expect(panel.locator("li strong").last()).toHaveCSS("opacity", "1");

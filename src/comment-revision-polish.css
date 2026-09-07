@@ -27,18 +27,19 @@ html:has(.cr2-site) {
 .cr2-site .cr2-career-panel li strong { font-size: clamp(20px, 6vw, 28px); overflow-wrap: break-word; }
 .cr2-site .cr2-career-tabs button { color: var(--cr2-ink); }
 .cr2-site .cr2-career-tabs button.is-active { color: var(--cr2-white); }
-.cr2-site .cr2-support-detail { animation: cr2-panel-enter 240ms var(--cr2-ease) both; }
+.cr2-site .cr2-support-detail-copy { animation: cr2-support-copy-fade 700ms ease-in-out both; }
+@keyframes cr2-support-copy-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cr2-panel-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 /* Replay on route changes; animate content without moving the row layout. */
 @media (prefers-reduced-motion: no-preference) {
-  .cr2-site [data-career-entered="true"] .cr2-career-panel > p { animation: cr2-panel-enter 280ms var(--cr2-ease) both; }
+  .cr2-site [data-career-entered="true"] .cr2-career-panel > p { animation: cr2-panel-enter 600ms var(--cr2-ease) both; }
   .cr2-site [data-career-entered="true"] .cr2-career-panel li > * {
-    animation: cr2-career-step-enter 440ms var(--cr2-ease) var(--cr2-step-delay) both;
+    animation: cr2-career-step-enter 700ms var(--cr2-ease) var(--cr2-step-delay) both;
   }
   .cr2-site [data-career-entered="true"] .cr2-career-panel li::before {
     transform-origin: left;
-    animation: cr2-career-line-enter 520ms var(--cr2-ease) var(--cr2-step-delay) both;
+    animation: cr2-career-line-enter 850ms var(--cr2-ease) var(--cr2-step-delay) both;
   }
   .cr2-site .cr2-career-tabs button i { transition: transform 240ms var(--cr2-ease); }
   .cr2-site .cr2-career-tabs button.is-active i { transform: translate(3px, -50%) rotate(45deg); }
@@ -188,6 +189,7 @@ html:has(.cr2-site) {
 @media (prefers-reduced-motion: reduce) {
   .cr2-site .cr2-career-panel,
   .cr2-site .cr2-support-detail,
+  .cr2-site .cr2-support-detail-copy,
   .cr2-modal,
   .cr2-modal-backdrop { animation: none; }
   .cr2-site .cr2-mobile-menu,
