@@ -141,6 +141,9 @@ html:has(.cr2-site) {
 
 @media (min-width: 1200px) {
   html:has(.cr2-site) { --cr2-header-height: 88px; --cr2-section-space: 120px; }
+  /* Equal whitespace between labels, not equal-width slots for their centers. */
+  .cr2-site .cr2-desktop-nav { display: flex; justify-content: space-between; gap: 28px; }
+  .cr2-site .cr2-desktop-nav button { flex: 0 0 auto; width: max-content; }
   .cr2-site .cr2-section-heading { margin-bottom: 56px; }
   .cr2-site .cr2-career-panel li { grid-template-columns: 150px minmax(0, 1fr); }
   .cr2-site .cr2-career-panel li strong { font-size: 34px; }

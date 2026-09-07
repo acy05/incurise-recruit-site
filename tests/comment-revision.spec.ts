@@ -259,12 +259,19 @@ test("comment 38 labels, header spacing, logo link, and selection arrows are pre
   ]);
   await expect(labels.locator(".cr2-official-mark i")).toHaveCount(6);
   await expect(page.locator(".cr2-desktop-nav button").first()).toHaveCSS("font-size", "13px");
-  const navCenters = await page.locator(".cr2-desktop-nav button").evaluateAll((buttons) => buttons.map((button) => {
-    const rect = button.getBoundingClientRect();
-    return rect.x + rect.width / 2;
-  }));
-  const navGaps = navCenters.slice(1).map((center, index) => center - navCenters[index]);
-  expect(Math.max(...navGaps) - Math.min(...navGaps)).toBeLessThanOrEqual(.5);
+  for (const width of [1200, 1280, 1440, 1512, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.evaluate(() => document.fonts.ready);
+    const labels = await page.locator(".cr2-desktop-nav button").evaluateAll((buttons) => buttons.map((button) => {
+      const range = document.createRange();
+      range.selectNodeContents(button);
+      const rect = range.getBoundingClientRect();
+      return { left: rect.left, right: rect.right };
+    }));
+    const gaps = labels.slice(1).map((label, index) => label.left - labels[index].right);
+    expect(Math.max(...gaps) - Math.min(...gaps)).toBeLessThanOrEqual(.5);
+    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(28);
+  }
   const brand = page.locator(".cr2-brand");
   await expect(brand).toHaveAttribute("href", "https://incurise.co.jp/");
   await expect(brand.locator("img")).toHaveCSS("width", "142px");
