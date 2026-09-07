@@ -19,3 +19,24 @@
 @media(max-width:1000px){.hc-toolbar{align-items:flex-start;flex-direction:column}.hc-tabs{width:100%}.hc-tabs button{flex:1;justify-content:center;padding:8px}.hc-caption{align-items:flex-start;flex-direction:column;gap:5px}}
 @media(max-width:767px){.hc-tabs span{display:none}.hc-toolbar{padding:16px 20px;gap:16px}.hc-caption{padding:14px 20px;min-height:120px}.hc-site-header{height:70px;padding:0 20px;gap:18px}.hc-site-header img{width:78px}.hc-site-header>span{display:none}.hc-type{left:20px;top:114px;font-size:clamp(48px,13vw,88px)}.hc-C .cr2-hero-copy{bottom:112px}.hc-block{left:35px;top:98px;width:145px}.hc-block svg{width:125px;height:125px}.hc-block span{font-size:6px}.hc-footer{flex-direction:column;padding:20px;gap:8px}}
 @media(prefers-reduced-motion:reduce){.hc-type,.hc-travel,.hc-block svg,.hc-cube{animation:none}.hc-cube{stroke-dashoffset:0}}
+
+/* D: a connected system of solids fills the middle, leaving copy unobstructed. */
+.hc-caption>div{display:flex;gap:24px;align-items:center;flex:1}
+.hc-replay{flex-shrink:0;min-height:44px;padding:10px 14px;border:1px solid #102e2e38;background:transparent;color:#102e2e;font:700 11px "Noto Sans JP",sans-serif;cursor:pointer}
+.hc-replay:disabled{opacity:.4;cursor:default}
+.hc-replay:active{transform:scale(.97)}
+.hc-constellation{position:absolute;z-index:1;left:max(44px,calc((100vw - 1440px)/2 + 64px));top:100px;width:min(40vw,500px);pointer-events:none}
+.hc-constellation>svg{display:block;width:100%;overflow:visible;fill:none;stroke:url(#hc-cube-color);stroke-width:1.2}
+.hc-cube-face{fill:#fa548914;stroke:none}.hc-cube-back{stroke:#a1d9cd;opacity:.35}
+.hc-core{animation:hc-core-drift 12s ease-in-out infinite}.hc-satellite{animation:hc-satellite-drift 10s ease-in-out infinite}.hc-satellite-two{animation-delay:-3s}.hc-satellite-three{animation-delay:-6s}
+.hc-orbit{stroke:#a5d3c738;stroke-width:.7}.hc-orbit-inner{stroke:#ec9f9c24}.hc-network{stroke:#e78b9838;stroke-width:.8}
+.hc-orbit-points{fill:#ffb599;stroke:none;transform-origin:255px 140px;animation:hc-orbit-turn 45s linear infinite}
+.hc-constellation>span{display:flex;gap:14px;align-items:center;margin:8px 0 0 32px;font:500 9px Roboto,sans-serif;letter-spacing:.22em;color:#adc2bc}
+.hc-constellation i{height:1px;width:26px;background:#aecdc74d}
+.hc-page:has(.cr2-motion-toggle[aria-pressed=true]) .hc-constellation *{animation-play-state:paused}
+@keyframes hc-core-drift{0%,100%{transform:translateY(4px) rotate(-7deg)}50%{transform:translateY(-8px) rotate(7deg)}}
+@keyframes hc-satellite-drift{0%,100%{transform:translateY(10px) rotate(8deg);opacity:.65}50%{transform:translateY(-10px) rotate(-8deg);opacity:1}}
+@keyframes hc-orbit-turn{to{transform:rotate(360deg)}}
+@media(max-width:1000px){.hc-caption>div{align-items:flex-start;flex-direction:column;gap:5px}.hc-constellation{top:120px;width:46vw}}
+@media(max-width:767px){.hc-caption{min-height:178px}.hc-constellation{left:20px;top:100px;width:min(82vw,400px)}.hc-constellation>span{font-size:7px;gap:10px;margin-left:10px}.hc-constellation i{width:16px}}
+@media(prefers-reduced-motion:reduce){.hc-constellation *{animation:none!important}}
