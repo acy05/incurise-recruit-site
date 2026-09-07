@@ -4,6 +4,14 @@
 .sc-E .lc-shade{background:radial-gradient(ellipse at center,#051417a0 0%,#05141738 28%,transparent 58%)}
 .sc-E .lc-copy h2,.sc-E .lc-lead{text-shadow:0 2px 14px #05141799}
 .sc-E .lc-copy h2 strong{text-shadow:none}
+.sc-E .lc-copy{padding:56px 6%;justify-content:center}
+.sc-E .lc-label{font-family:"Noto Sans JP",sans-serif;font-size:18px;line-height:1.7;letter-spacing:.06em;margin-bottom:24px;color:#fff}
+.sc-E .sc-punctuation{display:inline-block;width:.5em;text-align:left}
+.sc-E .lc-lead{font-size:16px;line-height:2;max-width:680px;margin-top:28px;text-wrap:pretty}
+.sc-E .lc-bottom a{min-width:224px;min-height:64px;padding:0 24px;border:1px solid #ffffffb3;background:#05141770;font-size:16px;margin-top:28px;transition:background .25s,color .25s,transform .12s}
+.sc-E .lc-bottom a:active{transform:scale(.98)}
+.sc-E .lc-bottom a:focus-visible{outline:3px solid #ff9b71;outline-offset:5px}
+@media(hover:hover){.sc-E .lc-bottom a:hover{background:#fff;color:#051417}.sc-E .lc-bottom a:hover img{filter:brightness(0)}}
 .sc-E .lc-label{animation:sc-text-enter .8s .25s both cubic-bezier(.22,1,.36,1)}
 .sc-E .lc-title-line{animation:sc-text-enter 1s .45s both cubic-bezier(.22,1,.36,1)}
 .sc-E .lc-title-line+.lc-title-line{animation-delay:.65s}
@@ -13,3 +21,4 @@
 .sc-page .hc-toolbar{flex-wrap:wrap}.sc-page .hc-tabs{flex-wrap:wrap}
 @media(max-width:767px){.sc-page .lc-shade{background:radial-gradient(ellipse at 50% 56%,#051417eb 0%,#051417ae 35%,transparent 85%)}}
 @media(max-width:767px){.sc-E .lc-shade{background:radial-gradient(ellipse at 50% 56%,#051417ba 0%,#05141750 32%,transparent 70%)}}
+@media(max-width:767px){.sc-E .lc-copy{padding:40px 20px}.sc-E .lc-label{font-size:14px;letter-spacing:.02em;margin-bottom:22px}.sc-E .lc-lead{font-size:13px;line-height:2;max-width:400px;margin-top:24px}.sc-E .lc-bottom a{min-width:208px;min-height:58px;font-size:14px;margin-top:24px}}
