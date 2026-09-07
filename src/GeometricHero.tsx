@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /** A locally rendered particle sculpture: no video download or external runtime. */
-export function GeometricHero({ centerShift = 0 }: { centerShift?: number }) {
+export function GeometricHero({ centerShift = 0, motion = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D" }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeRef = useRef(0);
   const [paused, setPaused] = useState(false);
@@ -25,6 +25,14 @@ export function GeometricHero({ centerShift = 0 }: { centerShift?: number }) {
     let last = 0;
     let time = timeRef.current;
     let inView = true;
+    const pointer = { x: -10000, y: -10000, tilt: 0, targetTilt: 0 };
+    const move = (event: PointerEvent) => {
+      const box = canvas.getBoundingClientRect();
+      pointer.x = event.clientX - box.left; pointer.y = event.clientY - box.top;
+      pointer.targetTilt = pointer.x >= 0 && pointer.x <= box.width && pointer.y >= 0 && pointer.y <= box.height ? (pointer.x / box.width - .5) * .45 : 0;
+    };
+    if (motion === "C") window.addEventListener("pointermove", move, { passive: true });
+    if (motion === "C") window.addEventListener("pointerdown", move, { passive: true });
     const still = paused || reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
     // Deterministic sampling avoids a flashing/random composition on resize.
     const points = Array.from({ length: 12000 }, (_, i) => ({
@@ -36,10 +44,12 @@ export function GeometricHero({ centerShift = 0 }: { centerShift?: number }) {
     const draw = () => {
       context.clearRect(0, 0, width, height);
       const mobile = width < 768;
-      const scale = Math.min(width * (mobile ? .49 : .27), height * .43);
+      const progress = motion === "D" && !still ? Math.max(0, Math.min(1, -canvas.getBoundingClientRect().top / height)) : 0;
+      const scale = Math.min(width * (mobile ? .49 : .27), height * .43) * (1 + progress * 2.5);
       const cx = width * ((mobile ? .64 : .74) + centerShift);
       const cy = height * (mobile ? .30 : .46);
-      const spin = time * .085 + .3;
+      if (!still) pointer.tilt += (pointer.targetTilt - pointer.tilt) * .08;
+      const spin = time * .085 + .3 + (motion === "C" ? pointer.tilt : 0);
       const tilt = .65 + Math.sin(time * .12) * .16;
       const cos = Math.cos(spin), sin = Math.sin(spin);
       const ct = Math.cos(tilt), st = Math.sin(tilt);
@@ -49,16 +59,40 @@ export function GeometricHero({ centerShift = 0 }: { centerShift?: number }) {
         const wave = Math.sin(u * 3 + time * .22);
         const ring = .94 + .14 * wave;
         const tube = .25 + .065 * Math.cos(u * 5 - time * .15);
-        const x = (ring + tube * Math.cos(v)) * Math.cos(u);
-        const y = (ring + tube * Math.cos(v)) * Math.sin(u);
-        const z = tube * Math.sin(v) + .28 * Math.sin(u * 3 + time * .13);
+        let x = (ring + tube * Math.cos(v)) * Math.cos(u);
+        let y = (ring + tube * Math.cos(v)) * Math.sin(u);
+        let z = tube * Math.sin(v) + .28 * Math.sin(u * 3 + time * .13);
+        if (motion === "A" && !reduced) {
+          const spread = Math.pow(1 - Math.min(time / 2.4, 1), 3);
+          x += Math.sin(i * 1.73) * 4 * spread;
+          y += Math.cos(i * 2.31) * 3 * spread;
+          z += Math.sin(i * .97) * spread;
+        }
+        if (motion === "B") {
+          const phase = (time / 5) % 3;
+          const blend = (1 - Math.cos((phase % 1) * Math.PI)) / 2;
+          const sz = Math.cos(v), sr = Math.sin(v);
+          const sphere = [sr * Math.cos(u), sr * Math.sin(u), sz];
+          const max = Math.max(...sphere.map(Math.abs));
+          const cube = sphere.map(value => value / max * .85);
+          const shapes = [sphere, cube, [x, y, z]];
+          const from = shapes[Math.floor(phase)], to = shapes[(Math.floor(phase) + 1) % 3];
+          [x, y, z] = from.map((value, axis) => value + (to[axis] - value) * blend);
+        }
         const rx = x * cos - z * sin;
         const rz = x * sin + z * cos;
         const ry = y * ct - rz * st;
         const depth = y * st + rz * ct;
         const perspective = 3.3 / (3.3 - depth);
-        const px = cx + rx * scale * perspective;
-        const py = cy + ry * scale * perspective;
+        let px = cx + rx * scale * perspective;
+        let py = cy + ry * scale * perspective;
+        if (motion === "C" && !still) {
+          const dx = px - pointer.x, dy = py - pointer.y;
+          const distance = Math.hypot(dx, dy);
+          const push = Math.max(0, 1 - distance / 150) * 55;
+          px += dx / Math.max(distance, 1) * push;
+          py += dy / Math.max(distance, 1) * push;
+        }
         const light = Math.max(.14, Math.min(1, (depth + 1.3) / 2.3));
         const hue = Math.sin(u * 2 + v * .3 + time * .06);
         context.fillStyle = hue > .52 ? `rgba(255,155,113,${.22 + light * .66})`
@@ -115,8 +149,10 @@ export function GeometricHero({ centerShift = 0 }: { centerShift?: number }) {
       cancelAnimationFrame(frame);
       resize.disconnect(); observer.disconnect();
       document.removeEventListener("visibilitychange", sync);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerdown", move);
     };
-  }, [paused, reduced, centerShift]);
+  }, [paused, reduced, centerShift, motion]);
 
   return <>
     <div className="cr2-geometric-background" aria-hidden="true">
