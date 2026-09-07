@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 export function GeometricHero({ centerShift = 0, motion = "default", space = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D"; space?: "default" | "flow" | "rings" | "facets" | "scatter" }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeRef = useRef(0);
-  const displacementRef = useRef(new Float32Array(4600));
+  const displacementRef = useRef(new Float32Array(48000));
   const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
 
@@ -43,11 +43,14 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       document.addEventListener("pointerleave", leave);
     }
     const still = paused || reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const random = (n: number) => { const value = Math.sin(n * 127.1 + 311.7) * 43758.5453; return value - Math.floor(value); };
     // Deterministic sampling avoids a flashing/random composition on resize.
-    const points = Array.from({ length: 12000 }, (_, i) => ({
+    const points = Array.from({ length: space === "scatter" ? 24000 : 12000 }, (_, i) => ({
       u: (i / 12000) * Math.PI * 2,
       v: ((i * .61803398875) % 1) * Math.PI * 2,
       seed: ((i * .754877666) % 1),
+      cloudT: random(i + 1),
+      cloudNoise: Math.sqrt(-2 * Math.log(Math.max(.001, random(i + 10001)))) * Math.cos(random(i + 90001) * Math.PI * 2),
     }));
 
     const draw = () => {
@@ -55,17 +58,25 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       const mobile = width < 768;
       if (space === "scatter") {
         // Distributed depth layers, not points constrained to a central sculpture.
-        const count = mobile ? 850 : 2300;
+        const count = mobile ? 9500 : 24000;
         const reduceMotion = reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
         const entrance = reduceMotion ? 1 : 1 - Math.pow(1 - Math.min(time / 2.2, 1), 3);
         const displacement = displacementRef.current;
         for (let i = 0; i < count; i++) {
           const seed = points[i].seed;
           const depth = .2 + seed * .8;
-          const baseX = (i * .61803398875) % 1;
-          const baseY = (i * .41421356237) % 1;
-          let x = ((baseX * (width + 80) + time * (2 + depth * 5) + Math.sin(time * .12 + i) * 12) % (width + 80)) - 40;
-          let y = ((baseY * (height + 80) + time * (1 + depth * 2) + Math.cos(time * .1 + i * 1.3) * 18) % (height + 80)) - 40;
+          const t = points[i].cloudT;
+          const branch = i % 6;
+          const phase = time * .085;
+          const gaussian = points[i].cloudNoise;
+          const thickness = .014 + .048 * Math.pow(.5 + .5 * Math.sin(t * 16 + branch * 2), 2);
+          // Coherent, folded wisps: dense cores, diffuse edges and large negative spaces.
+          let x = width * (branch / 5 + .16 * Math.sin(t * 7 + branch * 1.3 + phase) + .055 * Math.sin(t * 21 - branch + phase * .6) + gaussian * thickness);
+          let y = height * (t * 1.24 - .12 + .055 * Math.sin(t * 12 + branch + phase) + gaussian * .012);
+          if (i % 9 === 0) {
+            x = ((t * (width + 80) + time * 2) % (width + 80)) - 40;
+            y = (((i * .41421356237) % 1) * (height + 80) + time) % (height + 80) - 40;
+          }
           x = width / 2 + (x - width / 2) * (.55 + entrance * .45);
           y = height / 2 + (y - height / 2) * (.55 + entrance * .45);
           const dx = x - pointer.x, dy = y - pointer.y;
@@ -77,11 +88,11 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
             displacement[i * 2 + 1] += (dy / Math.max(distance, 1) * push - displacement[i * 2 + 1]) * .12;
           }
           if (!reduceMotion) { x += displacement[i * 2]; y += displacement[i * 2 + 1]; }
-          const alpha = (.22 + depth * .58) * (.15 + entrance * .85);
-          context.fillStyle = i % 5 === 0 ? `rgba(255,153,109,${alpha})` : i % 3 === 0 ? `rgba(190,225,220,${alpha})` : `rgba(255,42,126,${alpha})`;
-          context.beginPath();
-          context.arc(x, y, .45 + depth * (i % 29 === 0 ? 2.2 : 1.05), 0, Math.PI * 2);
-          context.fill();
+          const alpha = (.24 + depth * .58) * (.15 + entrance * .85) * (i % 9 === 0 ? .25 : 1);
+          const warmth = Math.sin(t * 9 + branch * 1.2 + phase);
+          context.fillStyle = warmth > .1 ? `rgba(236,160,113,${alpha})` : warmth < -.65 ? `rgba(235,220,196,${alpha})` : `rgba(237,76,131,${alpha * .8})`;
+          const size = (mobile ? .55 : .6) + depth * .65;
+          context.fillRect(x, y, size, size);
         }
         return;
       }
