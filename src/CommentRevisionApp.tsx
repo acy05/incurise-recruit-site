@@ -952,11 +952,8 @@ function CommentRevisionMotion() {
 
     gsap.registerPlugin(ScrollTrigger);
     const context = gsap.context(() => {
-      const heroTimeline = gsap.timeline({ defaults: { ease: "power3.out" } });
-      heroTimeline
-        .fromTo(".cr2-geometric-background", { opacity: .35 }, { opacity: 1, duration: 1.35 })
-        .fromTo(".cr2-growth-sequence", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .65 }, "-=.85")
-        .fromTo(".cr2-hero-copy > *", { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .72, stagger: .09 }, "-=.55");
+      // Keep the message readable immediately, even when background rendering is throttled.
+      gsap.fromTo(".cr2-geometric-background", { opacity: .65 }, { opacity: 1, duration: 1.35, ease: "power3.out" });
 
       gsap.utils.toArray<HTMLElement>(
         ".cr2-section-heading, .cr2-iketeru-intro, .cr2-iketeru-bridge, .cr2-career-shell, .cr2-support-chapters, .cr2-job-grid, .cr2-selection, .cr2-faq-list, .cr2-form",
