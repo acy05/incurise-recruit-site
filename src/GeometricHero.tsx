@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /** A locally rendered particle sculpture: no video download or external runtime. */
-export function GeometricHero({ centerShift = 0, motion = "default", space = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D"; space?: "default" | "flow" | "rings" | "facets" }) {
+export function GeometricHero({ centerShift = 0, motion = "default", space = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D"; space?: "default" | "flow" | "rings" | "facets" | "scatter" }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeRef = useRef(0);
   const [paused, setPaused] = useState(false);
@@ -44,6 +44,24 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
     const draw = () => {
       context.clearRect(0, 0, width, height);
       const mobile = width < 768;
+      if (space === "scatter") {
+        // Distributed depth layers, not points constrained to a central sculpture.
+        const count = mobile ? 850 : 2300;
+        for (let i = 0; i < count; i++) {
+          const seed = points[i].seed;
+          const depth = .2 + seed * .8;
+          const baseX = (i * .61803398875) % 1;
+          const baseY = (i * .41421356237) % 1;
+          const x = ((baseX * (width + 80) + time * (2 + depth * 5) + Math.sin(time * .12 + i) * 12) % (width + 80)) - 40;
+          const y = ((baseY * (height + 80) + time * (1 + depth * 2) + Math.cos(time * .1 + i * 1.3) * 18) % (height + 80)) - 40;
+          const alpha = .22 + depth * .58;
+          context.fillStyle = i % 5 === 0 ? `rgba(255,153,109,${alpha})` : i % 3 === 0 ? `rgba(190,225,220,${alpha})` : `rgba(255,42,126,${alpha})`;
+          context.beginPath();
+          context.arc(x, y, .45 + depth * (i % 29 === 0 ? 2.2 : 1.05), 0, Math.PI * 2);
+          context.fill();
+        }
+        return;
+      }
       const progress = motion === "D" && !still ? Math.max(0, Math.min(1, -canvas.getBoundingClientRect().top / height)) : 0;
       const scale = Math.min(width * (mobile ? .49 : .27), height * .43) * (1 + progress * 2.5);
       const cx = width * ((mobile ? .64 : .74) + centerShift);
