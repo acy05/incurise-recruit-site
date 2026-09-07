@@ -244,8 +244,15 @@ const days = Array.from({ length: 31 }, (_, index) => String(index + 1));
 const maxFileBytes = 5 * 1024 * 1024;
 
 function scrollToSection(selector: string) {
+  const section = document.querySelector<HTMLElement>(selector);
+  if (!section) return;
+  // Use the unanimated content container, not section padding or a heading
+  // currently translated by its reveal animation (or pinned with sticky).
+  const anchor = section.querySelector<HTMLElement>(":scope > .cr2-container") ?? section;
+  const headerHeight = document.querySelector(".cr2-header")?.getBoundingClientRect().height ?? 0;
+  const top = window.scrollY + anchor.getBoundingClientRect().top - headerHeight - 28;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.querySelector<HTMLElement>(selector)?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+  window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion ? "instant" : "smooth" });
 }
 
 function ArrowAsset({ light = false }: { light?: boolean }) {
@@ -994,7 +1001,12 @@ function Footer() {
       </div>
       <div className="cr2-footer-bottom">
         <p>© INCURISE Consulting</p>
-        <nav aria-label="フッターナビゲーション">{navItems.map(([label, target]) => <a key={target} href={target}>{label}</a>)}</nav>
+        <nav aria-label="フッターナビゲーション">{navItems.map(([label, target]) => <a key={target} href={target} onClick={(event) => {
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+          event.preventDefault();
+          if (window.location.hash !== target) window.history.pushState(null, "", target);
+          scrollToSection(target);
+        }}>{label}</a>)}</nav>
       </div>
     </footer>
   );

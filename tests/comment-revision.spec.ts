@@ -2,6 +2,36 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const route = "comment-revision/";
+test("header, footer and mobile menu land headings at the same offset", async ({ page }) => {
+  test.setTimeout(90_000);
+  const names = ["ABOUT", "CAREER", "SUPPORT & BENEFIT", "JOBS", "FAQ", "ENTRY"];
+  const ids = ["about", "career", "support", "jobs", "faq", "entry"];
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const reducedMotion of ["no-preference", "reduce"] as const) {
+      await page.emulateMedia({ reducedMotion });
+      await page.goto(route);
+      for (const source of ["header", "footer"]) {
+        for (let index = 0; index < names.length; index++) {
+          if (source === "footer") {
+            await page.getByRole("navigation", { name: "フッターナビゲーション" }).getByRole("link", { name: names[index], exact: true }).click();
+          } else if (width < 1200) {
+            await page.locator(".cr2-menu-button").click();
+            await page.locator("#cr2-mobile-navigation").getByRole("button").nth(index).click();
+          } else {
+            await page.locator(".cr2-header").getByRole("button", { name: names[index], exact: true }).click();
+          }
+          await expect.poll(() => page.locator(`#cr2-${ids[index]}`).evaluate(section => {
+            const heading = section.querySelector(".cr2-section-heading, .cr2-iketeru-intro")!;
+            const header = document.querySelector(".cr2-header")!;
+            return Math.round(heading.getBoundingClientRect().top - header.getBoundingClientRect().bottom);
+          })).toBe(28);
+        }
+      }
+    }
+  }
+});
+
 test("support changes fade text only while retaining the panel and accent", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -463,7 +493,7 @@ test("mobile menu traps focus, restores scroll and closes on desktop resize", as
   await trigger.click();
   await menu.getByRole("button", { name: "03 SUPPORT & BENEFIT", exact: true }).click();
   await expect(page.locator("#cr2-support")).toBeFocused();
-  await expect.poll(() => page.locator("#cr2-support").evaluate(el => Math.round(el.getBoundingClientRect().top))).toBe(86);
+  await expect.poll(() => page.locator("#cr2-support > .cr2-container").evaluate(el => Math.round(el.getBoundingClientRect().top))).toBe(98);
 });
 
 test("mobile support can close completely without an empty detail area", async ({ page }) => {
