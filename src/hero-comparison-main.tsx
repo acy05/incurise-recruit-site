@@ -9,7 +9,7 @@ const options = [
   { id: "A", name: "TYPOGRAPHY", title: "大きな英字で、余白に意味を。", detail: "INCUBATE / RISEを淡いアウトラインで配置。ゆっくり浮かぶ文字が、右側の粒子と呼応します。" },
   { id: "B", name: "LIGHT PATH", title: "ひとつの光が、成長をつなぐ。", detail: "左上の数字から右側の立体へ。細い曲線に光が流れ、空白に視線の通り道をつくります。" },
   { id: "C", name: "REBALANCE", title: "足さずに、重心を整える。", detail: "コピーを上へ移動し、立体も少し中央へ。要素を増やさず、余白と情報のバランスを整えます。" },
-  { id: "D", name: "BUILDING BLOCK", title: "点から線へ、線から立体へ。", detail: "キューブを大きくし、周囲の小さな立体と軌道を追加。左中央から右へ広がる成長の構図に調整しました。" },
+  { id: "D", name: "BUILDING BLOCK", title: "点から線へ、線から立体へ。", detail: "直線の格子と三角面で構成した幾何学フレーム。中心の立体と周囲のパーツが、ゆっくり連動します。" },
   { id: "current", name: "CURRENT", title: "現在のデザイン", detail: "変更前のHero。4案と同じ表示サイズで比較できます。" },
 ];
 
@@ -21,14 +21,19 @@ function Decoration({ variant }: { variant: string }) {
       <defs><linearGradient id="hc-cube-color" x2="1" y2="1"><stop stopColor="#ffb188"/><stop offset="1" stopColor="#ff006c"/></linearGradient>
         <g id="hc-solid"><path className="hc-cube-face" d="M0 -65 57 -32 57 33 0 66 -57 33 -57 -32Z"/><path d="M0 -65 57 -32 57 33 0 66 -57 33 -57 -32Z M-57 -32 0 1 57 -32 M0 1V66"/><path className="hc-cube-back" d="M0 -65V1 M-57 33 0 1 57 33"/></g>
       </defs>
-      <ellipse className="hc-orbit" cx="255" cy="140" rx="228" ry="87" transform="rotate(-16 255 140)"/>
-      <ellipse className="hc-orbit hc-orbit-inner" cx="255" cy="140" rx="164" ry="104" transform="rotate(15 255 140)"/>
-      <path className="hc-network" d="M56 184 207 119 419 66 M207 119 365 228 M56 184 365 228 419 66"/>
+      <g className="hc-angular-frame">
+        <path className="hc-facet hc-facet-coral" d="M36 110 153 30 207 119Z"/>
+        <path className="hc-facet hc-facet-pink" d="M207 119 331 25 419 66Z"/>
+        <path className="hc-facet hc-facet-mint" d="M207 119 365 228 176 249Z"/>
+        <path className="hc-facet hc-facet-pink" d="M419 66 489 154 365 228Z"/>
+        <path className="hc-frame-edge" d="M36 110 153 30 331 25 419 66 489 154 365 228 176 249 56 184Z M36 110 207 119 153 30 M331 25 207 119 419 66 M489 154 207 119 365 228 M176 249 207 119 56 184 M153 30 176 249 M331 25 365 228 M36 110 489 154"/>
+        <path className="hc-frame-inner" d="M91 106 170 53 305 48 391 81 447 149 349 207 180 224 81 177Z M91 106 180 224 M305 48 349 207"/>
+      </g>
       <g transform="translate(207 119)"><g className="hc-core"><use href="#hc-solid"/><circle r="4" fill="#ffd0b9" stroke="none"/></g></g>
       <g transform="translate(56 184) scale(.33)"><g className="hc-satellite"><use href="#hc-solid"/></g></g>
       <g transform="translate(419 66) scale(.45)"><g className="hc-satellite hc-satellite-two"><use href="#hc-solid"/></g></g>
       <g transform="translate(365 228) scale(.24)"><g className="hc-satellite hc-satellite-three"><use href="#hc-solid"/></g></g>
-      <g className="hc-orbit-points"><circle cx="29" cy="124" r="2"/><circle cx="309" cy="51" r="3"/><circle cx="480" cy="139" r="2"/><circle cx="171" cy="231" r="3"/></g>
+      <g className="hc-vertex-points"><rect x="33" y="107" width="6" height="6"/><rect x="150" y="27" width="6" height="6"/><rect x="328" y="22" width="6" height="6"/><rect x="486" y="151" width="6" height="6"/><rect x="173" y="246" width="6" height="6"/></g>
     </svg><span>INCUBATE <i/> CONNECT <i/> RISE</span>
   </div>;
   return null;

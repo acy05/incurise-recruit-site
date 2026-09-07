@@ -29,14 +29,15 @@
 .hc-constellation>svg{display:block;width:100%;overflow:visible;fill:none;stroke:url(#hc-cube-color);stroke-width:1.2}
 .hc-cube-face{fill:#fa548914;stroke:none}.hc-cube-back{stroke:#a1d9cd;opacity:.35}
 .hc-core{animation:hc-core-drift 12s ease-in-out infinite}.hc-satellite{animation:hc-satellite-drift 10s ease-in-out infinite}.hc-satellite-two{animation-delay:-3s}.hc-satellite-three{animation-delay:-6s}
-.hc-orbit{stroke:#a5d3c738;stroke-width:.7}.hc-orbit-inner{stroke:#ec9f9c24}.hc-network{stroke:#e78b9838;stroke-width:.8}
-.hc-orbit-points{fill:#ffb599;stroke:none;transform-origin:255px 140px;animation:hc-orbit-turn 45s linear infinite}
+.hc-frame-edge{stroke:#bfdbcf55;stroke-width:.8}.hc-frame-inner{stroke:#ec9f9c30;stroke-width:.7}
+.hc-facet{stroke:none;animation:hc-facet-light 14s ease-in-out infinite}.hc-facet-coral{fill:#ffb18816}.hc-facet-pink{fill:#ff006c1c;animation-delay:-4s}.hc-facet-mint{fill:#94d9c915;animation-delay:-8s}
+.hc-vertex-points{fill:#ffb599;stroke:none;animation:hc-facet-light 14s ease-in-out infinite}
 .hc-constellation>span{display:flex;gap:14px;align-items:center;margin:8px 0 0 32px;font:500 9px Roboto,sans-serif;letter-spacing:.22em;color:#adc2bc}
 .hc-constellation i{height:1px;width:26px;background:#aecdc74d}
 .hc-page:has(.cr2-motion-toggle[aria-pressed=true]) .hc-constellation *{animation-play-state:paused}
 @keyframes hc-core-drift{0%,100%{transform:translateY(4px) rotate(-7deg)}50%{transform:translateY(-8px) rotate(7deg)}}
 @keyframes hc-satellite-drift{0%,100%{transform:translateY(10px) rotate(8deg);opacity:.65}50%{transform:translateY(-10px) rotate(-8deg);opacity:1}}
-@keyframes hc-orbit-turn{to{transform:rotate(360deg)}}
+@keyframes hc-facet-light{0%,100%{opacity:.45}50%{opacity:1}}
 @media(max-width:1000px){.hc-caption>div{align-items:flex-start;flex-direction:column;gap:5px}.hc-constellation{top:120px;width:46vw}}
 @media(max-width:767px){.hc-caption{min-height:178px}.hc-constellation{left:20px;top:100px;width:min(82vw,400px)}.hc-constellation>span{font-size:7px;gap:10px;margin-left:10px}.hc-constellation i{width:16px}}
 @media(prefers-reduced-motion:reduce){.hc-constellation *{animation:none!important}}
