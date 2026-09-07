@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
 
 const route = "comment-revision/";
 const viewports = [
@@ -280,7 +281,8 @@ test("adopted E hero retains the approved copy, centered layout and official arr
     await expect(page.locator(".cr2-e-lead")).toContainText("ITコンサルティングとシステム開発で、企業の挑戦を支える。");
     await expect(page.locator(".cr2-e-line strong").first()).toHaveCSS("font-weight", "900");
     const headingArrow = page.locator(".cr2-e-line img").first();
-    await expect(headingArrow).toHaveAttribute("src", /growth-arrow/);
+    const officialArrowData = readFileSync(new URL("../src/assets/preview/growth-arrow.png", import.meta.url)).toString("base64");
+    await expect(headingArrow).toHaveAttribute("src", `data:image/png;base64,${officialArrowData}`);
     await expect(headingArrow).toHaveCSS("filter", "brightness(0) invert(1)");
     const headingAngle = await headingArrow.evaluate((node) => {
       const matrix = new DOMMatrixReadOnly(getComputedStyle(node).transform);
