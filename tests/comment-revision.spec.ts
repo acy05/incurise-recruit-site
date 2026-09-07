@@ -2,6 +2,40 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const route = "comment-revision/";
+test("career steps animate in order on entry and route changes, respecting reduced motion", async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto(route);
+    const shell = page.locator(".cr2-career-shell");
+    await shell.scrollIntoViewIfNeeded();
+    await expect(shell).toHaveAttribute("data-career-entered", "true");
+    const tabs = shell.getByRole("tab");
+    for (const index of [1, 0, 1]) {
+      await tabs.nth(index).click();
+      const panel = shell.getByRole("tabpanel");
+      await expect(panel).toHaveCount(1);
+      const motion = await panel.locator("li").evaluateAll(rows => rows.map(row => ({
+        name: getComputedStyle(row.querySelector("strong")!).animationName,
+        delay: parseFloat(getComputedStyle(row.querySelector("strong")!).animationDelay),
+        line: getComputedStyle(row, "::before").animationName,
+      })));
+      expect(motion).toHaveLength(index === 1 ? 7 : 6);
+      motion.forEach((value, step) => {
+        expect(value.name).toBe("cr2-career-step-enter");
+        expect(value.delay).toBeCloseTo(step * .055, 3);
+        expect(value.line).toBe("cr2-career-line-enter");
+      });
+      await expect(panel.locator("li strong").last()).toHaveCSS("opacity", "1");
+    }
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await tabs.first().click();
+    await expect(shell.locator("li strong").first()).toHaveCSS("animation-name", "none");
+    await expect(shell.locator("li strong").first()).toHaveCSS("opacity", "1");
+    await expect(tabs.first()).toBeFocused();
+  }
+});
+
 const viewports = [
   { width: 1920, height: 1080 },
   { width: 1512, height: 982 },

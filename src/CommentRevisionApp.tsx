@@ -5,6 +5,7 @@ import {
   type FormEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
+  type CSSProperties,
 } from "react";
 import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
@@ -450,6 +451,20 @@ function IketeruSection() {
 
 function CareerSection() {
   const [active, setActive] = useState<CareerRoute>("se");
+  const [entered, setEntered] = useState(false);
+  const shellRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const shell = shellRef.current;
+    if (!shell) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setEntered(true);
+        observer.disconnect();
+      }
+    }, { threshold: .1 });
+    observer.observe(shell);
+    return () => observer.disconnect();
+  }, []);
   const tabRefs = useRef<Record<CareerRoute, HTMLButtonElement | null>>({ se: null, consultant: null });
   const routeKeys = Object.keys(careerRoutes) as CareerRoute[];
   const route = careerRoutes[active];
@@ -477,7 +492,7 @@ function CareerSection() {
           title={<>志向に応じて選べる、<br />2つのキャリアパス。</>}
           lead="SEとして技術と現場を理解した先に、専門性を深める道と、課題解決を担う道があります。"
         />
-        <div className="cr2-career-shell">
+        <div className="cr2-career-shell" ref={shellRef} data-career-entered={entered}>
           <div className="cr2-career-tabs" role="tablist" aria-label="キャリアパスを選択">
             {routeKeys.map((key) => (
               <button
@@ -508,7 +523,7 @@ function CareerSection() {
             <p>{route.label}</p>
             <ol>
               {route.roles.map((role, index) => (
-                <li key={role}>
+                <li key={role} style={{ "--cr2-step-delay": `${index * 55}ms` } as CSSProperties}>
                   <span>Step {index + 1}</span>
                   <strong>{role}</strong>
                 </li>
