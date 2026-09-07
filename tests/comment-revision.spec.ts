@@ -124,7 +124,8 @@ test("#9 reproduces the official scroll motion and honors reduced motion", async
   const reducedPage = await reducedContext.newPage();
   await reducedPage.goto(route, { waitUntil: "networkidle" });
   await expect(reducedPage.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "reduced");
-  await expect(reducedPage.locator(".cr2-hero-copy")).toHaveCSS("opacity", "1");
+  await expect(reducedPage.locator(".cr2-e-copy")).toHaveCSS("opacity", "1");
+  await expect(reducedPage.locator(".cr2-e-label")).toHaveCSS("animation-name", "none");
   await expect(reducedPage.locator(".cr2-official-blob")).toHaveCSS("opacity", "1");
   await reducedContext.close();
 });
@@ -270,30 +271,35 @@ test("comment 38 labels, header spacing, logo link, and selection arrows are pre
   await expect(page.locator(".cr2-selection-arrow")).toHaveCount(3);
 });
 
-test("hero growth marks match the reference preview asset, sizes, and angle", async ({ page }) => {
+test("adopted E hero retains the approved copy, centered layout and official arrows", async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await page.goto(route, { waitUntil: "domcontentloaded" });
-    const expected = viewport.width === 1440
-      ? { sequence: "15px", heading: "24px" }
-      : { sequence: "10px", heading: "13px" };
-    const sequenceArrow = page.locator(".cr2-growth-sequence img").first();
-    await expect(sequenceArrow).toHaveCSS("width", expected.sequence);
-    await expect(sequenceArrow).toHaveCSS("filter", "brightness(0) invert(1)");
-    await expect(page.locator(".cr2-growth-sequence strong").first()).toHaveCSS("font-weight", "900");
-    const angle = await sequenceArrow.evaluate((node) => {
-      const matrix = new DOMMatrixReadOnly(getComputedStyle(node).transform);
-      return Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
-    });
-    expect(angle).toBeCloseTo(-40, 1);
-    const headingArrow = page.locator(".cr2-hero-copy h1 > img").first();
-    await expect(headingArrow).toHaveCSS("width", expected.heading);
+    await expect(page.locator(".cr2-growth-sequence")).toHaveCount(0);
+    await expect(page.locator(".cr2-e-label")).toHaveText("技術と人で、企業の変革を支える。");
+    await expect(page.locator(".cr2-e-lead")).toContainText("ITコンサルティングとシステム開発で、企業の挑戦を支える。");
+    await expect(page.locator(".cr2-e-line strong").first()).toHaveCSS("font-weight", "900");
+    const headingArrow = page.locator(".cr2-e-line img").first();
+    await expect(headingArrow).toHaveAttribute("src", /growth-arrow/);
     await expect(headingArrow).toHaveCSS("filter", "brightness(0) invert(1)");
     const headingAngle = await headingArrow.evaluate((node) => {
       const matrix = new DOMMatrixReadOnly(getComputedStyle(node).transform);
       return Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
     });
     expect(headingAngle).toBeCloseTo(-40, 1);
+    const cta = page.locator(".cr2-e-bottom a");
+    await expect(cta).toHaveAttribute("href", "https://incurise.co.jp/about/");
+    await expect(cta).toHaveCSS("min-height", viewport.width === 1440 ? "64px" : "58px");
+    // Wait for entrance transforms before measuring the optical text group.
+    await expect(page.locator(".cr2-e-bottom")).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
+    const geometry = await page.evaluate(() => {
+      const hero = document.querySelector(".cr2-adopted-hero")!.getBoundingClientRect();
+      const label = document.querySelector(".cr2-e-label")!.getBoundingClientRect();
+      const button = document.querySelector(".cr2-e-bottom a")!.getBoundingClientRect();
+      return { x: label.x + label.width / 2 - (hero.x + hero.width / 2), y: (label.top + button.bottom) / 2 - (hero.top + hero.height / 2) };
+    });
+    expect(Math.abs(geometry.x)).toBeLessThan(.5);
+    expect(Math.abs(geometry.y)).toBeLessThan(.5);
   }
 });
 

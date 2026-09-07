@@ -1,0 +1,38 @@
+/* Approved E: retain its dimensions, optical alignment and entrance choreography. */
+.cr2-adopted-hero { position: relative; min-height: 850px; overflow: hidden; background: #051417; color: white; }
+.cr2-e-shade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center,#051417a0 0%,#05141738 28%,transparent 58%); }
+.cr2-e-copy { position: relative; z-index: 2; min-height: 850px; padding: 56px 6%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+.cr2-e-label { margin: 0 0 24px; font: 700 18px/1.7 "Noto Sans JP",sans-serif; letter-spacing: .06em; }
+.cr2-e-copy h1 { margin: 0; font: 700 clamp(48px,6.3vw,90px)/1.25 "Noto Sans JP",sans-serif; letter-spacing: -.055em; text-shadow: 0 2px 14px #05141799; }
+.cr2-e-line { display: block; }
+.cr2-e-line strong { font-weight: 900; font-family: "Roboto",sans-serif; color: transparent; background: linear-gradient(115deg,#ff0830,#fc006c 75%,#fd02a8); background-clip: text; text-shadow: none; }
+.cr2-e-line img { display: inline-block; width: .32em; height: auto; margin: 0 .06em; vertical-align: baseline; filter: brightness(0) invert(1); transform: rotate(-40deg); }
+.cr2-e-punctuation { display: inline-block; width: .5em; text-align: left; }
+.cr2-e-lead { max-width: 680px; margin: 28px 0 0; font-size: 16px; font-weight: 700; line-height: 2; text-wrap: pretty; text-shadow: 0 2px 14px #05141799; }
+.cr2-e-bottom a { display: inline-flex; align-items: center; justify-content: space-between; gap: 28px; min-width: 224px; min-height: 64px; margin-top: 28px; padding: 0 24px; border: 1px solid #ffffffb3; background: #05141770; color: white; font-size: 16px; font-weight: 700; text-decoration: none; pointer-events: auto; transition: background .25s,color .25s,transform .12s; }
+.cr2-e-bottom a img { width: 26px; }
+.cr2-e-bottom a:active { transform: scale(.98); }
+.cr2-e-bottom a:focus-visible { outline: 3px solid #ff9b71; outline-offset: 5px; }
+.cr2-e-hint { position: absolute; z-index: 2; bottom: 35px; left: 50%; transform: translateX(-50%); font: 500 9px "Roboto",sans-serif; letter-spacing: .18em; color: #a8bcb7; white-space: nowrap; pointer-events: none; }
+.cr2-e-label { animation: cr2-e-enter .8s .25s both cubic-bezier(.22,1,.36,1); }
+.cr2-e-line { animation: cr2-e-enter 1s .45s both cubic-bezier(.22,1,.36,1); }
+.cr2-e-line + .cr2-e-line { animation-delay: .65s; }
+.cr2-e-bottom { animation: cr2-e-enter .85s .95s both cubic-bezier(.22,1,.36,1); }
+@keyframes cr2-e-enter { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@media (hover:hover) {
+  .cr2-e-bottom a:hover { background: white; color: #051417; }
+  .cr2-e-bottom a:hover img { filter: brightness(0); }
+}
+@media (max-width:767px) {
+  .cr2-adopted-hero,.cr2-e-copy { min-height: 820px; }
+  .cr2-e-copy { padding: 40px 20px; }
+  .cr2-e-copy h1 { font-size: clamp(32px,8.9vw,54px); }
+  .cr2-e-label { font-size: 14px; letter-spacing: .02em; margin-bottom: 22px; }
+  .cr2-e-lead { font-size: 13px; line-height: 2; max-width: 400px; margin-top: 24px; }
+  .cr2-e-bottom a { min-width: 208px; min-height: 58px; font-size: 14px; margin-top: 24px; }
+  .cr2-e-shade { background: radial-gradient(ellipse at 50% 56%,#051417ba 0%,#05141750 32%,transparent 70%); }
+  .cr2-e-hint { bottom: 70px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .cr2-e-copy * { animation: none !important; transition: none !important; }
+}

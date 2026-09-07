@@ -12,6 +12,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import logo from "./assets/preview/incurise-logo.png";
 import { GeometricHero } from "./GeometricHero";
+import { AdoptedHero } from "./AdoptedHero";
 import growthArrow from "./assets/preview/growth-arrow.png";
 import buttonArrowDark from "./assets/preview/button-arrow-dark.png";
 import buttonArrowWhite from "./assets/preview/button-arrow-white.png";
@@ -953,8 +954,7 @@ function CommentRevisionMotion() {
 
     gsap.registerPlugin(ScrollTrigger);
     const context = gsap.context(() => {
-      // Keep the message readable immediately, even when background rendering is throttled.
-      gsap.fromTo(".cr2-geometric-background", { opacity: .65 }, { opacity: 1, duration: 1.35, ease: "power3.out" });
+      // The adopted Hero owns its entrance; keep section scroll motion independent.
 
       gsap.utils.toArray<HTMLElement>(
         ".cr2-section-heading, .cr2-iketeru-intro, .cr2-iketeru-bridge, .cr2-career-shell, .cr2-support-chapters, .cr2-job-grid, .cr2-selection, .cr2-faq-list, .cr2-form",
@@ -1034,7 +1034,7 @@ export default function CommentRevisionApp() {
       <a className="cr2-skip-link" href="#cr2-main">本文へ移動</a>
       <Header />
       <main id="cr2-main">
-        <Hero />
+        <AdoptedHero />
         <IketeruSection />
         <CareerSection />
         <SupportSection />
