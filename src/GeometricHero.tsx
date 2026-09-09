@@ -46,7 +46,7 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
     const still = paused || reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
     const random = (n: number) => { const value = Math.sin(n * 127.1 + 311.7) * 43758.5453; return value - Math.floor(value); };
     // Official incurise.co.jp opening palette, verified 2026-09-09.
-    // Precompute the gradient; recoloring must not change the particle choreography.
+    // Precompute the gradient; keep the official colors independent of the motion clock.
     const stops = [
       { at: 0, rgb: [239, 179, 3] },
       { at: .16, rgb: [239, 90, 3] },
@@ -95,10 +95,19 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           const backLayer = i % 5 === 0;
           const phase = time * (backLayer ? .045 : .085);
           const gaussian = points[i].cloudNoise;
-          const thickness = .035 + .10 * Math.pow(.5 + .5 * Math.sin(t * 16 + branch * 2), 2);
+          const official = palette === "official";
+          const core = official && (branch === 1 || branch === 4);
+          const thickness = (core ? .018 : .035) + (core ? .055 : .10) * Math.pow(.5 + .5 * Math.sin(t * 16 + branch * 2), 2);
           // Coherent, folded wisps: dense cores, diffuse edges and large negative spaces.
           let x = width * (branch / 5 + .16 * Math.sin(t * 7 + branch * 1.3 + phase) + .055 * Math.sin(t * 21 - branch + phase * .6) + gaussian * thickness) + cameraX * (backLayer ? 5 : 20);
           let y = height * (t * 1.24 - .12 + .055 * Math.sin(t * 12 + branch + phase) + gaussian * .027) + cameraY * (backLayer ? 3 : 12);
+          // Pull two existing wisps into denser side currents, without adding particles.
+          // The other branches keep the open, scattered composition of the approved E study.
+          if (core) {
+            const side = branch === 1 ? -1 : 1;
+            const sweep = .085 * Math.sin(t * 7 + phase) + .035 * Math.sin(t * 17 - phase * .6);
+            x = width * (.5 + side * (.32 + sweep) + gaussian * thickness) + cameraX * (backLayer ? 5 : 20);
+          }
           if (i % 9 === 0) {
             x = ((t * (width + 80) + time * 2) % (width + 80)) - 40;
             y = (((i * .41421356237) % 1) * (height + 80) + time) % (height + 80) - 40;
@@ -117,10 +126,13 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           const alpha = (.35 + depth * .6) * (.15 + entrance * .85) * (i % 9 === 0 ? .25 : backLayer ? .42 : 1);
           const warmth = Math.sin(t * 9 + branch * 1.2 + phase);
           const colorIndex = Math.round(Math.max(0, Math.min(1, x / width + gaussian * .035)) * 127);
-          context.fillStyle = palette === "official"
-            ? `rgba(${officialColors[colorIndex]},${alpha * .82})`
+          const presence = core ? 1.12 : .9;
+          context.fillStyle = official
+            ? `rgba(${officialColors[colorIndex]},${Math.min(.96, alpha * presence)})`
             : warmth > .1 ? `rgba(236,160,113,${alpha})` : warmth < -.65 ? `rgba(235,220,196,${alpha})` : `rgba(237,76,131,${alpha * .8})`;
-          const size = backLayer ? .65 : (mobile ? .65 : .8) + depth * .85;
+          const baseSize = backLayer ? .65 : (mobile ? .65 : .8) + depth * .85;
+          // Sparse larger foreground grains provide scale; avoid turning every point into noise.
+          const size = official ? baseSize * (core ? 1.25 : 1.05) + (!backLayer && i % 17 === 0 ? (mobile ? .9 : 1.25) : 0) : baseSize;
           context.fillRect(x, y, size, size);
         }
         // A few defocused foreground motes give the cloud scale without covering the copy.
@@ -131,8 +143,9 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           const radius = (mobile ? 5 : 8) + p.seed * 12;
           const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
           const color = palette === "official" ? officialColors[Math.round(Math.max(0, Math.min(1, x / width)) * 127)] : i % 3 === 0 ? "255,180,126" : "255,54,124";
-          gradient.addColorStop(0, `rgba(${color},${entrance * .24})`);
-          gradient.addColorStop(.3, `rgba(${color},${entrance * .12})`);
+          const moteOpacity = palette === "official" ? .34 : .24;
+          gradient.addColorStop(0, `rgba(${color},${entrance * moteOpacity})`);
+          gradient.addColorStop(.3, `rgba(${color},${entrance * moteOpacity * .5})`);
           gradient.addColorStop(1, `rgba(${color},0)`);
           context.fillStyle = gradient;
           context.fillRect(x - radius, y - radius, radius * 2, radius * 2);

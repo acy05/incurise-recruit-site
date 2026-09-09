@@ -439,11 +439,44 @@ test("adopted E hero retains the approved copy, centered layout and official arr
       const hero = document.querySelector(".cr2-adopted-hero")!.getBoundingClientRect();
       const label = document.querySelector(".cr2-e-label")!.getBoundingClientRect();
       const button = document.querySelector(".cr2-e-bottom a")!.getBoundingClientRect();
-      return { x: label.x + label.width / 2 - (hero.x + hero.width / 2), y: (label.top + button.bottom) / 2 - (hero.top + hero.height / 2) };
+      return { x: label.x + label.width / 2 - (hero.x + hero.width / 2), y: (label.top + button.bottom) / 2 - (hero.top + hero.height / 2), height: hero.height, topGap: label.top - hero.top };
     });
     expect(Math.abs(geometry.x)).toBeLessThan(.5);
     expect(Math.abs(geometry.y)).toBeLessThan(.5);
+    if (viewport.width === 390) {
+      expect(geometry.height).toBeLessThanOrEqual(740);
+      expect(geometry.topGap).toBeLessThan(190);
+    }
   }
+});
+
+test("adopted particle motion pauses, resumes and respects reduced motion", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(route, { waitUntil: "domcontentloaded" });
+  const canvas = page.locator(".cr2-geometric-background canvas");
+  const capture = () => canvas.evaluate(node => (node as HTMLCanvasElement).toDataURL());
+  const initial = await capture();
+  await expect.poll(capture).not.toBe(initial);
+  await page.getByRole("button", { name: "背景アニメーションを一時停止" }).click();
+  const resume = page.getByRole("button", { name: "背景アニメーションを再生" });
+  await expect(resume).toHaveAttribute("aria-pressed", "true");
+  const paused = await capture();
+  await page.waitForTimeout(200);
+  expect(await capture()).toBe(paused);
+  await resume.click();
+  await expect.poll(capture).not.toBe(paused);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.locator(".cr2-motion-toggle")).toHaveCount(0);
+  const reduced = await capture();
+  await page.waitForTimeout(200);
+  expect(await capture()).toBe(reduced);
+  const hasParticles = await canvas.evaluate(node => {
+    const element = node as HTMLCanvasElement;
+    const pixels = element.getContext("2d")!.getImageData(0, 0, element.width, element.height).data;
+    return pixels.some((value, index) => index % 4 === 3 && value > 0);
+  });
+  expect(hasParticles).toBe(true);
 });
 
 test("form validates, confirms files, and keeps final submission disabled", async ({ page }) => {

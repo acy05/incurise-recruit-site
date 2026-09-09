@@ -1,10 +1,10 @@
-/* Approved E: retain its dimensions, optical alignment and entrance choreography. */
+/* Approved E: retain its optical alignment, official palette and entrance choreography. */
 .cr2-adopted-hero { position: relative; min-height: 850px; overflow: hidden; background: #f1f1f1; color: #0d2b2b; }
 .cr2-adopted-hero .cr2-geometric-background { background: #f1f1f1; }
-.cr2-adopted-hero .cr2-geometric-glow { background: radial-gradient(ellipse at 14% 30%, #efb30314, transparent 48%), radial-gradient(ellipse at 85% 65%, #fc006c0d, transparent 55%); }
+.cr2-adopted-hero .cr2-geometric-glow { background: radial-gradient(ellipse at 12% 32%, #efb3031c, transparent 42%), radial-gradient(ellipse at 88% 64%, #fc006c16, transparent 46%); }
 .cr2-adopted-hero .cr2-geometric-grid { opacity: .1; background-image: linear-gradient(#0d2b2b12 1px, transparent 1px), linear-gradient(90deg, #0d2b2b12 1px, transparent 1px); }
 .cr2-adopted-hero .cr2-motion-toggle { border-color: #0d2b2b38; background: #f1f1f1dc; color: #0d2b2b; }
-.cr2-e-shade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center,#f1f1f1ed 0%,#f1f1f199 28%,transparent 64%); }
+.cr2-e-shade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center,#f1f1f1d9 0%,#f1f1f17a 24%,#f1f1f100 59%); }
 .cr2-e-copy { position: relative; z-index: 2; min-height: 850px; padding: 56px 6%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
 .cr2-e-label { margin: 0 0 24px; font: 700 18px/1.7 "Noto Sans JP",sans-serif; letter-spacing: .06em; }
 .cr2-e-copy h1 { margin: 0; font: 700 clamp(48px,6.3vw,90px)/1.25 "Noto Sans JP",sans-serif; letter-spacing: -.055em; }
@@ -28,14 +28,14 @@
   .cr2-e-bottom a:hover img { filter: brightness(0); }
 }
 @media (max-width:767px) {
-  .cr2-adopted-hero,.cr2-e-copy { min-height: 820px; }
+  .cr2-adopted-hero,.cr2-e-copy { min-height: clamp(650px,calc(100svh - 70px),740px); }
   .cr2-e-copy { padding: 40px 20px; }
   .cr2-e-copy h1 { font-size: clamp(32px,8.9vw,54px); }
   .cr2-e-label { font-size: 14px; letter-spacing: .02em; margin-bottom: 22px; }
   .cr2-e-lead { font-size: 13px; line-height: 2; max-width: 400px; margin-top: 24px; }
   .cr2-e-bottom a { min-width: 208px; min-height: 58px; font-size: 14px; margin-top: 24px; }
-  .cr2-e-shade { background: radial-gradient(ellipse at 50% 56%,#f1f1f1f2 0%,#f1f1f1b3 32%,transparent 75%); }
-  .cr2-e-hint { bottom: 70px; }
+  .cr2-e-shade { background: radial-gradient(ellipse at 50% 50%,#f1f1f1e6 0%,#f1f1f199 22%,#f1f1f100 64%); }
+  .cr2-e-hint { bottom: 32px; }
 }
 @media (prefers-reduced-motion:reduce) {
   .cr2-e-copy * { animation: none !important; transition: none !important; }
