@@ -1031,7 +1031,7 @@ h2 {
 .faq-open button {
   color: var(--orange);
 }
-.faq-answer > p {
+.faq-answer p {
   font-size: 11px;
   line-height: 2.2;
   color: #73736a;
@@ -1802,7 +1802,7 @@ h2 {
   .faq-list button > span {
     font-size: 9px;
   }
-  .faq-answer > p {
+  .faq-answer p {
     padding: 0 8px 23px 35px;
     font-size: 11px;
   }

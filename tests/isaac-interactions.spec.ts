@@ -27,7 +27,15 @@ for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("./web-production/");
-    await expect(page.locator(".fd-c-chat")).toHaveCSS("transform", "none");
+    const tilt = await page.locator(".fd-c-chat").evaluate(el => {
+      const matrix = new DOMMatrix(getComputedStyle(el).transform);
+      return Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+    });
+    expect(tilt).toBeCloseTo(width > 860 ? 2 : 1, 2);
+    const card = await page.locator(".fd-c-chat").boundingBox();
+    const shell = await page.locator(".fd-c-chat-shell").boundingBox();
+    expect(Math.abs(card!.width - shell!.width)).toBeLessThan(25);
+    expect(Math.abs(card!.x + card!.width / 2 - shell!.x - shell!.width / 2)).toBeLessThan(2);
     const assertAligned = async () => {
       await expect.poll(async () => page.locator("#contact .section-label").evaluate(el => Math.round(el.getBoundingClientRect().top))).toBe(32);
       await expect(page.locator(".contact-copy")).toHaveCSS("opacity", "1");
@@ -49,3 +57,50 @@ for (const width of [1440, 390]) {
     }
   });
 }
+
+test("FAQ expands and collapses gradually, including an interrupted toggle", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("./web-production/");
+  const question = page.locator("#faq-question-2");
+  const answer = page.locator("#faq-answer-2");
+  await question.scrollIntoViewIfNeeded();
+  const sampleToggle = () => page.evaluate(async () => {
+    const button = document.querySelector<HTMLButtonElement>("#faq-question-2")!;
+    const answer = document.querySelector<HTMLElement>("#faq-answer-2")!;
+    const expanded = button.getAttribute("aria-expanded") === "true";
+    button.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: 1 }));
+    // Wait for React to commit before sampling the compositor timeline.
+    while ((button.getAttribute("aria-expanded") === "true") === expanded) {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+    const animations = answer.getAnimations();
+    animations.forEach(animation => animation.pause());
+    const values = [0, 140, 280].map(time => {
+      animations.forEach(animation => { animation.currentTime = time; });
+      return answer.getBoundingClientRect().height;
+    });
+    animations.forEach(animation => animation.finish());
+    return values;
+  });
+  const opening = await sampleToggle();
+  expect(opening[0]).toBe(0);
+  const height = opening.at(-1)!;
+  expect(height).toBeGreaterThan(30);
+  expect(opening.some(value => value > 1 && value < height - 1)).toBe(true);
+  const closing = await sampleToggle();
+  expect(closing.some(value => value > 1 && value < height - 1)).toBe(true);
+  expect(closing.at(-1)).toBe(0);
+  await expect(answer).toBeHidden();
+  await question.click();
+  await page.waitForTimeout(70);
+  await question.click();
+  await expect(answer).toBeHidden();
+  await question.focus();
+  await page.keyboard.press("Enter");
+  await expect(answer).toBeVisible();
+  await expect(answer).toHaveCSS("transition-duration", "0s");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await question.click();
+  await expect(answer).toBeHidden();
+  await expect(answer).toHaveCSS("transition-duration", "0s");
+});

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 import team from "./assets/generated/hero/hero-team.webp";
 import "./friendly-launch.css";
 import "./sample-showcase.css";
@@ -9,6 +9,24 @@ function Cta({ children }: { children: ReactNode }) {
       {children}
     </a>
   );
+}
+function CrispTiltCard({ children }: { children: ReactNode }) {
+  const shell = useRef<HTMLDivElement>(null);
+  const card = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const surface = card.current;
+    const frame = shell.current;
+    if (!surface || !frame) return;
+    // The doubled paint scale is cancelled visually, while text retains finer sampling.
+    const measure = () => { frame.style.height = `${surface.offsetHeight}px`; };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(surface);
+    return () => observer.disconnect();
+  }, []);
+  return <div className="fd-c-chat-shell" ref={shell}>
+    <div className="fd-c-chat" ref={card}>{children}</div>
+  </div>;
 }
 function Friendly({
   theme,
@@ -39,7 +57,7 @@ function Friendly({
             <span>オンラインで全国対応</span>
           </div>
         </div>
-        <div className="fd-c-chat">
+        <CrispTiltCard>
           <div className="fd-c-chat-head">
             <span className="fd-c-dot" /> LET’S TALK <span>01 / HELLO</span>
           </div>
@@ -74,7 +92,7 @@ function Friendly({
                 : "まずは気軽に話す"}
           </Cta>
           <small>まだ具体的に決まっていなくても大丈夫です。</small>
-        </div>
+        </CrispTiltCard>
         <div className="fd-c-flower" aria-hidden="true">
           <svg viewBox="0 0 200 200">
             <path

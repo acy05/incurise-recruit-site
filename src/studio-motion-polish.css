@@ -129,6 +129,58 @@
   .studio [data-reveal] { opacity: 1; transform: none; transition: none; }
 }
 
-/* Keep form typography on the pixel grid, rather than rasterizing a rotated panel. */
-.studio .launch-sections .fd-c-chat { transform: none; }
+/* Paint the live HTML at twice the resolution before restoring the original tilt. */
+.launch-sections .fd-c-chat-shell {
+  --card-tilt: 2deg;
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  justify-self: end;
+  z-index: 2;
+}
+.studio .launch-sections .fd-c-chat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 200%;
+  max-width: none;
+  zoom: 2;
+  transform: translate(-50%, -50%) scale(.5) rotate(var(--card-tilt));
+  transform-origin: center;
+}
+@container (max-width: 860px) {
+  .launch-sections .fd-c-chat-shell {
+    --card-tilt: 1deg;
+    max-width: 560px;
+    justify-self: center;
+  }
+}
 .studio #contact { scroll-margin-top: 0; }
+
+/* Retargetable expansion keeps neighbouring questions moving with the answer. */
+.studio .faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition: grid-template-rows 280ms cubic-bezier(.23,1,.32,1), opacity 180ms ease-out, visibility 0s 280ms;
+}
+.studio .faq-answer-inner { min-height: 0; overflow: hidden; }
+.studio .faq-answer-inner p { margin: 0; }
+.studio .faq-open .faq-answer {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+.studio .faq-toggle-stem {
+  transform-origin: 12px 12px;
+  transition: transform 220ms cubic-bezier(.23,1,.32,1);
+}
+.studio .faq-open .faq-toggle-stem { transform: scaleY(0); }
+.studio .faq-list[data-instant="true"] :is(.faq-answer, .faq-toggle-stem),
+.studio.motion-paused :is(.faq-answer, .faq-toggle-stem),
+.studio.motion-reduced :is(.faq-answer, .faq-toggle-stem) { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .studio :is(.faq-answer, .faq-toggle-stem) { transition: none; }
+}

@@ -6,7 +6,6 @@ import {
   CheckCheck,
   Copy,
   Menu,
-  Minus,
   Pause,
   Play,
   Plus,
@@ -201,6 +200,7 @@ export default function StudioLanding() {
   );
   const [reduced, setReduced] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
+  const [faqInstant, setFaqInstant] = useState(false);
 
   useEffect(() => {
     const query = matchMedia("(prefers-reduced-motion: reduce)");
@@ -286,9 +286,16 @@ export default function StudioLanding() {
 
   // Align to the readable content, independent of section padding or reveal transforms.
   const contactFrame = useRef(0);
+  const contactRequest = useRef(0);
   const moveToContact = (animate: boolean) => {
+    const request = ++contactRequest.current;
     cancelAnimationFrame(contactFrame.current);
-    contactFrame.current = requestAnimationFrame(() => {
+    contactFrame.current = requestAnimationFrame(async () => {
+      // Finish any accordion expansion before measuring the section below it.
+      const transitions = Array.from(root.current?.querySelectorAll<HTMLElement>(".faq-answer") ?? [])
+        .flatMap(answer => answer.getAnimations());
+      await Promise.allSettled(transitions.map(animation => animation.finished));
+      if (request !== contactRequest.current) return;
       const contact = root.current?.querySelector<HTMLElement>("#contact");
       const label = contact?.querySelector<HTMLElement>(".section-label");
       if (!contact || !label) return;
@@ -309,6 +316,7 @@ export default function StudioLanding() {
     window.addEventListener("hashchange", onHashChange);
     return () => {
       active = false;
+      contactRequest.current++;
       cancelAnimationFrame(contactFrame.current);
       window.removeEventListener("hashchange", onHashChange);
     };
@@ -617,7 +625,7 @@ export default function StudioLanding() {
               質問してみる
             </a>
           </div>
-          <div className="faq-list">
+          <div className="faq-list" data-instant={faqInstant}>
             {faqs.map(([q, a], i) => (
               <article
                 className={activeFaq === i ? "faq-open" : ""}
@@ -629,11 +637,17 @@ export default function StudioLanding() {
                     aria-expanded={activeFaq === i}
                     aria-controls={`faq-answer-${i}`}
                     id={`faq-question-${i}`}
-                    onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                    onClick={(event) => {
+                      setFaqInstant(event.detail === 0);
+                      setActiveFaq(activeFaq === i ? null : i);
+                    }}
                   >
                     <span>Q.{String(i + 1).padStart(2, "0")}</span>
                     {q}
-                    {activeFaq === i ? <Minus size={18} /> : <Plus size={18} />}
+                    <svg className="faq-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                      <path d="M5 12h14" />
+                      <path className="faq-toggle-stem" d="M12 5v14" />
+                    </svg>
                   </button>
                 </h3>
                 <div
@@ -641,9 +655,9 @@ export default function StudioLanding() {
                   id={`faq-answer-${i}`}
                   role="region"
                   aria-labelledby={`faq-question-${i}`}
-                  hidden={activeFaq !== i}
+                  aria-hidden={activeFaq !== i}
                 >
-                  <p>{a}</p>
+                  <div className="faq-answer-inner"><p>{a}</p></div>
                 </div>
               </article>
             ))}
