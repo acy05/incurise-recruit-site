@@ -7,6 +7,10 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
+        webProduction: new URL("./web-production/index.html", import.meta.url).pathname,
+        sampleSora: new URL("./web-production/samples/sora/index.html", import.meta.url).pathname,
+        sampleNext: new URL("./web-production/samples/next/index.html", import.meta.url).pathname,
+        sampleMellow: new URL("./web-production/samples/mellow/index.html", import.meta.url).pathname,
         main: new URL("./index.html", import.meta.url).pathname,
         preview: new URL("./preview/index.html", import.meta.url).pathname,
         commentRevision: new URL("./comment-revision/index.html", import.meta.url).pathname,

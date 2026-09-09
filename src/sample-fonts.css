@@ -1,0 +1,122 @@
+/* OFL-1.1 fonts, self-hosted through Vite. See public/isaac/fonts/README.md. */
+@import "@fontsource-variable/noto-serif-jp";
+@import "@fontsource-variable/jost";
+@import "@fontsource-variable/outfit";
+@import "@fontsource/zen-kaku-gothic-new/400.css";
+@import "@fontsource/zen-kaku-gothic-new/700.css";
+@import "@fontsource/cormorant-garamond/latin-500.css";
+@import "@fontsource/cormorant-garamond/latin-500-italic.css";
+
+:root {
+  --sora-display: "Noto Serif JP Variable", "Yu Mincho", serif;
+  --sora-latin: "Jost Variable", sans-serif;
+  --next-text: "Outfit Variable", "Zen Kaku Gothic New", sans-serif;
+  --mellow-display: "Cormorant Garamond", Georgia, serif;
+  --mellow-text: "Jost Variable", "Zen Kaku Gothic New", sans-serif;
+}
+
+/* SORA: quiet Japanese Mincho, paired with architectural Latin lettering. */
+.sora-page :is(h1, h2, h3),
+.sora-page .sora-full-image p {
+  font-family: var(--sora-display);
+  font-weight: 400;
+  letter-spacing: .055em;
+}
+.sora-page .sora-hero-copy h1 {
+  font-weight: 450;
+  line-height: 1.5;
+  letter-spacing: .07em;
+}
+.sora-page .ss-logo,
+.sora-page .ss-footer-brand {
+  font-family: var(--sora-latin);
+  font-weight: 450;
+  letter-spacing: .17em;
+}
+.sora-page .ss-logo { font-size: 32px; line-height: 1; }
+.sora-page .ss-footer-brand { font-size: 54px; }
+.sora-page :is(.ss-eyebrow, .ss-logo small, .sora-english, .sora-hero-foot, .sora-hero-foot button, .sora-project-image > span, .sora-journal-row > span:first-child) {
+  font-family: var(--sora-latin);
+  font-weight: 400;
+}
+.sora-page .sora-english { font-size: 16px; letter-spacing: .045em; }
+.sora-page .sora-project-card h3 { line-height: 1.7; }
+.sora-page .sora-journal-row h3 { line-height: 1.7; }
+
+/* next.: an open, friendly grotesk for both the UI and the editorial voice. */
+.next-page { font-family: var(--next-text); }
+.next-page :is(.ss-eyebrow, .ss-logo, .ss-footer-brand, .ss-logo small, .next-photo-tab, .next-hero-bottom > span, .next-person > div > span, .next-values article > span, .next-job > span:first-child, .next-culture-visual p) {
+  font-family: "Outfit Variable", sans-serif;
+}
+.next-page .ss-logo { font-weight: 750; letter-spacing: -.055em; }
+.next-page .ss-footer-brand { font-weight: 750; letter-spacing: -.055em; }
+.next-page :is(h1, h2, h3) { font-family: var(--next-text); }
+.next-page .next-hero-copy h1 { letter-spacing: -.035em; line-height: 1.34; }
+.next-page :is(h2, h3) { letter-spacing: -.015em; }
+.next-page .ss-eyebrow { font-weight: 450; }
+.next-page .next-person h3 { line-height: 1.65; }
+.next-page .ss-form :is(input, textarea, select) { font-family: var(--next-text); }
+
+/* mellow: a true drawn italic and a generous, soft-textured serif. */
+.mellow-page { font-family: var(--mellow-text); }
+.mellow-page :is(.ss-logo, .ss-footer-brand, .mellow-hero h1, .mellow-product-info h2, .mellow-notes-copy h3, .mellow-ritual > h2, .mellow-ritual h3, .mellow-faq h2, .mellow-closing h2, .mellow-cart-item h3, .mellow-cart-total strong, .ss-modal-head h2, .mellow-story-word) {
+  font-family: var(--mellow-display);
+  font-weight: 500;
+  letter-spacing: -.025em;
+}
+.mellow-page .mellow-hero h1 { font-size: clamp(72px, 8.2vw, 122px); line-height: .98; }
+.mellow-page .mellow-hero h1 em { font-size: .86em; }
+.mellow-page .ss-logo { font-size: 47px; letter-spacing: -.05em; }
+.mellow-page :is(.ss-eyebrow, .ss-nav, .mellow-bag, .mellow-hero-caption, .mellow-detail-image > span, .mellow-ritual article > span, .mellow-price, .mellow-price small) {
+  font-family: var(--mellow-text);
+}
+.mellow-page :is(.mellow-story h2, .mellow-notes-copy h2) {
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-weight: 400;
+  letter-spacing: .07em;
+}
+.mellow-page .mellow-product-info h2 { font-size: 68px; line-height: 1.03; }
+.mellow-page .mellow-price { font-weight: 400; letter-spacing: .02em; }
+.mellow-page .mellow-story-word { font-style: italic; font-size: 36px; }
+.mellow-page :is(p, summary) { letter-spacing: .025em; }
+.mellow-page .ss-form :is(input, textarea, select) { font-family: var(--mellow-text); }
+
+/* The same font pairings in the original gallery. */
+.sample-sora .sample-nav strong { font: 450 6.5cqw/1 var(--sora-latin); letter-spacing: .17em; }
+.sample-sora .sample-nav strong > span { font-family: var(--sora-latin); font-size: 1.6cqw; letter-spacing: .2em; margin-top: .7cqw; }
+.launch-sections .sample-sora h3 { font-family: var(--sora-display); font-weight: 500; letter-spacing: .055em; }
+.sample-sora .sora-bottom p { font-family: var(--sora-display); font-weight: 500; font-size: 3.4cqw; letter-spacing: .025em; }
+.sample-sora :is(.sora-title > span, .sora-title p, .sora-index, .sora-bottom > span, .sample-nav > div) { font-family: var(--sora-latin); }
+.sample-sora .sora-title p { font-size: 2.5cqw; letter-spacing: .025em; }
+.launch-sections .sample-next { font-family: var(--next-text); }
+.launch-sections .sample-next h3 { font-family: var(--next-text); font-weight: 700; letter-spacing: -.025em; }
+.sample-next :is(.sample-nav strong, .sample-nav > div, .next-copy > span:first-child, .next-photo-label) { font-family: "Outfit Variable", sans-serif; }
+.sample-next .sample-nav strong { font-weight: 750; letter-spacing: -.055em; }
+.sample-next .next-bottom strong { font-family: var(--next-text); letter-spacing: 0; }
+.launch-sections .sample-mellow { font-family: var(--mellow-text); }
+.sample-mellow .sample-nav strong,
+.launch-sections .sample-mellow h3,
+.sample-mellow .mellow-bottom strong,
+.sample-mellow .mellow-shop { font-family: var(--mellow-display); font-weight: 500; letter-spacing: -.025em; }
+.sample-mellow .sample-nav strong { font-size: 8cqw; letter-spacing: -.05em; }
+.launch-sections .sample-mellow h3 { font-size: 11cqw; line-height: .99; }
+.sample-mellow h3 em { font-size: 8.5cqw; }
+.sample-mellow :is(.sample-nav > div, .mellow-copy > span, .mellow-bottom > span:first-child) { font-family: var(--mellow-text); }
+.sample-mellow .mellow-shop { font-size: 2.4cqw; }
+
+@media (max-width: 1050px) and (min-width: 761px) {
+  .mellow-page .mellow-hero h1 { font-size: 84px; }
+  .mellow-page .mellow-product-info h2 { font-size: 53px; }
+}
+@media (max-width: 760px) {
+  .sora-page .ss-logo { font-size: 27px; }
+  .sora-page .sora-hero-copy h1 { font-size: 61px; line-height: 1.6; }
+  .sora-page .sora-english { font-size: 12px; letter-spacing: .02em; }
+  .sora-page .sora-journal-row h3 { font-size: 18px; }
+  .next-page .next-hero-copy h1 { font-size: clamp(39px,10vw,65px); line-height: 1.45; }
+  .mellow-page .ss-logo { font-size: 39px; }
+  .mellow-page .mellow-hero h1 { font-size: clamp(54px,13vw,80px); line-height: 1; }
+  .mellow-page .mellow-hero h1 em { font-size: .85em; }
+  .mellow-page .mellow-product-info h2 { font-size: 57px; }
+  .mellow-page .mellow-story-word { font-size: 30px; }
+}

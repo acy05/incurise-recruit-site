@@ -1,0 +1,169 @@
+/* Brand motion: quiet / lively / soft. Only transform and opacity run continuously. */
+.ss-motion-root {
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --motion-duration: 900ms;
+  --reading-progress: 0;
+}
+.ss-motion-root:has(.next-page) { --motion-duration: 650ms; }
+.ss-motion-root:has(.mellow-page) { --motion-duration: 1100ms; }
+.ss-motion-root .ss-enter {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition: opacity var(--motion-duration) var(--motion-ease), transform var(--motion-duration) var(--motion-ease);
+  transition-delay: var(--enter-delay, 0ms);
+}
+.ss-motion-root .ss-enter.is-revealed { opacity: 1; transform: none; }
+.ss-motion-root .ss-title-line { display: block; overflow: clip; padding-block: .08em; margin-block: -.08em; }
+.ss-motion-root .ss-title-line > span { display: block; animation: ss-title-rise 1250ms var(--motion-ease) both; }
+.ss-motion-root .ss-title-line:nth-child(2) > span { animation-delay: 140ms; }
+.ss-motion-root [data-hero] .ss-eyebrow { animation: ss-rise 900ms var(--motion-ease) both; }
+.ss-motion-root [data-hero] :is(.sora-english, .next-hero-copy > p:not(.ss-eyebrow), .mellow-hero-copy > p:not(.ss-eyebrow)) { animation: ss-rise 1100ms 300ms var(--motion-ease) both; }
+.ss-motion-root [data-hero] :is(.ss-button, .ss-text-link) { animation: ss-rise 1100ms 420ms var(--motion-ease) both; }
+.ss-reading-progress { position: fixed; inset: 0 0 auto; height: 2px; background: #819475; transform-origin: left; transform: scaleX(var(--reading-progress)); z-index: 50; pointer-events: none; }
+.ss-motion-root:has(.next-page) .ss-reading-progress { background: #e77952; }
+.ss-motion-toggle {
+  position: fixed; bottom: max(18px, env(safe-area-inset-bottom)); right: 22px; z-index: 40;
+  display: flex; align-items: center; gap: 7px; min-height: 40px; padding: 11px 15px;
+  border: 1px solid #ffffff35; border-radius: 40px; color: #f6f4e9; background: #293c31ed;
+  font: 10px/1.2 "Jost Variable", sans-serif; letter-spacing: .06em; box-shadow: 0 4px 18px #13231714;
+}
+.ss-motion-toggle:disabled { opacity: .8; }
+.ss-motion-icon { display: flex; align-items: center; justify-content: center; gap: 3px; width: 12px; height: 12px; }
+.ss-motion-icon i { height: 9px; width: 2px; background: currentColor; }
+.ss-light-film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; mix-blend-mode: multiply; opacity: .5; }
+.ss-motion-root [data-parallax] > img {
+  transform: translate3d(0, var(--scroll-y, 0px), 0) scale(var(--image-scale, 1.1));
+  transition: none;
+}
+.ss-motion-root [data-scroll-turn] { transform: translateY(var(--scroll-y, 0px)) rotate(var(--scroll-turn, 0deg)); }
+.ss-motion-root .ss-photo-drift { animation: ss-photo-drift 16s ease-in-out infinite alternate; }
+
+/* Architecture: a slow camera move, a passing canopy, and lines that extend like a drawing. */
+.sora-hero { isolation: isolate; }
+.sora-hero .ss-light-film { opacity: .4; }
+.sora-hero-foot > a { display: flex; gap: 18px; align-items: center; }
+.sora-scroll-line { position: relative; width: 1px; height: 46px; background: #ffffff3b; overflow: hidden; }
+.sora-scroll-line::after { content: ""; display: block; height: 65%; background: #fffdf3; animation: ss-scroll-line 2.6s cubic-bezier(.65,0,.35,1) infinite; }
+.sora-full-image { isolation: isolate; }
+.sora-full-image .ss-light-film { opacity: .35; }
+.sora-full-image p { z-index: 1; }
+.sora-process li { position: relative; border-top-color: transparent; }
+.sora-process li::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: #34423844; transform: scaleX(0); transform-origin: left; transition: transform 1.3s var(--motion-ease); }
+.sora-process li.is-revealed::before { transform: scaleX(1); }
+.sora-project-image { isolation: isolate; }
+/* Keep architectural compositions still while scrolling; one hover transform only. */
+.ss-motion-root .sora-project-card.ss-enter { transform: none; transition: opacity 800ms var(--motion-ease); transition-delay: 0ms; }
+.ss-motion-root .sora-project-card:focus-visible { opacity: 1; transition: none; }
+.ss-motion-root .sora-project-image > img { transform: scale(1); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .ss-motion-root[data-motion="on"] .sora-project-card:hover .sora-project-image > img { transform: scale(1.018); }
+}
+
+/* Portraits retain their full framing. Only fade on entry, never pan or zoom people. */
+.ss-motion-root .next-person.ss-enter { transform: none; transition: opacity 800ms var(--motion-ease); transition-delay: 0ms; }
+.ss-motion-root .next-person:focus-visible { opacity: 1; transition: none; }
+
+/* Recruitment: a crisp headline, a rotating asterisk and a continuous typographic ribbon. */
+.next-page .ss-title-line { overflow: visible; }
+.next-page .ss-title-line > span { animation-duration: 850ms; }
+.next-page .next-hero-copy h1 em {
+  display: inline; background-size: 0% 100%; background-repeat: no-repeat;
+  animation: next-marker 900ms 500ms var(--motion-ease) both;
+}
+.next-page .next-big-star { animation: next-orbit 22s linear infinite; transform-origin: 50% 53%; }
+.next-hero-photo .ss-photo-drift { animation-duration: 13s; }
+.next-marquee { overflow: hidden; padding: 30px 0 36px; color: #193d37; background: #d3e889; margin-top: 36px; }
+.next-marquee-track { display: flex; width: max-content; animation: next-marquee 36s linear infinite; }
+.next-marquee-track > div { display: flex; align-items: center; gap: 50px; padding-right: 50px; flex-shrink: 0; }
+.next-marquee span { font: 550 clamp(44px, 6.5vw, 100px)/1 "Outfit Variable", sans-serif; letter-spacing: -.045em; white-space: nowrap; }
+.next-marquee b { font: 400 clamp(48px, 6vw, 92px)/1 "Outfit Variable", sans-serif; color: #d96b47; }
+.next-about { overflow: hidden; }
+.next-culture-visual p { transition: none; }
+.next-job { transition: padding-inline 250ms var(--motion-ease), background 250ms; }
+.next-job:hover { padding-inline: 16px; background: #dce6d677; }
+.next-values article { position: relative; }
+.next-values article::before { content: ""; position: absolute; inset: -1px auto auto 0; height: 3px; width: 38px; background: #e77952; transform: scaleX(0); transform-origin: left; transition: transform 700ms 200ms var(--motion-ease); }
+.next-values article.is-revealed::before { transform: scaleX(1); }
+.next-entry-section { position: relative; isolation: isolate; overflow: hidden; }
+.next-entry-section::before { content: "✳"; position: absolute; z-index: -1; left: -85px; bottom: -210px; color: #bfd46f70; font: 520px/1 Arial,sans-serif; animation: next-orbit 70s linear infinite; }
+
+/* Botanical care: slower light and shadow, unhurried imagery and a fine botanical seal. */
+.mellow-hero { isolation: isolate; }
+.mellow-hero .ss-light-film { width: 100%; height: 100%; mask-image: none; opacity: .55; }
+.mellow-hero .ss-photo-drift { animation-name: mellow-photo-drift; animation-duration: 19s; transform-origin: 75% 70%; }
+.mellow-story { position: relative; overflow: hidden; }
+.mellow-botanical-mark { display: block; width: 112px; height: 112px; margin: 0 auto 42px; color: #829071; animation: mellow-seal 18s ease-in-out infinite alternate; }
+.mellow-detail-image { --image-scale: 1.6; isolation: isolate; }
+.mellow-notes .ss-light-film { opacity: .4; }
+.mellow-notes-copy article { position: relative; }
+.mellow-notes-copy article > span { transition: transform 700ms 100ms var(--motion-ease); }
+.mellow-notes-copy article:not(.is-revealed) > span { transform: translateY(10px); }
+.mellow-product-gallery { position: sticky; top: 128px; }
+.mellow-ritual article { position: relative; }
+.mellow-ritual article::before { content: ""; display: block; position: absolute; top: -1px; height: 1px; width: 100%; background: #556c45; transform-origin: left; transform: scaleX(0); transition: transform 1.2s var(--motion-ease); transition-delay: var(--enter-delay); }
+.mellow-ritual article.is-revealed::before { transform: scaleX(1); }
+.mellow-closing { position: relative; isolation: isolate; overflow: hidden; }
+.mellow-closing .ss-light-film { z-index: -1; opacity: .65; }
+
+/* Small, responsive feedback remains secondary to the content. */
+.ss-motion-root :is(.ss-button, .ss-filter button):active { scale: .98; }
+.ss-motion-root :is(.ss-nav a, .ss-filter button) { transition: opacity 180ms, background 180ms, color 180ms; }
+.ss-motion-root .ss-modal[open] { animation: ss-dialog-in 400ms var(--motion-ease) both; }
+.ss-motion-root .ss-modal[open]::backdrop { animation: ss-backdrop-in 300ms ease both; }
+.ss-motion-root .ss-modal[open].is-closing { animation: ss-dialog-out 260ms ease both; transform: var(--close-transform, none); pointer-events: none; }
+.ss-motion-root .ss-modal[open].is-closing::backdrop { animation: ss-backdrop-out 260ms ease both; }
+@keyframes ss-dialog-out { from { opacity: var(--close-opacity, 1); } to { opacity: 0; } }
+@keyframes ss-backdrop-out { from { opacity: var(--close-backdrop-opacity, 1); } to { opacity: 0; } }
+.ss-motion-root .ss-form-result { animation: ss-rise 550ms var(--motion-ease) both; }
+.ss-motion-root details[open] > p { animation: ss-rise 350ms var(--motion-ease); }
+.ss-motion-root .ss-footer { padding-bottom: 80px; }
+
+@keyframes ss-title-rise { from { opacity: 0; transform: translateY(105%); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ss-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ss-photo-drift { from { transform: scale(1.035) translate(-.7%, .2%); } to { transform: scale(1.085) translate(.7%, -.4%); } }
+@keyframes mellow-photo-drift { from { transform: scale(1.02) translateX(-.5%); } to { transform: scale(1.065) translateX(.5%); } }
+@keyframes ss-scroll-line { 0% { transform: translateY(-110%); } 70%, 100% { transform: translateY(165%); } }
+@keyframes next-orbit { from { transform: rotate(12deg); } to { transform: rotate(372deg); } }
+@keyframes next-marker { to { background-size: 100% 100%; } }
+@keyframes next-marquee { to { transform: translateX(-50%); } }
+@keyframes mellow-seal { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+@keyframes ss-dialog-in { from { opacity: 0; transform: translateY(20px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes ss-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Off-screen scenes and background tabs stop burning animation frames. */
+.ss-motion-root [data-scene][data-inview="false"] .ss-loop,
+.ss-motion-root [data-scene][data-inview="false"]::before,
+.ss-motion-root [data-scene][data-inview="false"] .sora-scroll-line::after,
+.ss-motion-root[data-hidden="true"] *,
+.ss-motion-root[data-hidden="true"] *::before,
+.ss-motion-root[data-hidden="true"] *::after { animation-play-state: paused !important; }
+.ss-motion-root[data-motion="off"] *,
+.ss-motion-root[data-motion="off"] *::before,
+.ss-motion-root[data-motion="off"] *::after { animation-play-state: paused !important; transition: none !important; }
+.ss-motion-root[data-motion="off"] .ss-enter,
+.ss-motion-root[data-motion="off"] .ss-title-line > span,
+.ss-motion-root[data-motion="off"] [data-hero] :is(.ss-eyebrow,.sora-english,.ss-button,.ss-text-link,.next-hero-copy > p,.mellow-hero-copy > p),
+.ss-motion-root[data-motion="off"] .ss-modal,
+.ss-motion-root[data-motion="off"] .ss-form-result,
+.ss-motion-root[data-motion="off"] details[open] > p { animation: none !important; opacity: 1; transform: none; }
+.ss-motion-root[data-motion="off"] .next-hero-copy h1 em { animation: none !important; background-size: 100% 100%; }
+.ss-motion-root[data-motion="off"] .ss-modal::backdrop { animation: none !important; opacity: 1; }
+.ss-motion-root[data-motion="off"] .ss-loop { will-change: auto; }
+html:has(.ss-motion-root[data-motion="off"]) { scroll-behavior: auto; }
+
+@media (max-width: 760px) {
+  .ss-motion-toggle { right: 14px; font-size: 9px; min-height: 38px; padding: 11px 13px; }
+  .next-marquee { margin-top: 25px; padding: 24px 0 28px; }
+  .next-marquee-track > div { gap: 28px; padding-right: 28px; }
+  .mellow-botanical-mark { width: 85px; height: 85px; margin-bottom: 30px; }
+  .mellow-product-gallery { position: static; }
+  .mellow-hero-caption { bottom: 70px; }
+  .ss-motion-root .ss-enter { transform: translateY(18px); }
+  .ss-motion-root .sora-project-card.ss-enter,
+  .ss-motion-root .ss-enter.is-revealed,
+  .ss-motion-root[data-motion="off"] .ss-enter { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ss-motion-root .ss-enter { opacity: 1; transform: none; }
+  .ss-motion-root .next-hero-copy h1 em { background-size: 100% 100%; }
+}

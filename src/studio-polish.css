@@ -1,0 +1,574 @@
+/* Final production adjustments shared by the C hero and D gallery. */
+.studio {
+  --orange: #e75a3f;
+  --paper: #faf9f6;
+  color: #302e28;
+}
+.studio .studio-header {
+  background: #fff2df;
+  color: #492923;
+}
+.studio .header-contact {
+  background: #df4c31;
+  color: #fff;
+  min-height: 44px;
+}
+.studio .header-contact:hover {
+  background: #c9432a;
+}
+.studio :is(a, button, input, textarea):focus-visible {
+  outline: 3px solid #a7462f;
+  outline-offset: 5px;
+}
+.studio :is(#contact, [id^="service-"]) {
+  scroll-margin-top: 110px;
+}
+.studio .section-label {
+  font-size: 11px;
+}
+.launch-sections {
+  container-type: inline-size;
+}
+.launch-sections .fd-c-body {
+  height: auto;
+  min-height: 580px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 5cqw;
+  padding: clamp(56px, 5.2cqw, 90px) 5%;
+  isolation: isolate;
+}
+.launch-sections .fd-c-copy {
+  width: 100%;
+  max-width: 680px;
+}
+.launch-sections .fd-label {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+.launch-sections .fd-c-copy h1 {
+  font-size: clamp(48px, 6.1cqw, 92px);
+  line-height: 1.42;
+}
+.launch-sections .fd-c-lead {
+  font-size: clamp(14px, 1.05cqw, 17px);
+  line-height: 2.1;
+}
+.launch-sections .fd-c-trust {
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.launch-sections .fd-c-trust span {
+  font-size: 12px;
+  padding: 8px 12px;
+}
+.launch-sections .fd-c-chat {
+  width: 100%;
+  max-width: 480px;
+  justify-self: end;
+  margin: 0;
+  padding: clamp(24px, 2.3cqw, 38px);
+  border-radius: 22px;
+  position: relative;
+}
+.launch-sections .fd-c-chat-head {
+  font-size: 11px;
+  gap: 8px;
+  color: #945a42;
+}
+.launch-sections .fd-c-chat-head > span:last-child {
+  font-size: 10px;
+}
+.launch-sections .fd-c-dot {
+  width: 6px;
+  height: 6px;
+}
+.launch-sections .fd-c-chat h2 {
+  font-size: clamp(24px, 1.9cqw, 30px);
+  margin: 24px 0;
+  line-height: 1.6;
+}
+.launch-sections .fd-c-choices {
+  gap: 10px;
+}
+.launch-sections .fd-c-choices button {
+  min-height: 48px;
+  font-size: 13px;
+  padding: 12px;
+  gap: 10px;
+  border-radius: 7px;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.launch-sections .fd-c-choices button:hover {
+  background: #fff4e9;
+}
+.launch-sections .fd-c-choices button > span {
+  font-size: 10px;
+}
+.launch-sections .fd-c-choices button b {
+  font-size: 14px;
+}
+.launch-sections .fd-cta {
+  min-height: 52px;
+  padding: 16px 22px;
+  font-size: 14px;
+  width: min(100%, 300px);
+  gap: 16px;
+  background: #d94930;
+  color: #fff;
+}
+.launch-sections .fd-cta > span {
+  font-size: 22px;
+}
+.launch-sections .fd-c-chat .fd-cta {
+  margin-top: 22px;
+  width: 100%;
+  font-size: 14px;
+  background: #d94930;
+}
+.launch-sections .fd-cta:hover {
+  background: #c43f27;
+  transform: translateY(-2px);
+}
+.launch-sections .fd-c-chat > small {
+  font-size: 11px;
+  line-height: 1.8;
+  margin-top: 14px;
+  color: #76665a;
+}
+.launch-sections .fd-c-flower {
+  left: 44%;
+  bottom: 28px;
+  width: clamp(90px, 11cqw, 160px);
+}
+.launch-sections .fd-c-foot {
+  padding: 38px 5%;
+  gap: 24px;
+}
+.launch-sections .fd-c-foot strong {
+  font-size: clamp(30px, 3.45cqw, 54px);
+}
+.launch-sections .fd-c-foot > span {
+  font-size: 13px;
+  line-height: 1.9;
+}
+.launch-sections .fd-d-body {
+  padding: 80px 5% 64px;
+}
+.launch-sections .fd-d-heading {
+  gap: 40px;
+  margin-bottom: 42px;
+}
+.launch-sections .fd-d-heading h2 {
+  font-size: clamp(34px, 4.55cqw, 68px);
+  line-height: 1.45;
+}
+.launch-sections .fd-d-intro {
+  width: 30%;
+  min-width: 245px;
+}
+.launch-sections .fd-d-intro > p {
+  font-size: 14px;
+  line-height: 2;
+  color: #67625b;
+}
+.launch-sections .fd-d-intro .fd-cta {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 22px;
+  background: #d94930;
+}
+.launch-sections .fd-work-grid {
+  gap: 24px;
+}
+.launch-sections .fd-work > footer {
+  font-size: 12px;
+  gap: 8px;
+  align-items: center;
+  padding: 18px 0;
+  flex-wrap: wrap;
+}
+.launch-sections .fd-work > footer span:first-child {
+  font-size: 10px;
+  color: #757267;
+}
+.launch-sections .fd-work > footer a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #5d473a;
+  border-bottom: 1px solid #d8cbbd;
+}
+.launch-sections .fd-work > footer a:hover {
+  color: #b23e28;
+  border-color: currentColor;
+}
+.launch-sections .fd-d-foot {
+  font-size: 11px;
+  line-height: 1.9;
+  gap: 15px;
+  padding-top: 20px;
+  color: #766c60;
+}
+.studio .service-grid {
+  gap: 26px;
+}
+.studio .service-card {
+  padding: 28px 24px;
+  border: 1px solid #e2dcd0;
+  border-radius: 16px;
+  background: #fffdf8;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.studio .service-meta {
+  margin: 0 0 25px;
+  font-size: 10px;
+  color: #956a4e;
+}
+.studio .service-meta span:last-child {
+  font-size: 10px;
+  color: inherit;
+}
+.studio .service-card h3 {
+  font-size: clamp(20px, 1.65vw, 25px);
+  letter-spacing: -0.035em;
+  line-height: 1.6;
+}
+.studio .service-card h4 {
+  font-size: 13px;
+  color: #716457;
+  margin-bottom: 20px;
+}
+.studio .service-card > p {
+  font-size: 14px;
+  line-height: 2;
+  flex: 1;
+}
+.studio .service-card .tags {
+  margin: 20px 0;
+}
+.studio .tags span {
+  font-size: 11px;
+  padding: 6px 9px;
+}
+.studio .service-consult {
+  font-size: 12px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+.studio .service-foot > span,
+.studio .service-foot a {
+  font-size: 13px;
+}
+.studio .intro-grid > div > p:not(.large-copy),
+.studio .section-title > p,
+.studio .approach-item p,
+.studio .process-grid article > p:not(.step-en),
+.studio .faq-answer p {
+  font-size: 14px;
+  line-height: 2;
+}
+.studio .process-grid h3 {
+  font-size: 18px;
+  line-height: 1.65;
+}
+.studio .step-tag {
+  font-size: 11px;
+}
+.studio .process-note > span {
+  font-size: 10px;
+}
+.studio .process-note a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.studio .consultation fieldset label {
+  font-size: 14px;
+  min-height: 48px;
+  padding: 13px;
+}
+.studio .consultation fieldset legend,
+.studio .message-label {
+  font-size: 13px;
+}
+.studio .consultation input {
+  accent-color: #c84c31;
+  width: 16px;
+  height: 16px;
+}
+.studio .consultation fieldset label.selected {
+  border-color: #d6795b;
+  background: #fff2e8;
+}
+.studio .consultation fieldset label > svg {
+  color: #b65b3e;
+}
+.studio .consultation textarea {
+  font-size: 16px;
+  line-height: 1.8;
+  min-height: 130px;
+  border-radius: 8px;
+}
+.studio .copy-button {
+  font-size: 13px;
+  min-height: 44px;
+}
+.studio .consultation-next > span,
+.studio .contact-note {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #706b5f;
+}
+.studio .button--orange {
+  background: #d94930;
+}
+.studio .button--orange:hover {
+  background: #c43f27;
+}
+.studio .manual-copy {
+  margin: 0 0 24px;
+}
+.studio .manual-copy label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.studio .motion-control {
+  min-height: 36px;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  right: max(14px, env(safe-area-inset-right));
+  font-size: 10px;
+  box-shadow: 0 3px 16px #0002;
+}
+.studio .studio-footer {
+  padding-bottom: 85px;
+}
+@container (max-width:860px) {
+  .launch-sections .fd-c-body {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    gap: 42px;
+    padding: 48px 6% 54px;
+  }
+  .launch-sections .fd-c-copy {
+    max-width: none;
+  }
+  .launch-sections .fd-c-copy h1 {
+    font-size: clamp(38px, 9.3cqw, 70px);
+    margin: 22px 0;
+  }
+  .launch-sections .fd-c-chat {
+    justify-self: center;
+    max-width: 560px;
+    transform: rotate(1deg);
+  }
+  .launch-sections .fd-c-flower {
+    width: 92px;
+    left: auto;
+    right: 6%;
+    top: 170px;
+    bottom: auto;
+    opacity: 0.9;
+  }
+  .launch-sections .fd-c-lead {
+    font-size: 14px;
+    max-width: calc(100% - 70px);
+  }
+  .launch-sections .fd-c-lead br {
+    display: none;
+  }
+  .launch-sections .fd-c-copy > .fd-c-lead {
+    line-height: 2;
+  }
+  .launch-sections .fd-c-foot {
+    display: block;
+    padding: 32px 6%;
+  }
+  .launch-sections .fd-c-foot strong {
+    font-size: clamp(28px, 5.5cqw, 44px);
+  }
+  .launch-sections .fd-c-foot > span {
+    display: block;
+    margin-top: 18px;
+    font-size: 13px;
+  }
+  .launch-sections .fd-d-body {
+    padding: 58px 6% 45px;
+  }
+  .launch-sections .fd-d-heading {
+    display: block;
+    margin-bottom: 32px;
+  }
+  .launch-sections .fd-d-heading h2 {
+    font-size: clamp(33px, 6.8cqw, 52px);
+    margin-top: 18px;
+  }
+  .launch-sections .fd-d-intro {
+    width: 100%;
+    min-width: 0;
+    margin-top: 22px;
+  }
+  .launch-sections .fd-d-intro > p {
+    font-size: 14px;
+    line-height: 2;
+  }
+  .launch-sections .fd-d-intro .fd-cta {
+    width: auto;
+    max-width: 320px;
+    font-size: 14px;
+  }
+  .launch-sections .fd-d-foot {
+    display: block;
+    font-size: 11px;
+  }
+  .launch-sections .fd-d-foot > span {
+    display: block;
+  }
+}
+@container (max-width:480px) {
+  .launch-sections .fd-c-body {
+    padding-top: 36px;
+    gap: 32px;
+  }
+  .launch-sections .fd-c-chat {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  .launch-sections .fd-c-flower {
+    width: 70px;
+    top: 223px;
+    right: 5%;
+  }
+  .launch-sections .fd-c-trust {
+    max-width: 100%;
+    gap: 6px;
+  }
+  .launch-sections .fd-c-trust span {
+    font-size: 11px;
+    padding: 7px 9px;
+  }
+  .launch-sections .fd-c-chat h2 {
+    font-size: 24px;
+    margin: 20px 0;
+  }
+  .launch-sections .fd-c-choices button {
+    font-size: 12px;
+    gap: 7px;
+    padding: 12px 9px;
+  }
+  .launch-sections .fd-c-chat .fd-cta {
+    font-size: 13px;
+    padding: 15px 16px;
+  }
+  .launch-sections .fd-c-foot strong {
+    font-size: 27px;
+    line-height: 1.3;
+    display: block;
+  }
+  .launch-sections .fd-c-foot strong em {
+    display: block;
+  }
+  .launch-sections .fd-work-grid {
+    gap: 28px;
+  }
+  .launch-sections .fd-work-art {
+    height: 85cqw;
+    min-height: 260px;
+  }
+  .launch-sections .fd-work > footer {
+    font-size: 12px;
+    padding: 14px 0;
+    gap: 4px;
+  }
+  .launch-sections .fd-work-caption {
+    font-size: 10px;
+  }
+}
+@media (max-width: 1050px) {
+  .studio .service-grid {
+    grid-template-columns: 1fr;
+  }
+  .studio .service-card {
+    padding: 26px;
+  }
+  .studio .service-card h3 {
+    font-size: 24px;
+  }
+  .studio .service-card > p {
+    max-width: 65ch;
+  }
+  .studio .process-grid h3 {
+    font-size: 17px;
+  }
+}
+@media (max-width: 760px) {
+  .studio .motion-control {
+    min-height: 32px;
+    opacity: 0.9;
+  }
+  .studio .consultation {
+    padding: 26px 22px;
+  }
+  .studio .contact-benefits {
+    font-size: 13px;
+  }
+  .studio .service-card h3 {
+    font-size: 21px;
+  }
+  .studio .section-label {
+    font-size: 10px;
+  }
+  .studio .section-shell {
+    padding-top: 65px;
+    padding-bottom: 65px;
+  }
+  .studio .studio-footer {
+    padding-bottom: 82px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio * {
+    scroll-behavior: auto !important;
+  }
+  .launch-sections * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media (max-width: 400px) {
+  .studio .studio-header {
+    padding-inline: 14px;
+    gap: 10px;
+  }
+  .studio .brand {
+    font-size: 26px;
+  }
+  .studio .header-actions {
+    gap: 8px;
+  }
+  .studio .header-contact {
+    padding: 12px 14px;
+    gap: 12px;
+    white-space: nowrap;
+    font-size: 10px;
+  }
+}
+@container (max-width:360px) {
+  .launch-sections .fd-c-flower {
+    display: none;
+  }
+  .launch-sections .fd-c-lead {
+    max-width: 100%;
+  }
+}

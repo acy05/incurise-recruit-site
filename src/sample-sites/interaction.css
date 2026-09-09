@@ -1,0 +1,59 @@
+/* Labels carry actions. Directional icons are reserved for return/top and drill-in rows. */
+.sample-full .ss-navigation-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex: 0 0 18px; vertical-align: middle; }
+.sample-full .ss-navigation-icon svg { display: block; width: 100%; height: 100%; }
+.sora-page .ss-navigation-icon svg { stroke-width: 1.2; }
+.next-page .ss-navigation-icon svg { stroke-width: 2; }
+.sample-full .ss-button { justify-content: center; gap: 0; text-align: center; padding: 18px 28px; min-height: 56px; }
+.sample-full .ss-header-action .ss-button { min-height: 44px; padding: 12px 24px; }
+.sample-full .ss-text-link { display: inline-flex; gap: 0; width: fit-content; min-height: 42px; text-underline-offset: 6px; }
+.sample-full .demo-bar > a,
+.sample-full .ss-footer > div:last-child > a { display: inline-flex; align-items: center; gap: 8px; }
+.sample-full .demo-bar > a .ss-navigation-icon { width: 13px; height: 13px; flex-basis: 13px; }
+.sample-full .ss-footer > div:last-child > a { padding-block: 6px; }
+.sample-full .ss-footer > div:last-child > a:last-of-type { text-decoration: underline; text-underline-offset: 6px; text-decoration-color: #34423855; }
+
+/* SORA uses a quiet editorial reading link instead of arrows over architecture. */
+.sora-page .sora-hero-foot button { align-items: center; gap: 25px; min-height: 44px; font-size: 12px; padding-bottom: 10px; border-bottom-color: #ffffff66; }
+.sora-page .sora-hero-foot button > span { font: inherit; line-height: 1.8; }
+.sora-page .sora-project-read { opacity: .85; }
+.sora-page .sora-project-meta { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 22px; }
+.sora-page .sora-project-action { font-size: 11px; padding-block: 9px; border-bottom: 1px solid #34423866; white-space: nowrap; }
+.sora-page .sora-project-card h3 { display: block; margin-bottom: 9px; }
+.sora-page .sora-journal-row > .sora-journal-action { font: 11px/1.8 var(--sora-latin), "Noto Sans JP", sans-serif; border-bottom: 1px solid #34423866; padding-block: 6px; white-space: nowrap; }
+
+/* next. has one clear invitation below each interview; photographs are unadorned. */
+.next-page .next-person h3 { padding-right: 0; margin-bottom: 20px; }
+.next-page .next-person-action { display: inline-flex; gap: 24px; align-items: center; padding: 9px 0; border-bottom: 1px solid #193d3766; font-size: 12px; }
+.next-page .next-person-action .ss-navigation-icon { width: 16px; height: 16px; flex-basis: 16px; }
+.next-page .next-job { grid-template-columns: 170px minmax(0,1fr) 24px; transition: background 180ms, color 180ms; }
+.next-page .next-job > .ss-navigation-icon { justify-self: end; }
+.next-page .next-job:hover { padding-inline: 0; }
+.next-page .next-hero-bottom { align-items: center; }
+
+/* mellow lets the product and label do the work; no nested rings inside pills. */
+.mellow-page .mellow-hero-copy .ss-button { min-width: 230px; }
+.mellow-page .mellow-add { min-height: 58px; }
+.sample-full .ss-form > .ss-button { justify-self: start; min-width: 230px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .sample-full .ss-text-link:hover,
+  .sample-full .ss-footer > div:last-child > a:hover { text-decoration: underline; text-underline-offset: 6px; }
+  .sora-page :is(.sora-project-card, .sora-journal-row):hover :is(.sora-project-action, .sora-journal-action) { border-bottom-color: currentColor; }
+  .next-page .next-person:hover .next-person-action { border-bottom-color: currentColor; }
+}
+@media (max-width:1050px) {
+  .next-page .next-job { grid-template-columns: 120px minmax(0,1fr) 24px; }
+}
+@media (max-width:760px) {
+  .sample-full .ss-header-action .ss-button { padding: 11px 16px; min-height: 42px; }
+  .sample-full .ss-button { padding: 16px 21px; min-height: 52px; }
+  .sample-full .ss-form > .ss-button { min-width: 0; }
+  .sora-page .sora-hero-foot button { gap: 15px; font-size: 11px; }
+  .sora-page .sora-project-meta { gap: 16px; }
+  .sora-page .sora-project-card h3 { font-size: 20px; }
+  .sora-page .sora-project-action { font-size: 10px; }
+  .sora-page .sora-journal-row { column-gap: 16px; row-gap: 14px; }
+  .sora-page .sora-journal-row > .sora-journal-action { font-size: 10px; }
+  .next-page .next-job { grid-template-columns: minmax(0,1fr) 24px; }
+  .mellow-page .mellow-hero-copy .ss-button { min-width: 200px; min-height: 48px; padding: 14px 24px; }
+}

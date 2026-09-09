@@ -1,0 +1,10 @@
+import { StrictMode, Suspense, lazy } from "react";
+import { createRoot } from "react-dom/client";
+import "@fontsource/noto-sans-jp/400.css";
+import "@fontsource/noto-sans-jp/700.css";
+import "./shared.css";
+import { MotionProvider } from "./Motion";
+const pages={sora:lazy(()=>import("./Sora")),next:lazy(()=>import("./Next")),mellow:lazy(()=>import("./Mellow"))};
+const root=document.getElementById("sample-root")!;
+const Page=pages[root.dataset.site as keyof typeof pages];
+createRoot(root).render(<StrictMode><Suspense fallback={<p className="ss-loading">Loading…</p>}><MotionProvider><Page/></MotionProvider></Suspense></StrictMode>);
