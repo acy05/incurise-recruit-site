@@ -61,28 +61,6 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       const blend = (t - from.at) / (to.at - from.at || 1);
       return from.rgb.map((value, channel) => Math.round(value + (to.rgb[channel] - value) * blend)).join(",");
     });
-    // Cache softly edged circles once, rather than creating 36,000 gradients per frame.
-    // Transparent padding prevents adjacent colors bleeding into a downsized sprite.
-    const spriteCell = 32;
-    const spriteRadius = 14;
-    const particleAtlas = palette === "official" && space === "scatter" ? document.createElement("canvas") : null;
-    const spriteContext = particleAtlas?.getContext("2d");
-    if (particleAtlas && spriteContext) {
-      particleAtlas.width = officialColors.length * spriteCell;
-      particleAtlas.height = spriteCell;
-      officialColors.forEach((color, index) => {
-        const x = index * spriteCell + spriteCell / 2;
-        const y = spriteCell / 2;
-        const gradient = spriteContext.createRadialGradient(x, y, 0, x, y, spriteRadius);
-        gradient.addColorStop(0, `rgba(${color},1)`);
-        gradient.addColorStop(.8, `rgba(${color},1)`);
-        gradient.addColorStop(1, `rgba(${color},0)`);
-        spriteContext.fillStyle = gradient;
-        spriteContext.beginPath();
-        spriteContext.arc(x, y, spriteRadius, 0, Math.PI * 2);
-        spriteContext.fill();
-      });
-    }
     // Deterministic sampling avoids a flashing/random composition on resize.
     const points = Array.from({ length: space === "scatter" ? 36000 : 12000 }, (_, i) => ({
       u: (i / 12000) * Math.PI * 2,
@@ -97,7 +75,8 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       const mobile = width < 768;
       if (space === "scatter") {
         // Distributed depth layers, not points constrained to a central sculpture.
-        const count = mobile ? 14000 : 36000;
+        // Fewer, larger circles keep individual outlines visible instead of merging into pixel noise.
+        const count = palette === "official" ? (mobile ? 9000 : 18000) : (mobile ? 14000 : 36000);
         const reduceMotion = reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
         const entrance = reduceMotion ? 1 : 1 - Math.pow(1 - Math.min(time / 2.2, 1), 3);
         const displacement = displacementRef.current;
@@ -153,19 +132,15 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           // Sparse larger foreground grains provide scale; avoid turning every point into noise.
           const size = official ? baseSize * (core ? 1.25 : 1.05) + (!backLayer && i % 17 === 0 ? (mobile ? .9 : 1.25) : 0) : baseSize;
           if (official) {
-            context.globalAlpha = Math.min(.96, alpha * presence);
-            // Account for the circle's smaller area, keeping the approved density and center.
-            const diameter = size * 1.25;
-            if (particleAtlas && spriteContext) {
-              const extent = diameter * spriteCell / (spriteRadius * 2);
-              context.drawImage(particleAtlas, colorIndex * spriteCell, 0, spriteCell, spriteCell,
-                x + (size - extent) / 2, y + (size - extent) / 2, extent, extent);
-            } else {
-              context.fillStyle = `rgb(${officialColors[colorIndex]})`;
-              context.beginPath();
-              context.arc(x + size / 2, y + size / 2, diameter / 2, 0, Math.PI * 2);
-              context.fill();
-            }
+            // Draw vector circles directly: shrinking a bitmap to 1px hid its round outline.
+            // Foreground dots remain visibly circular at normal desktop/mobile zoom levels.
+            const radius = Math.max(backLayer ? 1.2 : (mobile ? 1.9 : 2.3) + depth * .2, size * .8);
+            const areaCompensation = Math.min(1, size * size / (Math.PI * radius * radius));
+            context.globalAlpha = Math.min(.96, alpha * presence) * Math.sqrt(areaCompensation);
+            context.fillStyle = `rgb(${officialColors[colorIndex]})`;
+            context.beginPath();
+            context.arc(x + size / 2, y + size / 2, radius, 0, Math.PI * 2);
+            context.fill();
           } else {
             context.fillStyle = warmth > .1 ? `rgba(236,160,113,${alpha})` : warmth < -.65 ? `rgba(235,220,196,${alpha})` : `rgba(237,76,131,${alpha * .8})`;
             context.fillRect(x, y, size, size);
@@ -330,7 +305,8 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
     const resize = new ResizeObserver(() => {
       const box = canvas.getBoundingClientRect();
       width = box.width; height = box.height;
-      const dpr = Math.min(devicePixelRatio || 1, 1.5);
+      // Supersample the adopted circles at 2x even on 1x displays, instead of pixel-sized blocks.
+      const dpr = palette === "official" && space === "scatter" ? 2 : Math.min(devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);

@@ -450,26 +450,29 @@ test("adopted E hero retains the approved copy, centered layout and official arr
   }
 });
 
-test("adopted particles use cached soft circles instead of square grains", async ({ page }) => {
+test("adopted particles are directly drawn circles at a legible size and 2x resolution", async ({ page }) => {
   await page.addInitScript(() => {
-    const state = window as typeof window & { particleShape?: { center: number; corner: number; edge: number; draws: number }; squareGrains: number };
-    state.squareGrains = 0;
+    const state = window as typeof window & { particleShape: { circles: number; minRadius: number; maxRadius: number; nonCircles: number; squareGrains: number; bitmaps: number } };
+    state.particleShape = { circles: 0, minRadius: Infinity, maxRadius: 0, nonCircles: 0, squareGrains: 0, bitmaps: 0 };
+    const arc = CanvasRenderingContext2D.prototype.arc;
+    CanvasRenderingContext2D.prototype.arc = function (x, y, radius, start, end, counterclockwise) {
+      if (this.canvas.matches(".cr2-geometric-background canvas")) {
+        const shape = state.particleShape;
+        shape.circles++;
+        shape.minRadius = Math.min(shape.minRadius, radius);
+        shape.maxRadius = Math.max(shape.maxRadius, radius);
+        if (Math.abs(end - start - Math.PI * 2) > .0001) shape.nonCircles++;
+      }
+      return arc.call(this, x, y, radius, start, end, counterclockwise);
+    };
     const drawImage = CanvasRenderingContext2D.prototype.drawImage;
     CanvasRenderingContext2D.prototype.drawImage = function (...args: Parameters<typeof drawImage>) {
-      const source = args[0];
-      if (this.canvas.matches(".cr2-geometric-background canvas") && source instanceof HTMLCanvasElement && source.height === 32 && args.length === 9) {
-        if (!state.particleShape) {
-          const pixels = source.getContext("2d")!.getImageData(Number(args[1]), 0, 32, 32).data;
-          const alpha = (x: number, y: number) => pixels[(y * 32 + x) * 4 + 3];
-          state.particleShape = { center: alpha(16, 16), corner: alpha(4, 4), edge: alpha(29, 16), draws: 0 };
-        }
-        state.particleShape.draws++;
-      }
+      if (this.canvas.matches(".cr2-geometric-background canvas")) state.particleShape.bitmaps++;
       return drawImage.apply(this, args);
     };
     const fillRect = CanvasRenderingContext2D.prototype.fillRect;
     CanvasRenderingContext2D.prototype.fillRect = function (x, y, width, height) {
-      if (this.canvas.matches(".cr2-geometric-background canvas") && width > 0 && width < 8 && height < 8) state.squareGrains++;
+      if (this.canvas.matches(".cr2-geometric-background canvas") && width > 0 && width < 8 && height < 8) state.particleShape.squareGrains++;
       return fillRect.call(this, x, y, width, height);
     };
   });
@@ -477,14 +480,19 @@ test("adopted particles use cached soft circles instead of square grains", async
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(route);
-    const shape = () => page.evaluate(() => (window as typeof window & { particleShape?: { center: number; corner: number; edge: number; draws: number } }).particleShape);
-    await expect.poll(async () => (await shape())?.draws ?? 0).toBeGreaterThanOrEqual(width < 768 ? 14000 : 36000);
-    const pixels = (await shape())!;
-    expect(pixels.center).toBe(255);
-    expect(pixels.corner).toBe(0);
-    expect(pixels.edge).toBeGreaterThan(0);
-    expect(pixels.edge).toBeLessThan(128);
-    expect(await page.evaluate(() => (window as typeof window & { squareGrains: number }).squareGrains)).toBe(0);
+    const shape = () => page.evaluate(() => (window as typeof window & { particleShape: { circles: number; minRadius: number; maxRadius: number; nonCircles: number; squareGrains: number; bitmaps: number } }).particleShape);
+    await expect.poll(async () => (await shape()).circles).toBeGreaterThanOrEqual(width < 768 ? 9000 : 18000);
+    const result = await shape();
+    expect(result.minRadius).toBeGreaterThanOrEqual(1.2);
+    expect(result.maxRadius).toBeGreaterThanOrEqual(width < 768 ? 1.9 : 2.3);
+    expect(result.nonCircles).toBe(0);
+    expect(result.squareGrains).toBe(0);
+    expect(result.bitmaps).toBe(0);
+    const resolution = await page.locator(".cr2-geometric-background canvas").evaluate(node => {
+      const canvas = node as HTMLCanvasElement;
+      return canvas.width / canvas.getBoundingClientRect().width;
+    });
+    expect(resolution).toBeCloseTo(2, 2);
   }
 });
 
