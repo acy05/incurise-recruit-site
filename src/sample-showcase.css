@@ -110,3 +110,26 @@
 .sample-open > span { position: absolute; right: 15px; bottom: 15px; background: #faf9f6; color: #344238; border: 1px solid #34423833; border-radius: 30px; padding: 12px 18px; font-size: 12px; opacity: 0; transform: translateY(6px); transition: opacity .2s,transform .2s; }
 .sample-open:hover > span,.sample-open:focus-visible > span { opacity: 1; transform: none; }
 @media (hover: none) { .sample-open > span { opacity: 1; transform: none; font-size: 10px; padding: 9px 13px; } }
+
+/* Keep gallery typography with its layout so shared CSS chunk order cannot override it. */
+.sample-sora .sample-nav strong { font: 450 6.5cqw/1 var(--sora-latin); letter-spacing: .17em; }
+.sample-sora .sample-nav strong > span { font-family: var(--sora-latin); font-size: 1.6cqw; letter-spacing: .2em; margin-top: .7cqw; }
+.launch-sections .sample-sora h3 { font-family: var(--sora-display); font-weight: 450; letter-spacing: .07em; }
+.sample-sora .sora-bottom p { font-family: var(--sora-display); font-weight: 400; font-size: 3.4cqw; letter-spacing: .025em; }
+.sample-sora :is(.sora-title > span, .sora-title p, .sora-index, .sora-bottom > span, .sample-nav > div) { font-family: var(--sora-latin); }
+.sample-sora .sora-title p { font-size: 2.5cqw; letter-spacing: .025em; }
+.launch-sections .sample-gallery .sample-next { font-family: var(--next-text); }
+.launch-sections .sample-next h3 { font-family: var(--next-text); font-weight: 700; letter-spacing: -.035em; }
+.sample-next :is(.sample-nav strong, .sample-nav > div, .next-copy > span:first-child, .next-photo-label) { font-family: "Outfit Variable", sans-serif; }
+.sample-next .sample-nav strong { font-weight: 900; letter-spacing: -.075em; }
+.sample-next .next-bottom strong { font-family: var(--next-text); letter-spacing: 0; }
+.launch-sections .sample-gallery .sample-mellow { font-family: var(--mellow-text); }
+.sample-mellow .sample-nav strong,
+.launch-sections .sample-mellow h3,
+.sample-mellow .mellow-bottom strong,
+.sample-mellow .mellow-shop { font-family: var(--mellow-display); font-weight: 500; letter-spacing: -.025em; }
+.sample-mellow .sample-nav strong { font-size: 7cqw; letter-spacing: -.05em; }
+.launch-sections .sample-mellow h3 { font-size: 10cqw; line-height: .98; }
+.sample-mellow h3 em { font-size: .86em; }
+.sample-mellow :is(.sample-nav > div, .mellow-copy > span, .mellow-bottom > span:first-child) { font-family: var(--mellow-text); }
+.sample-mellow .mellow-shop { font-size: 2.4cqw; }

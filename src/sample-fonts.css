@@ -81,29 +81,6 @@
 .mellow-page :is(p, summary) { letter-spacing: .025em; }
 .mellow-page .ss-form :is(input, textarea, select) { font-family: var(--mellow-text); }
 
-/* The same font pairings in the original gallery. */
-.sample-sora .sample-nav strong { font: 450 6.5cqw/1 var(--sora-latin); letter-spacing: .17em; }
-.sample-sora .sample-nav strong > span { font-family: var(--sora-latin); font-size: 1.6cqw; letter-spacing: .2em; margin-top: .7cqw; }
-.launch-sections .sample-sora h3 { font-family: var(--sora-display); font-weight: 500; letter-spacing: .055em; }
-.sample-sora .sora-bottom p { font-family: var(--sora-display); font-weight: 500; font-size: 3.4cqw; letter-spacing: .025em; }
-.sample-sora :is(.sora-title > span, .sora-title p, .sora-index, .sora-bottom > span, .sample-nav > div) { font-family: var(--sora-latin); }
-.sample-sora .sora-title p { font-size: 2.5cqw; letter-spacing: .025em; }
-.launch-sections .sample-next { font-family: var(--next-text); }
-.launch-sections .sample-next h3 { font-family: var(--next-text); font-weight: 700; letter-spacing: -.025em; }
-.sample-next :is(.sample-nav strong, .sample-nav > div, .next-copy > span:first-child, .next-photo-label) { font-family: "Outfit Variable", sans-serif; }
-.sample-next .sample-nav strong { font-weight: 750; letter-spacing: -.055em; }
-.sample-next .next-bottom strong { font-family: var(--next-text); letter-spacing: 0; }
-.launch-sections .sample-mellow { font-family: var(--mellow-text); }
-.sample-mellow .sample-nav strong,
-.launch-sections .sample-mellow h3,
-.sample-mellow .mellow-bottom strong,
-.sample-mellow .mellow-shop { font-family: var(--mellow-display); font-weight: 500; letter-spacing: -.025em; }
-.sample-mellow .sample-nav strong { font-size: 8cqw; letter-spacing: -.05em; }
-.launch-sections .sample-mellow h3 { font-size: 11cqw; line-height: .99; }
-.sample-mellow h3 em { font-size: 8.5cqw; }
-.sample-mellow :is(.sample-nav > div, .mellow-copy > span, .mellow-bottom > span:first-child) { font-family: var(--mellow-text); }
-.sample-mellow .mellow-shop { font-size: 2.4cqw; }
-
 @media (max-width: 1050px) and (min-width: 761px) {
   .mellow-page .mellow-hero h1 { font-size: 84px; }
   .mellow-page .mellow-product-info h2 { font-size: 53px; }
