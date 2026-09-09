@@ -2,12 +2,12 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const route = "comment-revision/";
-// Comments take priority; uncommented copy matches the design itself.
-// Source: Figma 6QM5lCn22AJzsbZPUpV9Sj, checked 2026-09-07.
+// Explicit user revisions take priority, then comments, then uncommented design copy.
+// Source: Figma 6QM5lCn22AJzsbZPUpV9Sj, checked 2026-09-09.
 test("support descriptions match Figma and its comments without paraphrasing", async ({ page }) => {
   const comments = [
     [11, "learn", "01", ["プログラミングスキルを継続的に学ぶ環境を提供しています。"]],
-    [null, "learn", "02", ["待テラコヤを活用し、場所を選ばずオンラインで学べる環境を提供します。"]], // Desktop 345:348 / Mobile 349:518
+    [null, "learn", "02", ["プログラミングスキルを継続的に学ぶ環境を提供しています。"]], // Explicit user copy, 2026-09-09
     [15, "learn", "03", ["コンサルタントに求められる基礎・実践スキルを早期習得するための研修が整っています。"]],
     [16, "learn", "04", ["あなたのキャリア形成の後押し役として、役員が直接相談にのります。"]],
     [17, "learn", "05", ["全新入社員に1人、先輩社員がサポーターとしてアサインされます。", "入社直後から立ち上がりまでの支援を行います。"]],
@@ -18,7 +18,7 @@ test("support descriptions match Figma and its comments without paraphrasing", a
     [27, "connect", "10", ["隔月で役員も参加するイベントを開催しています。", "BBQやゲーム大会などを通して、様々なメンバーと交流することができます。"]],
     [30, "connect", "12", ["経営層から全社員に向けて理念を伝え、新入社員の紹介などを行う、隔月の集会です。"]],
     [30, "connect", "13", ["年に1度全社員が集まり、経営層から翌年に向けた重要な発表があります。豪華な景品が出るビンゴ大会も開催される、特別な集会です。"]],
-    [21, "life", "07", ["夏季冬期、産前・産後休暇/育児休暇が利用いただけます。"]],
+    [null, "life", "07", ["夏季休暇・冬期休暇、産前・産後休暇／育児休暇が利用可能です。"]], // User requests current Figma design, Desktop 345:383
     [31, "life", "14", ["住宅の賃貸・売買の際、会社と提供している不動産仲介会社を通して成約した場合、不動産仲介手数料が割引となる制度です。"]],
     [32, "life", "15", ["「たくさん歩いて健康促進」を目標に、上記テーマパークの入園料の一部を負担する制度"]],
   ] as const;
@@ -39,7 +39,7 @@ test("support descriptions match Figma and its comments without paraphrasing", a
       await expect(tab).toHaveText(titles[Number(item) - 1]);
       await tab.click();
       await expect(chapter.locator(".cr2-support-detail-copy h3")).toHaveText(titles[Number(item) - 1]);
-      await expect(chapter.locator(".cr2-support-detail-copy p"), number === null ? "Figma design (no comment)" : `Figma comment #${number}`).toHaveText([...paragraphs]);
+      await expect(chapter.locator(".cr2-support-detail-copy p"), number === null ? "Latest user request / Figma design" : `Figma comment #${number}`).toHaveText([...paragraphs]);
     }
   }
 });
@@ -421,7 +421,10 @@ test("adopted E hero retains the approved copy, centered layout and official arr
     const headingArrow = page.locator(".cr2-e-line img").first();
     const officialArrowData = readFileSync(new URL("../src/assets/preview/growth-arrow.png", import.meta.url)).toString("base64");
     await expect(headingArrow).toHaveAttribute("src", `data:image/png;base64,${officialArrowData}`);
-    await expect(headingArrow).toHaveCSS("filter", "brightness(0) invert(1)");
+    await expect(headingArrow).toHaveCSS("filter", "none");
+    await expect(page.locator(".cr2-adopted-hero")).toHaveCSS("color", "rgb(13, 43, 43)");
+    await expect(page.locator(".cr2-geometric-background")).toHaveCSS("background-color", "rgb(241, 241, 241)");
+    await expect(page.locator(".cr2-geometric-background")).toHaveAttribute("data-palette", "official");
     const headingAngle = await headingArrow.evaluate((node) => {
       const matrix = new DOMMatrixReadOnly(getComputedStyle(node).transform);
       return Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;

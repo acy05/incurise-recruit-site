@@ -7,7 +7,7 @@ import "./adopted-hero.css";
 export function AdoptedHero() {
   return (
     <section className="cr2-adopted-hero" aria-labelledby="cr2-hero-title">
-      <GeometricHero centerShift={-.24} space="scatter" />
+      <GeometricHero centerShift={-.24} space="scatter" palette="official" />
       <div className="cr2-e-shade" aria-hidden="true" />
       <div className="cr2-e-copy">
         <p className="cr2-e-label">技術と人で、企業の変革を支える。</p>

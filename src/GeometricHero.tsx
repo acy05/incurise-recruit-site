@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /** A locally rendered particle sculpture: no video download or external runtime. */
-export function GeometricHero({ centerShift = 0, motion = "default", space = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D"; space?: "default" | "flow" | "rings" | "facets" | "scatter" }) {
+export function GeometricHero({ centerShift = 0, motion = "default", space = "default", palette = "default" }: { centerShift?: number; motion?: "default" | "A" | "B" | "C" | "D"; space?: "default" | "flow" | "rings" | "facets" | "scatter"; palette?: "default" | "official" }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeRef = useRef(0);
   const displacementRef = useRef(new Float32Array(72000));
@@ -45,6 +45,22 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
     }
     const still = paused || reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
     const random = (n: number) => { const value = Math.sin(n * 127.1 + 311.7) * 43758.5453; return value - Math.floor(value); };
+    // Official incurise.co.jp opening palette, verified 2026-09-09.
+    // Precompute the gradient; recoloring must not change the particle choreography.
+    const stops = [
+      { at: 0, rgb: [239, 179, 3] },
+      { at: .16, rgb: [239, 90, 3] },
+      { at: .26, rgb: [255, 8, 48] },
+      { at: .79, rgb: [252, 0, 108] },
+      { at: 1, rgb: [253, 2, 168] },
+    ];
+    const officialColors = Array.from({ length: 128 }, (_, index) => {
+      const t = index / 127;
+      const end = stops.findIndex(stop => stop.at >= t);
+      const from = stops[Math.max(0, end - 1)], to = stops[end];
+      const blend = (t - from.at) / (to.at - from.at || 1);
+      return from.rgb.map((value, channel) => Math.round(value + (to.rgb[channel] - value) * blend)).join(",");
+    });
     // Deterministic sampling avoids a flashing/random composition on resize.
     const points = Array.from({ length: space === "scatter" ? 36000 : 12000 }, (_, i) => ({
       u: (i / 12000) * Math.PI * 2,
@@ -100,7 +116,10 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           if (!reduceMotion) { x += displacement[i * 2]; y += displacement[i * 2 + 1]; }
           const alpha = (.35 + depth * .6) * (.15 + entrance * .85) * (i % 9 === 0 ? .25 : backLayer ? .42 : 1);
           const warmth = Math.sin(t * 9 + branch * 1.2 + phase);
-          context.fillStyle = warmth > .1 ? `rgba(236,160,113,${alpha})` : warmth < -.65 ? `rgba(235,220,196,${alpha})` : `rgba(237,76,131,${alpha * .8})`;
+          const colorIndex = Math.round(Math.max(0, Math.min(1, x / width + gaussian * .035)) * 127);
+          context.fillStyle = palette === "official"
+            ? `rgba(${officialColors[colorIndex]},${alpha * .82})`
+            : warmth > .1 ? `rgba(236,160,113,${alpha})` : warmth < -.65 ? `rgba(235,220,196,${alpha})` : `rgba(237,76,131,${alpha * .8})`;
           const size = backLayer ? .65 : (mobile ? .65 : .8) + depth * .85;
           context.fillRect(x, y, size, size);
         }
@@ -111,7 +130,7 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           const y = ((p.seed * (height + 160) + time * 3) % (height + 160)) - 80 + cameraY * 30;
           const radius = (mobile ? 5 : 8) + p.seed * 12;
           const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
-          const color = i % 3 === 0 ? "255,180,126" : "255,54,124";
+          const color = palette === "official" ? officialColors[Math.round(Math.max(0, Math.min(1, x / width)) * 127)] : i % 3 === 0 ? "255,180,126" : "255,54,124";
           gradient.addColorStop(0, `rgba(${color},${entrance * .24})`);
           gradient.addColorStop(.3, `rgba(${color},${entrance * .12})`);
           gradient.addColorStop(1, `rgba(${color},0)`);
@@ -283,10 +302,10 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       window.removeEventListener("scroll", leave);
       document.removeEventListener("pointerleave", leave);
     };
-  }, [paused, reduced, centerShift, motion, space]);
+  }, [paused, reduced, centerShift, motion, space, palette]);
 
   return <>
-    <div className="cr2-geometric-background" aria-hidden="true">
+    <div className="cr2-geometric-background" data-palette={palette} aria-hidden="true">
       <div className="cr2-geometric-glow" />
       <canvas ref={canvasRef} />
       <div className="cr2-geometric-grid" />
