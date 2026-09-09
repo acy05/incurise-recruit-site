@@ -84,6 +84,8 @@ for (const width of [1440, 390]) {
     await visual.scrollIntoViewIfNeeded();
     const photo = visual.locator("img");
     await expect(photo).toHaveCSS("transform", "none");
+    // Scrolling starts lazy loading; intrinsic dimensions are zero until it finishes.
+    await expect.poll(() => photo.evaluate(image => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0)).toBe(true);
     const geometry = await photo.evaluate(image => {
       const rect = image.getBoundingClientRect();
       return { displayed: rect.width / rect.height, original: image.naturalWidth / image.naturalHeight };
