@@ -134,8 +134,10 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           if (official) {
             // Draw vector circles directly: shrinking a bitmap to 1px hid its round outline.
             // Foreground dots remain visibly circular at normal desktop/mobile zoom levels.
-            const radius = Math.max(backLayer ? 1.2 : (mobile ? 1.9 : 2.3) + depth * .2, size * .8);
-            const areaCompensation = Math.min(1, size * size / (Math.PI * radius * radius));
+            const baseRadius = Math.max(backLayer ? 1.2 : (mobile ? 1.9 : 2.3) + depth * .2, size * .8);
+            const radius = baseRadius * .75;
+            // Shrink the circle only; keep its existing opacity rather than brightening small dots.
+            const areaCompensation = Math.min(1, size * size / (Math.PI * baseRadius * baseRadius));
             context.globalAlpha = Math.min(.96, alpha * presence) * Math.sqrt(areaCompensation);
             context.fillStyle = `rgb(${officialColors[colorIndex]})`;
             context.beginPath();

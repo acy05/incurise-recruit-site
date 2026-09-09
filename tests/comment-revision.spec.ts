@@ -483,8 +483,9 @@ test("adopted particles are directly drawn circles at a legible size and 2x reso
     const shape = () => page.evaluate(() => (window as typeof window & { particleShape: { circles: number; minRadius: number; maxRadius: number; nonCircles: number; squareGrains: number; bitmaps: number } }).particleShape);
     await expect.poll(async () => (await shape()).circles).toBeGreaterThanOrEqual(width < 768 ? 9000 : 18000);
     const result = await shape();
-    expect(result.minRadius).toBeGreaterThanOrEqual(1.2);
-    expect(result.maxRadius).toBeGreaterThanOrEqual(width < 768 ? 1.9 : 2.3);
+    expect(result.minRadius).toBeCloseTo(.9, 5);
+    expect(result.maxRadius).toBeGreaterThanOrEqual((width < 768 ? 1.9 : 2.3) * .75);
+    expect(result.maxRadius).toBeLessThan(width < 768 ? 1.75 : 2.1);
     expect(result.nonCircles).toBe(0);
     expect(result.squareGrains).toBe(0);
     expect(result.bitmaps).toBe(0);
