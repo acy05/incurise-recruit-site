@@ -1,0 +1,120 @@
+/* Responsive refinements only: desktop typography and composition stay intact. */
+@media (max-width: 1023px) {
+  .sample-full .demo-bar { padding-block: 0; gap: 8px; }
+  .sample-full .demo-bar > a,
+  .sample-full .demo-bar nav a { display: inline-flex; align-items: center; min-height: 44px; }
+  .sample-full .demo-bar nav a { justify-content: center; min-width: 44px; }
+  .sample-full .demo-bar nav { gap: 8px; }
+  .sample-full .demo-bar > span { display: none; }
+  .sample-full .ss-logo,
+  .sample-full .ss-nav a,
+  .sample-full .ss-text-link,
+  .sample-full .ss-filter button,
+  .sample-full .ss-header-action .ss-button,
+  .sample-full .mellow-bag,
+  .sample-full .ss-footer a { min-height: 44px; }
+  .sample-full .ss-logo { display: block; align-content: center; }
+  .sample-full .ss-footer a { display: inline-flex; align-items: center; }
+  .ss-motion-root .ss-motion-toggle {
+    min-height: 44px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    right: max(12px, env(safe-area-inset-right));
+  }
+  .ss-motion-root .sample-full .ss-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  .sample-full .ss-form-two { grid-template-columns: minmax(0, 1fr); }
+  .sample-full :is(.ss-form, .ss-form label, .ss-section > div) { min-width: 0; }
+  .sample-full :is(input, textarea, select) { font-size: 16px; }
+  .sample-full .ss-section-head > * { min-width: 0; }
+  .next-page .next-entry-select select,
+  .mellow-page .mellow-quantity select,
+  .mellow-page .mellow-cart-item select { font-size: 16px; min-height: 44px; }
+  .next-page .next-hero-photo { height: auto; }
+  .next-page .next-hero-photo > img {
+    height: auto;
+    object-fit: contain;
+    transform: none;
+    animation: none;
+  }
+  .sample-full :is(.sora-process li p, .next-values p, .mellow-notes-copy article p, .mellow-product-info > p:not(.mellow-price), .mellow-ritual article p) {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .sample-full .ss-header { padding: 14px 22px; gap: 12px; min-height: 78px; }
+  .sample-full .ss-header-action { margin-left: auto; }
+  .sample-full .ss-menu { display: block; flex-shrink: 0; }
+  .sample-full .ss-nav { display: none; }
+  .sample-full .ss-nav.is-open {
+    display: flex;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 22px max(18px, env(safe-area-inset-bottom));
+    background: inherit;
+    border-bottom: 1px solid #34423844;
+    font-size: 14px;
+    max-height: calc(100dvh - var(--ss-menu-top, 100px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .sample-full .ss-nav a { padding-block: 14px; }
+  .sample-full .ss-section-head { display: block; }
+  .sample-full .ss-section-head > p,
+  .sample-full .ss-section-head > .ss-filter { margin-top: 24px; }
+  .sora-page .sora-about,
+  .sora-page .sora-process,
+  .sora-page .sora-contact,
+  .next-page .next-entry-section,
+  .mellow-page .mellow-faq { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .sora-page .sora-prose { padding-top: 0; }
+  .sora-page .sora-about h2 { margin-bottom: 0; }
+  .sample-full :is(.sora-contact, .next-entry-section) > .ss-form { width: 100%; max-width: 640px; }
+  .next-page .next-entry-select { max-width: 640px; }
+  .next-page .next-values { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .next-page .next-values h3 { margin: 18px 0 12px; font-size: 22px; }
+  .mellow-page .mellow-notes { grid-template-columns: minmax(0, 1fr); }
+  .mellow-page .mellow-detail-image { height: 380px; min-height: 0; }
+  .mellow-page .mellow-notes-copy { padding: 56px max(6vw, 22px); }
+  .mellow-page .mellow-ritual > div { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .mellow-page .mellow-ritual h3 { margin-block: 20px; }
+}
+
+@media (max-width: 760px) {
+  .sample-full .ss-header { padding-inline: 18px; }
+  .sample-full .ss-header-action .ss-button { padding-inline: 14px; white-space: nowrap; }
+  .sample-full .ss-section { padding-inline: 22px; }
+  .sora-page .sora-hero { min-height: 500px; }
+  .sora-page .sora-hero-copy h1 { font-size: clamp(48px, 14vw, 61px); }
+  .sora-page .sora-full-image { height: clamp(280px, 75vw, 430px); }
+  .next-page .next-hero-copy h1 { font-size: clamp(34px, 9.6vw, 65px); }
+  .next-page .next-big-star { font-size: clamp(32px, 10vw, 48px); right: 0; }
+  .mellow-page .mellow-hero {
+    height: clamp(600px, calc(100svh - 122px), 760px);
+    min-height: 0;
+  }
+  .mellow-page .mellow-product-gallery { width: 100%; max-width: 460px; margin-inline: auto; }
+  .mellow-page .mellow-product-info h2 { font-size: clamp(45px, 13vw, 57px); }
+  .mellow-page .mellow-ritual > h2 { font-size: clamp(40px, 11vw, 56px); }
+  .mellow-page .mellow-closing h2 { font-size: clamp(52px, 15vw, 76px); }
+}
+
+@media (max-width: 480px) {
+  .ss-motion-root .ss-motion-toggle { width: 44px; padding: 0; gap: 0; justify-content: center; font-size: 0; }
+  .ss-motion-root .ss-motion-toggle > span:not(.ss-motion-icon) { display: none; }
+  .ss-motion-root .ss-motion-icon { font-size: 16px; width: 18px; height: 18px; }
+  .sample-full .ss-modal { padding: 22px 18px; }
+  .sora-page .sora-project-meta { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .sora-page .sora-project-action { justify-self: start; }
+  .sora-page .sora-journal-row h3 { flex-basis: 100%; }
+  .next-page .next-hero-bottom { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .next-page .next-hero-copy .ss-eyebrow { letter-spacing: .08em; }
+  .mellow-page .mellow-story p { font-size: 14px; }
+  .mellow-page .mellow-story p br { display: none; }
+  .mellow-page .mellow-story h2 { font-size: clamp(23px, 6.5vw, 27px); }
+  .mellow-page .mellow-cart-item { grid-template-columns: 72px minmax(0, 1fr); gap: 14px; }
+  .mellow-page .mellow-cart-item img { width: 72px; height: 100px; }
+  .mellow-page .mellow-cart-item label { display: flex; align-items: center; gap: 8px; }
+  .mellow-page .mellow-cart-item select { margin: 0; }
+}

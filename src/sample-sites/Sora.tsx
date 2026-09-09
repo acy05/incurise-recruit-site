@@ -3,6 +3,7 @@ import { useState } from "react";
 import { asset, DemoBar, DemoForm, Modal, SiteFooter, SiteHeader } from "./Shared";
 import "./sora.css";
 import "../sample-fonts.css";
+import "./responsive.css";
 const works=[
  {title:"光を紡ぐ家",en:"HOUSE OF LIGHT",category:"住まい",image:"sora-courtyard.webp",area:"中庭のある住まい",body:"一日の光を、暮らしの風景に。外へと閉じ、庭へと開く住まいは、家族の気配と季節の移ろいをゆるやかにつなぎます。石、木、土。時間とともに表情を深める素材を選びました。"},
  {title:"庭と、ひと続きに。",en:"A ROOM WITH A GARDEN",category:"リノベーション",image:"sora-interior.webp",area:"庭を愉しむリノベーション",body:"窓辺に座り、風の通り道を感じる。残せるものを大切にしながら、庭と室内のあいだにある境界をほどきました。小さな変化から、住まいの新しい可能性が生まれます。"},

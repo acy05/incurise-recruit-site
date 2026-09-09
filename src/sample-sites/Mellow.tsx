@@ -4,6 +4,7 @@ import {useState} from "react";
 import {asset,DemoBar,Modal,SiteFooter,SiteHeader} from "./Shared";
 import "./mellow.css";
 import "../sample-fonts.css";
+import "./responsive.css";
 const money=(n:number)=>new Intl.NumberFormat("ja-JP",{style:"currency",currency:"JPY"}).format(n);
 export default function Mellow(){const [size,setSize]=useState<"250 mL"|"500 mL">("250 mL");const [qty,setQty]=useState(1);const [cart,setCart]=useState<Record<string,number>>({});const [open,setOpen]=useState(false);const [confirmed,setConfirmed]=useState(false);const [photo,setPhoto]=useState("全体");const price=size==="250 mL"?3200:5200;const total=Object.entries(cart).reduce((s,[k,q])=>s+q*(k==="250 mL"?3200:5200),0);const count=Object.values(cart).reduce((s,n)=>s+n,0);
 function add(){setCart(c=>({...c,[size]:(c[size]||0)+qty}));setConfirmed(false);setOpen(true);}

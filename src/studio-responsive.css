@@ -1,0 +1,70 @@
+/* Keep the approved desktop composition unchanged at 1024px and above. */
+@media (max-width: 1023px) {
+  .studio .brand,
+  .studio .desktop-nav a,
+  .studio .text-link,
+  .studio .footer-top > a,
+  .studio .footer-bottom a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .studio .footer-bottom > div { flex-wrap: wrap; gap: 8px 24px; }
+  .studio .motion-control {
+    min-height: 44px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    right: max(12px, env(safe-area-inset-right));
+  }
+  .studio .studio-footer { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+  .studio .consultation textarea { font-size: 16px; }
+  .studio .consultation,
+  .studio .contact-copy { min-width: 0; }
+  .studio .faq-list button { font-size: 14px; line-height: 1.8; }
+  .studio .faq-list button > span { flex-shrink: 0; }
+}
+
+@media (max-width: 900px) {
+  .studio .studio-header { height: 76px; justify-content: space-between; }
+  .studio .desktop-nav { display: none; }
+  .studio .menu-button { display: grid; flex-shrink: 0; }
+  .studio .mobile-menu {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: max(30px, env(safe-area-inset-bottom));
+  }
+  .studio .mobile-menu a { padding-block: 20px; min-height: 60px; }
+  .studio .intro-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .studio .faq,
+  .studio .contact { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .studio .contact .consultation { width: 100%; max-width: 620px; }
+  .studio .contact-copy > p { margin-top: 22px; }
+  .studio .contact-benefits { margin-top: 24px; }
+  .studio .contact-scribble { margin-top: 28px; }
+  .studio .process-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 0; }
+  .studio .process-grid article:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .studio .process-grid article:nth-child(even) { padding-right: 0; }
+  .studio .section-title { display: block; }
+  .studio .section-title > p { margin-top: 22px; }
+}
+
+@media (max-width: 480px) {
+  .studio .motion-control { width: 44px; padding: 0; justify-content: center; }
+  .studio .motion-control > span { display: none; }
+  .studio .motion-control > svg { width: 18px; height: 18px; }
+  .studio .section-shell { padding-inline: 22px; }
+  .studio .intro h2 { font-size: clamp(30px, 9.2vw, 43px); }
+  .studio .intro .large-copy { font-size: clamp(18px, 5.5vw, 21px); }
+  .studio .contact h2 { font-size: clamp(28px, 7.8vw, 35px); }
+  .studio .consultation { padding: 26px 18px; }
+  .studio .consultation h3 { font-size: clamp(20px, 5.8vw, 24px); }
+  .studio .consultation fieldset label { padding: 12px 10px; gap: 8px; }
+  .studio .consultation fieldset label > svg { flex-shrink: 0; }
+  .studio .process-grid { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .studio .process-grid article { border-left: 0; padding: 0 !important; }
+  .studio .process-grid h3 { font-size: 21px; margin-bottom: 12px; }
+  .studio .step-top { margin-bottom: 16px; }
+  .studio .step-en { font-size: 10px; }
+  .studio .faq-answer p { padding-left: 0; padding-right: 0; }
+  .studio .service-foot br,
+  .studio .process-note br { display: none; }
+}

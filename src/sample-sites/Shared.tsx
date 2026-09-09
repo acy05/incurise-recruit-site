@@ -7,9 +7,31 @@ export function DemoBar({site}: {site: string}) {
   return <aside className="demo-bar"><a href={`${base}#design-samples`}><NavigationIcon direction="back"/>ISAACに戻る</a><span>架空ブランドのデザインサンプル</span><nav aria-label="サンプル切り替え">{["sora","next","mellow"].map(s=><a key={s} href={`${base}samples/${s}/`} aria-current={site===s?"page":undefined}>{s === "sora" ? "SORA" : s === "next" ? "next." : "mellow"}</a>)}</nav></aside>;
 }
 export function SiteHeader({logo,links,action}:{logo:ReactNode;links:[string,string][];action?:ReactNode}) {
-  const [open,setOpen]=useState(false); const trigger=useRef<HTMLButtonElement>(null); const id=useId();
-  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.key==="Escape"&&open){setOpen(false);trigger.current?.focus();}};document.addEventListener("keydown",key);return()=>document.removeEventListener("keydown",key);},[open]);
-  return <header className="ss-header"><a className="ss-logo" href="#top" aria-label="トップへ">{logo}</a><nav id={id} className={open?"ss-nav is-open":"ss-nav"} aria-label="メインナビゲーション">{links.map(([label,href])=><a key={href} href={href} onClick={()=>setOpen(false)}>{label}</a>)}</nav><div className="ss-header-action">{action}</div><button className="ss-menu" ref={trigger} onClick={()=>setOpen(!open)} aria-expanded={open} aria-controls={id} aria-label={open?"メニューを閉じる":"メニューを開く"}>{open?"✕":"☰"}</button></header>;
+  const [open,setOpen]=useState(false); const trigger=useRef<HTMLButtonElement>(null); const header=useRef<HTMLElement>(null); const id=useId();
+  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.key==="Escape"&&open){setOpen(false);trigger.current?.focus({preventScroll:true});}};document.addEventListener("keydown",key);return()=>document.removeEventListener("keydown",key);},[open]);
+  useEffect(() => {
+    const wide = matchMedia("(min-width: 901px)");
+    const closeOnDesktop = () => { if (wide.matches) setOpen(false); };
+    wide.addEventListener("change", closeOnDesktop);
+    return () => wide.removeEventListener("change", closeOnDesktop);
+  }, []);
+  useEffect(() => {
+    if (!open) return;
+    // The demo bar scrolls away, so use the header's actual bottom edge.
+    const fitMenu = () => {
+      const element = header.current;
+      if (element) element.style.setProperty("--ss-menu-top", `${element.getBoundingClientRect().bottom}px`);
+    };
+    fitMenu();
+    window.addEventListener("resize", fitMenu);
+    window.addEventListener("scroll", fitMenu, { passive: true });
+    return () => {
+      window.removeEventListener("resize", fitMenu);
+      window.removeEventListener("scroll", fitMenu);
+      header.current?.style.removeProperty("--ss-menu-top");
+    };
+  }, [open]);
+  return <header ref={header} className="ss-header"><a className="ss-logo" href="#top" aria-label="トップへ">{logo}</a><nav id={id} className={open?"ss-nav is-open":"ss-nav"} aria-label="メインナビゲーション">{links.map(([label,href])=><a key={href} href={href} onClick={()=>setOpen(false)}>{label}</a>)}</nav><div className="ss-header-action">{action}</div><button className="ss-menu" ref={trigger} onClick={()=>setOpen(!open)} aria-expanded={open} aria-controls={id} aria-label={open?"メニューを閉じる":"メニューを開く"}>{open?"✕":"☰"}</button></header>;
 }
 export function Modal({title,close,children}:{title:string;close:()=>void;children:ReactNode}) {
   const ref=useRef<HTMLDialogElement>(null); const id=useId();

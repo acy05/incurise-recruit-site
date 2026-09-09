@@ -16,6 +16,7 @@ import "./studio-landing.css";
 import FriendlyLaunch from "./FriendlyLaunch";
 import "./studio-polish.css";
 import "./studio-motion-polish.css";
+import "./studio-responsive.css";
 
 const services = [
   {
@@ -245,7 +246,7 @@ export default function StudioLanding() {
   }, []);
 
   useEffect(() => {
-    const wide = matchMedia("(min-width: 761px)");
+    const wide = matchMedia("(min-width: 901px)");
     const closeOnDesktop = () => {
       if (wide.matches) setMenuOpen(false);
     };

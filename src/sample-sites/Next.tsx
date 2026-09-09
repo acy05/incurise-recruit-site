@@ -7,6 +7,7 @@ import workshop from "../assets/generated/growth/growth-workshop.webp";
 import {NavigationIcon,DemoBar,DemoForm,Modal,SiteFooter,SiteHeader} from "./Shared";
 import "./next.css";
 import "../sample-fonts.css";
+import "./responsive.css";
 const jobs=[{title:"プロダクトデザイナー",category:"DESIGN",body:"ユーザーの声から課題を見つけ、体験の設計からUIの表現までを担います。エンジニアと一緒に、つくって試すことを大切にする仕事です。",skills:"Web・アプリのUI設計経験、意図を伝えながらチームで制作を進めた経験。"},{title:"フロントエンドエンジニア",category:"ENGINEERING",body:"プロダクトの使いやすさを、実装からつくります。デザイナーと協働しながら、パフォーマンスやアクセシビリティも含めて体験を磨きます。",skills:"HTML・CSS・JavaScriptでの開発経験、チーム開発への関心。"},{title:"プロジェクトプランナー",category:"BUSINESS",body:"事業の課題を整理し、チームの力が届く道筋をつくります。企画・進行・振り返りを通じて、プロジェクトの一歩先を考える仕事です。",skills:"プロジェクトの進行経験、さまざまな立場の人と対話する力。"}];
 const people=[{name:"Haru",role:"PRODUCT DESIGNER",image:personDesign,title:"「こうしたい」を、\n一緒に面白がってくれる。",body:"ひとりで考えていたアイデアを話すと、誰かが別の視点を足してくれる。ここでは、未完成のまま相談できることが強さになっています。毎週のデザインレビューでも、立場より「なぜそう考えたか」を大切にしています。"},{name:"Ren",role:"FRONTEND ENGINEER",image:personEngineer,title:"いい体験は、\n職種の境目を越えてくる。",body:"デザインができる前から、一緒に画面を考えます。小さく実装して触ってみると、会議だけでは見つからない答えがある。技術を学ぶ時間と、隣の人に質問できる空気が、自分の成長を支えてくれています。"}];
 export default function Next(){const [filter,setFilter]=useState("ALL");const [person,setPerson]=useState<number|null>(null);const [job,setJob]=useState<number|null>(null);const [entry,setEntry]=useState("まずはカジュアルに話したい");
