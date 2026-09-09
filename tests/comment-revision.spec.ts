@@ -450,6 +450,44 @@ test("adopted E hero retains the approved copy, centered layout and official arr
   }
 });
 
+test("adopted particles use cached soft circles instead of square grains", async ({ page }) => {
+  await page.addInitScript(() => {
+    const state = window as typeof window & { particleShape?: { center: number; corner: number; edge: number; draws: number }; squareGrains: number };
+    state.squareGrains = 0;
+    const drawImage = CanvasRenderingContext2D.prototype.drawImage;
+    CanvasRenderingContext2D.prototype.drawImage = function (...args: Parameters<typeof drawImage>) {
+      const source = args[0];
+      if (this.canvas.matches(".cr2-geometric-background canvas") && source instanceof HTMLCanvasElement && source.height === 32 && args.length === 9) {
+        if (!state.particleShape) {
+          const pixels = source.getContext("2d")!.getImageData(Number(args[1]), 0, 32, 32).data;
+          const alpha = (x: number, y: number) => pixels[(y * 32 + x) * 4 + 3];
+          state.particleShape = { center: alpha(16, 16), corner: alpha(4, 4), edge: alpha(29, 16), draws: 0 };
+        }
+        state.particleShape.draws++;
+      }
+      return drawImage.apply(this, args);
+    };
+    const fillRect = CanvasRenderingContext2D.prototype.fillRect;
+    CanvasRenderingContext2D.prototype.fillRect = function (x, y, width, height) {
+      if (this.canvas.matches(".cr2-geometric-background canvas") && width > 0 && width < 8 && height < 8) state.squareGrains++;
+      return fillRect.call(this, x, y, width, height);
+    };
+  });
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(route);
+    const shape = () => page.evaluate(() => (window as typeof window & { particleShape?: { center: number; corner: number; edge: number; draws: number } }).particleShape);
+    await expect.poll(async () => (await shape())?.draws ?? 0).toBeGreaterThanOrEqual(width < 768 ? 14000 : 36000);
+    const pixels = (await shape())!;
+    expect(pixels.center).toBe(255);
+    expect(pixels.corner).toBe(0);
+    expect(pixels.edge).toBeGreaterThan(0);
+    expect(pixels.edge).toBeLessThan(128);
+    expect(await page.evaluate(() => (window as typeof window & { squareGrains: number }).squareGrains)).toBe(0);
+  }
+});
+
 test("adopted particle motion pauses, resumes and respects reduced motion", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
