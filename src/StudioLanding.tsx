@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import {
   ArrowUp,
   ArrowUpRight,
@@ -111,7 +111,7 @@ function Consultation({
     }
   };
   return (
-    <div className="consultation" data-reveal>
+    <div className="consultation">
       <div className="consultation-heading">
         <span className="status-dot" />
         LET’S START A CONVERSATION
@@ -214,7 +214,7 @@ export default function StudioLanding() {
       (entries) =>
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
+            entry.target.setAttribute("data-revealed", "true");
             observer.unobserve(entry.target);
           }
         }),
@@ -284,10 +284,48 @@ export default function StudioLanding() {
     };
   }, [menuOpen]);
 
+  // Align to the readable content, independent of section padding or reveal transforms.
+  const contactFrame = useRef(0);
+  const moveToContact = (animate: boolean) => {
+    cancelAnimationFrame(contactFrame.current);
+    contactFrame.current = requestAnimationFrame(() => {
+      const contact = root.current?.querySelector<HTMLElement>("#contact");
+      const label = contact?.querySelector<HTMLElement>(".section-label");
+      if (!contact || !label) return;
+      const top = window.scrollY + label.getBoundingClientRect().top - 32;
+      contact.focus({ preventScroll: true });
+      const motionOff = matchMedia("(prefers-reduced-motion: reduce)").matches || root.current?.classList.contains("motion-paused");
+      window.scrollTo({ top: Math.max(0, top), behavior: animate && !motionOff ? "smooth" : "instant" });
+    });
+  };
+  useEffect(() => {
+    let active = true;
+    void document.fonts.ready.then(() => {
+      if (active && location.hash === "#contact") moveToContact(false);
+    });
+    const onHashChange = () => {
+      if (location.hash === "#contact") moveToContact(true);
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => {
+      active = false;
+      cancelAnimationFrame(contactFrame.current);
+      window.removeEventListener("hashchange", onHashChange);
+    };
+  }, []);
+  const onContactLink = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href="#contact"]');
+    if (!link) return;
+    event.preventDefault();
+    if (location.hash !== "#contact") history.pushState(null, "", "#contact");
+    moveToContact(true);
+  };
   const toggleMotion = () => setPaused((current) => !current);
   return (
     <div
       ref={root}
+      onClick={onContactLink}
       className={`studio ${paused ? "motion-paused" : ""} ${reduced ? "motion-reduced" : ""}`}
       id="top"
     >
@@ -612,7 +650,7 @@ export default function StudioLanding() {
           </div>
         </section>
         <section className="contact section-shell" id="contact" tabIndex={-1}>
-          <div className="contact-copy" data-reveal>
+          <div className="contact-copy">
             <div className="section-label">
               <span>06 / LET’S TALK</span>
             </div>

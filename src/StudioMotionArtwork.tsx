@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 /* Vector artwork keeps the fine lines sharp at every screen size. */
 const contours = Array.from({ length: 24 }, (_, index) => {
   const points = Array.from({ length: 241 }, (_, step) => {
@@ -48,11 +50,25 @@ export function ChapterArtwork() {
 }
 
 export function DesignTicker() {
+  const root = useRef<HTMLDivElement>(null);
+  const [repetitions, setRepetitions] = useState(4);
+  useEffect(() => {
+    const container = root.current;
+    const pair = container?.querySelector<HTMLElement>(".ticker-pair");
+    if (!container || !pair) return;
+    const resize = new ResizeObserver(() => {
+      const width = pair.getBoundingClientRect().width;
+      if (width > 0) setRepetitions(Math.max(2, Math.ceil(container.clientWidth / width) + 1));
+    });
+    resize.observe(container);
+    resize.observe(pair);
+    return () => resize.disconnect();
+  }, []);
   return (
-    <div className="ticker" aria-hidden="true" data-motion-scene>
+    <div ref={root} className="ticker" aria-hidden="true" data-motion-scene>
       <div className="ticker-track">
         {[0, 1].map(group => <div className="ticker-group" key={group}>
-          {[0, 1, 2].map(item => <span className="ticker-pair" key={item}>
+          {Array.from({ length: repetitions }, (_, item) => <span className="ticker-pair" key={item}>
             <span>DESIGN WITH PURPOSE</span><i>✳</i><span>IDEAS INTO IMPACT</span><i>✳</i>
           </span>)}
         </div>)}
