@@ -16,7 +16,7 @@ export function AdoptedHero() {
           <span className="cr2-e-line">1<img src={growthArrow} alt="" /><strong>100</strong>の成長へ<span className="cr2-e-punctuation">。</span></span>
         </h1>
         <div className="cr2-e-bottom">
-          <p className="cr2-e-lead">ITコンサルティングとシステム開発で、企業の挑戦を支える。<br />未経験から技術を仕事にする人も、経験を次の事業へつなぐ人も。<br />一人ひとりの現在地から、成長の続きをつくる。</p>
+          <p className="cr2-e-lead"><span><span className="cr2-e-phrase">ITコンサルティングとシステム開発で、</span><span className="cr2-e-phrase">企業の挑戦を支える。</span></span><br /><span><span className="cr2-e-phrase">未経験から技術を仕事にする人も、</span><span className="cr2-e-phrase">経験を次の事業へつなぐ人も。</span></span><br /><span>一人ひとりの現在地から、成長の続きをつくる。</span></p>
           <a href="https://incurise.co.jp/about/">私たちを知る<img src={linkArrow} alt="" /></a>
         </div>
       </div>

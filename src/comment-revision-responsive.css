@@ -1,0 +1,121 @@
+/* Mobile/tablet composition. Keep the approved desktop rules at 1100px+ intact. */
+@media (max-width: 1099px) {
+  .cr2-site { --cr2-gutter: clamp(20px, 4vw, 40px); }
+  .cr2-site .cr2-header { padding-inline: var(--cr2-gutter); }
+  .cr2-site .cr2-entry-button {
+    width: 80px; min-height: 44px; display: inline-flex; align-items: center;
+    justify-content: center; gap: 8px; padding: 10px; border: 0;
+    color: var(--cr2-white); background: var(--cr2-gradient);
+    font: 700 12px/1 "Roboto", sans-serif; cursor: pointer;
+  }
+  .cr2-site .cr2-entry-button .cr2-arrow-asset { width: 14px; height: 14px; }
+  .cr2-site .cr2-entry-button[inert] { visibility: hidden; }
+  .cr2-site .cr2-official-label { min-height: 40px; gap: 14px; }
+  .cr2-site .cr2-official-label em { font-size: 13px; letter-spacing: .04em; }
+  .cr2-site .cr2-official-mark { width: 28px; height: 40px; flex-basis: 28px; }
+  .cr2-site .cr2-official-mark i { top: 4px; left: 13px; height: 32px; }
+  .cr2-site .cr2-official-mark b { left: 12px; height: 40px; width: 3px; }
+  .cr2-site .cr2-section-heading h2 { font-size: clamp(25px, 6.5vw, 38px); line-height: 1.5; letter-spacing: -.025em; }
+  .cr2-site .cr2-section-heading > div:not(.cr2-official-label) { font-size: 15px; line-height: 1.9; max-width: 42em; }
+  .cr2-site .cr2-iketeru-intro h2 { font-size: clamp(23px, 6.3vw, 38px); line-height: 1.5; }
+  .cr2-site .cr2-iketeru-who { font-size: 15px; line-height: 1.9; text-wrap: pretty; }
+  .cr2-site .cr2-iketeru-bridge { font-size: clamp(20px, 5.3vw, 28px); line-height: 1.6; letter-spacing: .015em; }
+  .cr2-site .cr2-official-definition-wrap { padding-inline: var(--cr2-gutter); }
+  .cr2-site .cr2-official-static { max-width: 280px; }
+  .cr2-site .cr2-official-static p { font-size: 56px; }
+  .cr2-site .cr2-official-static strong { padding-right: 40px; font-size: 17px; }
+  .cr2-site .cr2-official-definition-content { max-width: none; padding-inline: 0; }
+  .cr2-site .cr2-official-definition-content > h3 { font-size: clamp(32px, 6vw, 40px); letter-spacing: .07em; }
+  .cr2-site .cr2-official-definition-content > h3 span { margin-top: 12px; font-size: 16px; }
+  .cr2-site .cr2-official-definition-content ul { display: grid; gap: 16px; margin-top: 28px; }
+  .cr2-site .cr2-official-definition-content li { margin: 0; padding: 20px; border: 1px solid #0d2b2b14; background: #ffffffa6; }
+  .cr2-site .cr2-official-definition-title { display: flex; flex-wrap: wrap; gap: 4px 8px; padding-bottom: 12px; }
+  .cr2-site .cr2-official-definition-title > span { font-size: 13px; line-height: 1.8; letter-spacing: 0; }
+  .cr2-site .cr2-official-definition-key { padding-inline: 24px 6px; background: transparent; }
+  .cr2-site .cr2-official-definition-key::before { left: 0; font-size: 23px; }
+  .cr2-site .cr2-official-definition-title em { flex-basis: 100%; font-size: 26px; line-height: 1.3; transform: none; }
+  .cr2-site .cr2-official-definition-content li > p { padding-left: 16px; font-size: 16px; line-height: 1.85; letter-spacing: 0; text-wrap: pretty; }
+  .cr2-site .cr2-official-definition-content li > p::before { top: 12px; left: 0; width: 4px; height: 4px; }
+  .cr2-site .cr2-official-definition-content li > p:first-of-type { margin-top: 16px; }
+  .cr2-site .cr2-official-definition-content li > p + p { margin-top: 8px; }
+  .cr2-site .cr2-support-chapter-toggle { min-height: 88px; padding-inline: 18px; gap: 8px; }
+  .cr2-site .cr2-support-chapter-copy strong { font-size: 20px; }
+  .cr2-site .cr2-support-chapter-toggle > b { font-size: 13px; }
+  .cr2-site .cr2-support-chapter-content,
+  .cr2-site .cr2-support-chapters > article.is-open .cr2-support-chapter-content { padding-inline: 16px; gap: 16px; }
+  .cr2-site .cr2-support-item-list { padding-top: 16px; }
+  .cr2-site .cr2-support-detail { padding: 20px; margin-bottom: 16px; }
+  .cr2-site .cr2-support-detail p { font-size: 15px; line-height: 1.85; }
+  .cr2-site .cr2-job-grid article { padding: 24px; border-color: var(--cr2-line); border-top: 3px solid var(--cr2-magenta); }
+  .cr2-site .cr2-job-grid p { font-size: 15px; line-height: 1.85; }
+  .cr2-site .cr2-faq-list button { gap: 10px; padding-block: 20px; }
+  .cr2-site .cr2-faq-list button b { font-size: 15px; line-height: 1.8; }
+  .cr2-site .cr2-faq-answer { font-size: 15px; line-height: 1.9; }
+  .cr2-site .cr2-form { padding: 24px 20px; }
+  .cr2-site .cr2-form > fieldset > legend { font-size: 20px; }
+  .cr2-site .cr2-form-grid { gap: 24px; }
+  .cr2-site .cr2-file input { width: 100%; font-size: 13px; overflow: hidden; }
+  .cr2-site .cr2-file input::file-selector-button { min-height: 36px; margin-right: 10px; padding: 8px 12px; border: 1px solid var(--cr2-line); background: var(--cr2-soft); color: var(--cr2-ink); }
+  .cr2-site .cr2-footer-top { flex-direction: row; justify-content: space-between; gap: 12px; }
+  .cr2-site .cr2-footer-top > a img { width: 116px; height: 64px; }
+  .cr2-site .cr2-footer-top > div { gap: 16px; }
+}
+
+@media (max-width: 767px) {
+  .cr2-site .cr2-adopted-hero,
+  .cr2-site .cr2-e-copy { min-height: clamp(560px, calc(100svh - 70px), 740px); }
+  .cr2-site .cr2-e-copy { padding: 64px var(--cr2-gutter); }
+  .cr2-site .cr2-e-copy h1 { font-size: clamp(32px, 9.6vw, 58px); line-height: 1.35; }
+  .cr2-site .cr2-e-label { font-size: 13px; margin-bottom: 24px; }
+  .cr2-site .cr2-e-lead { max-width: 30em; font-size: 14px; line-height: 1.9; font-weight: 400; }
+  .cr2-site .cr2-e-lead > span { display: block; text-wrap: balance; }
+  .cr2-site .cr2-e-phrase { display: inline-block; max-width: 100%; }
+  .cr2-site .cr2-e-lead > span + br + span { margin-top: 8px; }
+  .cr2-site .cr2-e-lead > br { display: none; }
+  .cr2-site .cr2-e-bottom a { min-height: 58px; width: min(260px, 100%); margin-top: 28px; }
+  .cr2-site .cr2-e-hint { left: var(--cr2-gutter); bottom: 30px; transform: none; font-size: 8px; }
+  .cr2-site .cr2-motion-toggle { right: var(--cr2-gutter); bottom: 16px; }
+  .cr2-site .cr2-iketeru-bridge > span { display: block; }
+  .cr2-site .cr2-iketeru-who { text-align: left; }
+  .cr2-site .cr2-career-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 5px; gap: 4px; }
+  .cr2-site .cr2-career-tabs button { min-height: 78px; padding: 14px 8px; justify-content: center; text-align: center; font-size: 14px; }
+  .cr2-site .cr2-career-tab-label > span { display: block; margin-top: 4px; font-size: 11px; white-space: nowrap; }
+  .cr2-site .cr2-career-tabs button i { display: none; }
+  .cr2-site .cr2-career-panel { padding: 24px 18px; }
+  .cr2-site .cr2-career-panel li { grid-template-columns: 48px minmax(0, 1fr); min-height: 76px; gap: 12px; padding-inline: 0; }
+  .cr2-site .cr2-career-panel li::before { width: 40px; }
+  .cr2-site .cr2-career-panel li strong { font-size: clamp(21px, 5.8vw, 26px); }
+  .cr2-site .cr2-support-item-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .cr2-site .cr2-support-item-list button { min-height: 48px; padding: 10px 8px; border: 1px solid #0d2b2b26; background: var(--cr2-white); font-size: 12px; line-height: 1.6; text-align: center; overflow-wrap: anywhere; }
+  .cr2-site .cr2-support-item-list button:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .cr2-site .cr2-support-item-list button.is-selected { border-color: var(--cr2-red-text); background: #fff2f6; }
+  .cr2-site .cr2-support-item-list button::before { display: none; }
+  .cr2-site .cr2-selection ol { gap: 20px; }
+  .cr2-site .cr2-selection li { min-height: 64px; flex-direction: row; justify-content: flex-start; gap: 18px; }
+  .cr2-site .cr2-selection-number { width: 28px; font-size: 14px; text-align: center; }
+  .cr2-site .cr2-selection-arrow { bottom: -17px; }
+  .cr2-site .cr2-footer-bottom nav a { font-size: 11px; }
+}
+
+@media (min-width: 768px) and (max-width: 1099px) {
+  .cr2-site .cr2-section-heading { max-width: 760px; }
+  .cr2-site .cr2-official-label em { font-size: 15px; }
+  .cr2-site .cr2-official-static { max-width: 340px; }
+  .cr2-site .cr2-official-static p { font-size: 64px; }
+  .cr2-site .cr2-official-definition-content ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .cr2-site .cr2-official-definition-content li { padding: 24px; }
+  .cr2-site .cr2-support-chapter-content,
+  .cr2-site .cr2-support-chapters > article.is-open .cr2-support-chapter-content { grid-template-columns: minmax(0, .9fr) minmax(0, 1.3fr); gap: 24px; }
+  .cr2-site .cr2-support-item-list { padding-block: 20px; align-content: start; }
+  .cr2-site .cr2-support-item-list button { font-size: 14px; }
+  .cr2-site .cr2-support-detail { margin-top: 20px; margin-bottom: 20px; align-self: start; min-height: 200px; }
+  .cr2-site .cr2-career-panel { padding: 32px; }
+  .cr2-site .cr2-form { padding: 32px; }
+}
+
+@media (max-width: 359px) {
+  .cr2-site .cr2-form { padding-inline: 16px; }
+  .cr2-site .cr2-official-definition-content li { padding: 16px; }
+  .cr2-site .cr2-footer-top > div { gap: 8px; }
+  .cr2-site .cr2-footer-bottom nav a { font-size: 10px; }
+}

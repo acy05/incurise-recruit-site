@@ -243,6 +243,66 @@ test("mobile haze expansion never creates horizontal page scrolling", async ({ b
   }
 });
 
+test("responsive composition keeps readable copy and accessible compact controls", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(route, { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+  for (const width of [320, 390, 600, 768, 820, 1024, 1099]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(page.locator('.cr2-support-item-list').first()).toHaveAttribute('aria-orientation', width < 768 ? 'horizontal' : 'vertical');
+    const values = await page.evaluate(() => {
+      const elements = (selector: string) => Array.from(document.querySelectorAll<HTMLElement>(selector));
+      const columns = (selector: string) => new Set(elements(selector).map(e => Math.round(e.getBoundingClientRect().x))).size;
+      const box = document.querySelector<HTMLElement>('.cr2-official-definition-content li > p')!;
+      const clipped = elements('.cr2-e-phrase, .cr2-career-tab-label, .cr2-support-item-list button, .cr2-footer-bottom nav a')
+        .filter(e => e.clientWidth && getComputedStyle(e).visibility !== 'hidden' && e.scrollWidth > e.clientWidth + 1)
+        .map(e => e.textContent);
+      const entry = document.querySelector('.cr2-header .cr2-entry-button')!.getBoundingClientRect();
+      // The hero deliberately hangs punctuation outside its half-width box;
+      // check the actual text against the viewport rather than that optical box.
+      const headingFits = elements('.cr2-e-line').every(e => {
+        const range = document.createRange();
+        range.selectNodeContents(e);
+        const rect = range.getBoundingClientRect();
+        return rect.left >= 0 && rect.right <= document.documentElement.clientWidth;
+      });
+      return {
+        definitionColumns: columns('.cr2-official-definition-content li'),
+        careerColumns: columns('.cr2-career-tabs button'),
+        bodyFont: getComputedStyle(box).fontSize,
+        bodyLine: Number.parseFloat(getComputedStyle(box).lineHeight),
+        entry: { width: entry.width, height: entry.height },
+        clipped,
+        headingFits,
+        pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    });
+    expect(values.clipped, `${width}px clipped content`).toEqual([]);
+    expect(values.headingFits, `${width}px hero text fits`).toBe(true);
+    expect(values.pageOverflow).toBe(0);
+    expect(values.bodyFont).toBe('16px');
+    expect(values.bodyLine).toBeCloseTo(29.6, 1);
+    expect(values.definitionColumns).toBe(width < 768 ? 1 : 2);
+    expect(values.careerColumns).toBe(2);
+    expect(values.entry.width).toBeGreaterThanOrEqual(44);
+    expect(values.entry.height).toBeGreaterThanOrEqual(44);
+  }
+  await page.setViewportSize({width:390, height:844});
+  const firstTab = page.getByRole('tab', {name:'プログラミング研修', exact:true});
+  await firstTab.focus();
+  await firstTab.press('ArrowRight');
+  await expect(page.getByRole('tab',{name:'eラーニング',exact:true})).toBeFocused();
+  await expect(page.locator('#cr2-support-detail-learn')).toContainText('プログラミングスキルを継続的に学ぶ環境を提供しています。');
+  await page.locator('.cr2-header').getByRole('button',{name:'ENTRY',exact:true}).click();
+  await expect.poll(() => page.locator('#cr2-entry > .cr2-container').evaluate(e => Math.round(e.getBoundingClientRect().top - document.querySelector('.cr2-header')!.getBoundingClientRect().bottom))).toBe(28);
+  await page.getByRole('button',{name:'メニューを開く',exact:true}).click();
+  await expect(page.locator('.cr2-entry-button')).toHaveAttribute('inert','');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button',{name:'メニューを開く',exact:true})).toBeFocused();
+  await expect(page.locator('.cr2-entry-button')).not.toHaveAttribute('inert','');
+});
+
 test("#9 matches the official About Definition structure at desktop and mobile", async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
@@ -298,15 +358,16 @@ test("#9 matches the official About Definition structure at desktop and mobile",
       expect(values.content.width).toBeCloseTo(685, 0);
       expect(values.headingSize).toBe("64px");
     } else {
-      // Same typography and circle size, with compact stacked spacing on mobile.
-      expect(values.exactHeight).toBeCloseTo(2833.1, -1);
+      // Mobile uses the approved copy in a newly designed readable card layout.
+      expect(values.exactHeight).toBeGreaterThan(2000);
+      expect(values.exactHeight).toBeLessThan(2300);
       expect(values.wrap.x).toBeCloseTo(0, 0);
       expect(values.wrap.width).toBeCloseTo(390, 0);
-      expect(values.circle.x).toBeCloseTo(20, 0);
-      expect(values.circle.width).toBeCloseTo(350, 0);
+      expect(values.circle.x).toBeCloseTo(55, 0);
+      expect(values.circle.width).toBeCloseTo(280, 0);
       expect(values.content.x).toBeCloseTo(20, 0);
       expect(values.content.width).toBeCloseTo(350, 0);
-      expect(values.headingSize).toBe("42px");
+      expect(values.headingSize).toBe("32px");
     }
   }
 });

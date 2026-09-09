@@ -290,7 +290,7 @@ function Header() {
   useEffect(() => {
     if (!open) return;
     const unlock = lockPageScroll("cr2-menu-open");
-    const background = Array.from(document.querySelectorAll<HTMLElement>("#cr2-main, .cr2-footer, .cr2-brand, .cr2-skip-link"));
+    const background = Array.from(document.querySelectorAll<HTMLElement>("#cr2-main, .cr2-footer, .cr2-brand, .cr2-entry-button, .cr2-skip-link"));
     background.forEach((element) => { element.inert = true; });
     const menu = dialogRef.current;
     const selector = "button:not([disabled]),a[href]";
@@ -426,7 +426,7 @@ function IketeruSection() {
           <p className="cr2-iketeru-who cr2-definition-mobile-copy">「Incubate（育成・支援）」と「Rise（成長・向上）」の想いを社名に込め、課題をチャンスに変える挑戦を全力で支援します。</p>
         </header>
 
-        <h3 className="cr2-iketeru-bridge">技術力×人間力。IKETERU人材を育てる。</h3>
+        <h3 className="cr2-iketeru-bridge"><span>技術力×人間力。</span><span>IKETERU人材を育てる。</span></h3>
       </div>
 
       <div className="cr2-official-definition">
@@ -511,6 +511,7 @@ function CareerSection() {
                 id={`cr2-career-tab-${key}`}
                 type="button"
                 role="tab"
+                aria-label={careerRoutes[key].label}
                 aria-selected={active === key}
                 aria-controls={`cr2-career-panel-${key}`}
                 tabIndex={active === key ? 0 : -1}
@@ -518,7 +519,7 @@ function CareerSection() {
                 onClick={() => setActive(key)}
                 onKeyDown={(event) => onTabKeyDown(event, key)}
               >
-                {careerRoutes[key].label}<i aria-hidden="true" />
+                <span className="cr2-career-tab-label">{careerRoutes[key].label.replace("プロフェッショナル", "")}<span>プロフェッショナル</span></span><i aria-hidden="true" />
               </button>
             ))}
           </div>
@@ -547,6 +548,13 @@ function CareerSection() {
 }
 
 function SupportSection() {
+  const [compactTabs, setCompactTabs] = useState(() => window.matchMedia("(max-width: 767px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+    const update = () => setCompactTabs(query.matches);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
   const [openChapter, setOpenChapter] = useState<SupportGroupKey | null>("learn");
   const [selectedItems, setSelectedItems] = useState<Record<SupportGroupKey, string>>({
     learn: "01",
@@ -570,8 +578,8 @@ function SupportSection() {
     items: typeof supportItems,
   ) => {
     let nextIndex = index;
-    if (event.key === "ArrowDown") nextIndex = (index + 1) % items.length;
-    else if (event.key === "ArrowUp") nextIndex = (index - 1 + items.length) % items.length;
+    if (event.key === "ArrowDown" || (compactTabs && event.key === "ArrowRight")) nextIndex = (index + 1) % items.length;
+    else if (event.key === "ArrowUp" || (compactTabs && event.key === "ArrowLeft")) nextIndex = (index - 1 + items.length) % items.length;
     else if (event.key === "Home") nextIndex = 0;
     else if (event.key === "End") nextIndex = items.length - 1;
     else return;
@@ -625,7 +633,7 @@ function SupportSection() {
 
                 <div id={`cr2-support-chapter-${group.key}`} className="cr2-support-chapter-shell">
                 <div className="cr2-support-chapter-content">
-                  <div className="cr2-support-item-list" role="tablist" aria-orientation="vertical" aria-label={`${group.title}の制度`}>
+                  <div className="cr2-support-item-list" role="tablist" aria-orientation={compactTabs ? "horizontal" : "vertical"} aria-label={`${group.title}の制度`}>
                     {items.map((item, index) => {
                       const selected = selectedItem.number === item.number;
                       return (
