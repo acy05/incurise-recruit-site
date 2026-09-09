@@ -246,6 +246,9 @@ const maxFileBytes = 5 * 1024 * 1024;
 function scrollToSection(selector: string) {
   const section = document.querySelector<HTMLElement>(selector);
   if (!section) return;
+  // Flush the pending pin/reveal measurements before starting native scrolling.
+  // A startup refresh otherwise writes scrollY back before the first scroll frame.
+  if (ScrollTrigger.getAll().length) ScrollTrigger.refresh();
   // Use the unanimated content container, not section padding or a heading
   // currently translated by its reveal animation (or pinned with sticky).
   const anchor = section.querySelector<HTMLElement>(":scope > .cr2-container") ?? section;
