@@ -159,6 +159,90 @@ test("comment revision fits all target viewports", async ({ page }) => {
   }
 });
 
+test("responsive spacing is compact below 1100px and preserves desktop spacing", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(route, { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "reduced");
+  for (const width of [320, 390, 600, 768, 820, 1024, 1099, 1100, 1200, 1440, 1512]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+    const values = await page.evaluate(() => {
+      const style = (selector: string) => getComputedStyle(document.querySelector(selector)!);
+      const px = (value: string) => Number.parseFloat(value);
+      return {
+        definitionLead: px(style(".cr2-official-definition").marginTop),
+        circleMargin: px(style(".cr2-official-static").marginTop),
+        contentPadding: px(style(".cr2-official-definition-content").paddingTop),
+        stackGap: px(style(".cr2-official-definition-wrap").gap),
+        itemGap: px(style(".cr2-official-definition-content li").marginTop),
+        sectionSpace: px(style(".cr2-career").paddingTop),
+        heroMinimum: px(style(".cr2-adopted-hero").minHeight),
+        inputMinimum: px(style('.cr2-form input[name="name"]').minHeight),
+        tabMinimum: px(style(".cr2-support-item-list button").minHeight),
+        entryHeadingMargin: px(style(".cr2-entry .cr2-section-heading").marginBottom),
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    });
+    expect(values.overflow, `${width}px overflow`).toBeLessThanOrEqual(0);
+    expect(values.inputMinimum).toBe(52);
+    expect(values.entryHeadingMargin).toBe(0);
+    if (width < 1100) {
+      expect(values.definitionLead).toBeGreaterThanOrEqual(56);
+      expect(values.definitionLead).toBeLessThanOrEqual(88);
+      expect(values.circleMargin).toBe(0);
+      expect(values.contentPadding).toBe(0);
+      expect(values.stackGap).toBeGreaterThanOrEqual(32);
+      expect(values.stackGap).toBeLessThanOrEqual(44);
+      expect(values.itemGap).toBeLessThanOrEqual(56);
+      expect(values.sectionSpace).toBeLessThanOrEqual(80);
+      expect(values.tabMinimum).toBeGreaterThanOrEqual(44);
+    } else {
+      expect(values.definitionLead).toBe(250);
+      expect(values.circleMargin).toBe(150);
+      expect(values.contentPadding).toBe(70);
+      expect(values.stackGap).toBe(width < 1280 ? 32 : 58);
+      expect(values.itemGap).toBe(80);
+      expect(values.sectionSpace).toBe(width < 1200 ? 104 : 120);
+      expect(values.heroMinimum).toBe(850);
+    }
+  }
+});
+
+test("mobile haze expansion never creates horizontal page scrolling", async ({ browser }) => {
+  test.setTimeout(90_000);
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: "no-preference",
+  });
+  try {
+    const page = await context.newPage();
+    for (const width of [320, 390, 820]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto(route, { waitUntil: "networkidle" });
+      await expect(page.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "enabled");
+      const maxOverflow = await page.evaluate(async () => {
+        const intro = document.querySelector(".cr2-iketeru > .cr2-container")!;
+        scrollTo({ top: intro.getBoundingClientRect().top + scrollY - innerHeight * .34, behavior: "instant" });
+        const until = performance.now() + 800;
+        let overflow = 0;
+        do {
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+          overflow = Math.max(overflow, document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        } while (performance.now() < until);
+        return overflow;
+      });
+      await expect(page.locator(".cr2-official-blob")).toHaveCSS("opacity", "1");
+      expect(maxOverflow, `${width}px animated haze overflow`).toBe(0);
+      await page.evaluate(() => scrollBy({ left: 200, behavior: "instant" }));
+      expect(await page.evaluate(() => scrollX)).toBe(0);
+      // Clipping the decoration must not break the sticky header.
+      expect(await page.locator(".cr2-header").evaluate(element => element.getBoundingClientRect().top)).toBe(0);
+    }
+  } finally {
+    await context.close();
+  }
+});
+
 test("#9 matches the official About Definition structure at desktop and mobile", async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
@@ -214,7 +298,8 @@ test("#9 matches the official About Definition structure at desktop and mobile",
       expect(values.content.width).toBeCloseTo(685, 0);
       expect(values.headingSize).toBe("64px");
     } else {
-      expect(values.exactHeight).toBeCloseTo(3317.1, -1);
+      // Same typography and circle size, with compact stacked spacing on mobile.
+      expect(values.exactHeight).toBeCloseTo(2833.1, -1);
       expect(values.wrap.x).toBeCloseTo(0, 0);
       expect(values.wrap.width).toBeCloseTo(390, 0);
       expect(values.circle.x).toBeCloseTo(20, 0);

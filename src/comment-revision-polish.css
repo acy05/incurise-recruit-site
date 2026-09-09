@@ -182,6 +182,55 @@ html:has(.cr2-site) {
   .cr2-site .cr2-birth select { padding-inline: 6px; }
 }
 
+/* Contain the oversized haze without changing layout or creating a scroll container.
+   Vertical overflow and the desktop sticky composition remain unchanged. */
+.cr2-site .cr2-iketeru { overflow-x: clip; }
+
+/* Compact the stacked layout only; the approved desktop composition starts at 1100px. */
+@media (max-width: 1099px) {
+  html:has(.cr2-site) { --cr2-section-space: clamp(56px, 7vw, 80px); }
+  body:has(.cr2-site) { min-width: 0; }
+  .cr2-site .cr2-iketeru { padding-top: var(--cr2-section-space); }
+  .cr2-site .cr2-section-heading { gap: 16px; margin-bottom: clamp(28px, 4vw, 40px); }
+  .cr2-site .cr2-official-label { margin-bottom: 24px; }
+  .cr2-site .cr2-section-heading .cr2-official-label { margin-bottom: 0; }
+  .cr2-site .cr2-iketeru-intro h2 { margin-bottom: 24px; }
+  .cr2-site .cr2-iketeru-bridge { margin-top: clamp(32px, 4vw, 44px); }
+  /* Remove the desktop-sized lead-in and the three stacked gaps around the circle. */
+  .cr2-site .cr2-official-definition { margin-top: clamp(56px, 8vw, 88px); }
+  .cr2-site .cr2-official-definition-wrap { gap: clamp(32px, 4vw, 44px); }
+  .cr2-site .cr2-official-static { margin-block: 0; }
+  .cr2-site .cr2-official-definition-content { padding-top: 0; }
+  .cr2-site .cr2-official-definition-content li { margin-top: clamp(44px, 5vw, 56px); }
+  .cr2-site .cr2-official-definition-content li > p:first-of-type { margin-top: 20px; }
+  .cr2-site .cr2-support,
+  .cr2-site .cr2-jobs { padding-top: 24px; }
+  .cr2-site .cr2-career-panel { padding: 24px clamp(20px, 3vw, 32px) 28px; }
+  .cr2-site .cr2-career-panel li { min-height: clamp(76px, 8vw, 88px); }
+  .cr2-site .cr2-support-chapter-toggle { min-height: 96px; padding-block: 16px; }
+  .cr2-site .cr2-support-detail { min-height: 144px; padding-block: 18px; }
+  .cr2-site .cr2-selection { padding: 24px clamp(20px, 3vw, 32px); }
+  .cr2-site .cr2-selection li { min-height: 80px; padding-block: 14px; }
+  .cr2-site .cr2-faq-layout { gap: 28px; }
+  .cr2-site .cr2-faq .cr2-section-heading { margin-bottom: 0; }
+  .cr2-site .cr2-faq-list button { min-height: 76px; padding-block: 18px; }
+  .cr2-site .cr2-entry-layout { gap: 28px; }
+  .cr2-site .cr2-form > fieldset + fieldset { margin-top: 32px; padding-top: 28px; }
+}
+
+@media (min-width: 768px) and (max-width: 1099px) {
+  .cr2-site .cr2-adopted-hero,
+  .cr2-site .cr2-e-copy { min-height: clamp(620px, calc(100svh - 78px), 850px); }
+  .cr2-site .cr2-form { padding: 32px; }
+  .cr2-site .cr2-selection li { min-height: 96px; }
+  .cr2-site .cr2-faq-list button { min-height: 88px; }
+}
+
+@media (max-width: 359px) {
+  .cr2-site .cr2-official-definition-content > h3 { font-size: 36px; letter-spacing: .06em; }
+  .cr2-site .cr2-iketeru-bridge { text-wrap: balance; }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .cr2-site .cr2-footer-bottom a:hover { text-decoration: underline; text-underline-offset: 5px; }
 }
