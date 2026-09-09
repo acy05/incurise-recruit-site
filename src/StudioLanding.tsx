@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowRight,
+  ArrowUp,
   ArrowUpRight,
   Check,
   CheckCheck,
@@ -12,11 +12,11 @@ import {
   Plus,
   X,
 } from "lucide-react";
-import heroVideo from "./assets/generated/paper-motion/sunlit-paper-motion.mp4";
-import heroPoster from "./assets/generated/paper-motion/sunlit-paper-poster.jpg";
+import { ApproachArtwork, ChapterArtwork, DesignTicker } from "./StudioMotionArtwork";
 import "./studio-landing.css";
 import FriendlyLaunch from "./FriendlyLaunch";
 import "./studio-polish.css";
+import "./studio-motion-polish.css";
 
 const services = [
   {
@@ -218,7 +218,7 @@ export default function StudioLanding() {
             observer.unobserve(entry.target);
           }
         }),
-      { threshold: 0.08 },
+      { threshold: 0.04, rootMargin: "0px 0px 48px 0px" },
     );
     root.current
       ?.querySelectorAll("[data-reveal]")
@@ -230,37 +230,19 @@ export default function StudioLanding() {
   }, []);
 
   useEffect(() => {
-    const videos = Array.from(root.current?.querySelectorAll("video") ?? []);
-    const observer = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => {
-          const video = e.target as HTMLVideoElement;
-          if (e.isIntersecting && !paused && !document.hidden)
-            void video.play().catch(() => undefined);
-          else video.pause();
-        }),
-      { threshold: 0.01 },
-    );
-    videos.forEach((v) => observer.observe(v));
-    const visibility = () =>
-      videos.forEach((v) => {
-        const rect = v.getBoundingClientRect();
-        if (
-          !document.hidden &&
-          !paused &&
-          rect.bottom > 0 &&
-          rect.top < innerHeight
-        )
-          void v.play().catch(() => undefined);
-        else v.pause();
-      });
+    const scenes = Array.from(root.current?.querySelectorAll<HTMLElement>("[data-motion-scene]") ?? []);
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => entry.target.classList.toggle("scene-in-view", entry.isIntersecting));
+    }, { rootMargin: "80px" });
+    scenes.forEach(scene => observer.observe(scene));
+    const visibility = () => root.current?.classList.toggle("page-hidden", document.hidden);
     visibility();
     document.addEventListener("visibilitychange", visibility);
     return () => {
       observer.disconnect();
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [paused]);
+  }, []);
 
   useEffect(() => {
     const wide = matchMedia("(min-width: 761px)");
@@ -303,19 +285,6 @@ export default function StudioLanding() {
   }, [menuOpen]);
 
   const toggleMotion = () => setPaused((current) => !current);
-  const video = (className: string) => (
-    <video
-      className={className}
-      muted
-      loop
-      playsInline
-      preload="metadata"
-      poster={heroPoster}
-      aria-hidden="true"
-    >
-      <source src={heroVideo} type="video/mp4" />
-    </video>
-  );
   return (
     <div
       ref={root}
@@ -339,7 +308,6 @@ export default function StudioLanding() {
         <div className="header-actions">
           <a href="#contact" className="header-contact">
             無料で相談する
-            <ArrowUpRight size={16} />
           </a>
           <button
             ref={menuButton}
@@ -364,12 +332,10 @@ export default function StudioLanding() {
           <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
             <small>0{i + 1}</small>
             {text}
-            <ArrowUpRight />
           </a>
         ))}
         <a href="#contact" onClick={() => setMenuOpen(false)}>
           <small>05</small>無料で相談する
-          <ArrowUpRight />
         </a>
       </nav>
       <main id="main">
@@ -377,15 +343,7 @@ export default function StudioLanding() {
           theme={topics.indexOf(topic)}
           setTheme={(index) => setTopic(topics[index])}
         />
-        <div className="ticker" aria-hidden="true">
-          <div>
-            {[0, 1, 2, 3].map((i) => (
-              <span key={i}>
-                IDEAS INTO IMPACT <i>✳</i> DESIGN WITH PURPOSE <i>✳</i>{" "}
-              </span>
-            ))}
-          </div>
-        </div>
+        <DesignTicker />
         <section className="intro section-shell" id="intro">
           <div className="section-label" data-reveal>
             <span>01 / HELLO, WE’RE ISAAC</span>
@@ -419,7 +377,6 @@ export default function StudioLanding() {
               </p>
               <a className="text-link" href="#approach">
                 私たちが大切にしていること
-                <ArrowUpRight size={18} />
               </a>
             </div>
           </div>
@@ -464,7 +421,6 @@ export default function StudioLanding() {
                 </div>
                 <a className="service-consult text-link" href="#contact">
                   {s.name}の相談をする
-                  <ArrowUpRight size={17} />
                 </a>
               </article>
             ))}
@@ -477,18 +433,11 @@ export default function StudioLanding() {
             </span>
             <a className="text-link" href="#contact">
               こんなこと頼める？と相談する
-              <ArrowUpRight size={18} />
             </a>
           </div>
         </section>
         <section className="approach" id="approach">
-          <div className="approach-art" aria-hidden="true">
-            <div className="orbit orbit-one" />
-            <div className="orbit orbit-two" />
-            <div className="orbit orbit-three" />
-            <span className="orbit-center">✳</span>
-            <span className="orbit-word">THINK. CREATE. GROW.</span>
-          </div>
+          <ApproachArtwork />
           <div className="approach-content">
             <div className="section-label" data-reveal>
               <span>03 / OUR APPROACH</span>
@@ -526,7 +475,6 @@ export default function StudioLanding() {
                   <h3>{t}</h3>
                   <p>{b}</p>
                 </div>
-                <ArrowUpRight size={19} />
               </article>
             ))}
           </div>
@@ -582,7 +530,6 @@ export default function StudioLanding() {
               <article key={n} data-reveal>
                 <div className="step-top">
                   <span>{n}</span>
-                  <ArrowRight size={22} />
                 </div>
                 <p className="step-en">{en}</p>
                 <h3>{t}</h3>
@@ -600,18 +547,16 @@ export default function StudioLanding() {
             </p>
             <a href="#contact">
               まずは気軽に相談する
-              <ArrowUpRight size={17} />
             </a>
           </div>
         </section>
-        <section className="statement">
-          {video("statement-video")}
-          <div className="statement-overlay" />
+        <section className="statement" data-motion-scene>
+          <ChapterArtwork />
           <p data-reveal>YOUR NEXT CHAPTER</p>
           <h2 data-reveal>
             その一歩が、
             <br />
-            未来を変えていく。
+            <em>未来を変えていく。</em>
           </h2>
           <span data-reveal>LET’S MAKE IT HAPPEN, TOGETHER.</span>
         </section>
@@ -632,7 +577,6 @@ export default function StudioLanding() {
             </p>
             <a className="text-link" href="#contact">
               質問してみる
-              <ArrowUpRight size={18} />
             </a>
           </div>
           <div className="faq-list">
@@ -700,7 +644,6 @@ export default function StudioLanding() {
             </div>
             <span className="contact-scribble" aria-hidden="true">
               Hello, possibility.
-              <ArrowUpRight />
             </span>
           </div>
           <Consultation topic={topic} setTopic={setTopic} />
@@ -713,7 +656,7 @@ export default function StudioLanding() {
           </a>
           <a href="#top">
             BACK TO TOP
-            <ArrowUpRight size={17} />
+            <ArrowUp size={17} aria-hidden="true" />
           </a>
         </div>
         <div className="footer-bottom">
@@ -740,8 +683,8 @@ export default function StudioLanding() {
         onClick={toggleMotion}
         aria-label={
           paused
-            ? "背景動画とアニメーションを再生"
-            : "背景動画とアニメーションを一時停止"
+            ? "アニメーションを再生"
+            : "アニメーションを一時停止"
         }
         aria-pressed={paused}
       >

@@ -7,7 +7,6 @@ function Cta({ children }: { children: ReactNode }) {
   return (
     <a className="fd-cta" href="#contact">
       {children}
-      <span aria-hidden="true">↗</span>
     </a>
   );
 }
@@ -63,7 +62,7 @@ function Friendly({
               >
                 <span aria-hidden="true">0{i + 1}</span>
                 {text}
-                <b aria-hidden="true">{theme === i ? "✓" : "↗"}</b>
+                <b aria-hidden="true">{theme === i ? "✓" : ""}</b>
               </button>
             ))}
           </div>

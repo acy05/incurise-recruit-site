@@ -1,0 +1,131 @@
+/* A shared, quiet motion language for the lower half of the landing page. */
+.studio .ticker {
+  padding: 26px 0;
+  margin-top: 0;
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+.studio .ticker-track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  animation: ticker 64s linear infinite;
+}
+.studio .ticker-group {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100vw;
+  justify-content: space-around;
+}
+.studio .ticker-pair {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 32px;
+  padding-right: 32px;
+}
+.studio .ticker-pair > span {
+  font: 500 16px/1.3 var(--font-jost, "Jost Variable", Arial, sans-serif);
+  letter-spacing: .02em;
+}
+.studio .ticker-pair i { padding: 0; font-size: 24px; line-height: 1; }
+.studio .intro { padding-top: 88px; }
+.studio [data-reveal] {
+  transition: opacity 700ms cubic-bezier(.22,1,.36,1), transform 700ms cubic-bezier(.22,1,.36,1);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .studio [data-reveal]:not(.is-visible) { transform: translateY(16px); }
+}
+.studio .approach-art {
+  display: grid;
+  place-items: center;
+  padding: 54px 5%;
+  background: radial-gradient(ellipse at 50% 50%, #48513c35, transparent 67%);
+}
+.approach-engraving { position: relative; width: min(100%, 610px); }
+.approach-engraving > svg { display: block; width: 100%; overflow: visible; }
+.approach-weave { transform-origin: 300px 300px; animation: weave-turn 72s linear infinite; }
+.approach-seed { transform-origin: 300px 300px; animation: weave-turn 48s linear infinite reverse; }
+.approach-art-index {
+  display: block;
+  text-align: center;
+  font: 10px/1.5 "Jost Variable", sans-serif;
+  letter-spacing: .2em;
+  color: #b6bea8;
+  margin-top: -20px;
+}
+.approach-art-legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 32px 12% 0;
+  padding-top: 18px;
+  border-top: 1px solid #c6cfb329;
+  font: 10px/1.5 "Jost Variable", sans-serif;
+  letter-spacing: .08em;
+  color: #c7ceb9;
+}
+.studio .approach-item > div { flex: 1; }
+.studio .statement {
+  min-height: 440px;
+  margin: 0;
+  border-radius: 0;
+  gap: 25px;
+  padding: 64px 24px;
+  color: #333b30;
+  background: linear-gradient(180deg, #faf9f6, #edf0e7 38%, #edf0e7 62%, #faf9f6);
+}
+.chapter-art { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.chapter-lines { position: absolute; width: clamp(360px, 54vw, 850px); height: auto; color: #77896c; opacity: .18; }
+.chapter-lines-left { left: -22%; top: -22%; animation: chapter-drift-left 24s ease-in-out infinite; }
+.chapter-lines-right { right: -22%; bottom: -28%; animation: chapter-drift-right 24s ease-in-out infinite; }
+.studio .statement > p { color: #66755b; letter-spacing: .22em; }
+.studio .statement > span { color: #66755b; letter-spacing: .16em; }
+.studio .statement h2 { font-size: clamp(32px, 4vw, 60px); line-height: 1.65; }
+.studio .statement h2 em { font-style: normal; color: #d65a40; }
+.studio .statement [data-reveal] { transform: none; }
+.studio .launch-sections .fd-cta { justify-content: center; }
+.studio .fd-c-choices button b {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border: 1px solid #cebba9;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px;
+}
+.studio .fd-c-choices button[aria-pressed="true"] b { background: #d94930; color: white; border-color: #d94930; }
+.studio .header-contact { justify-content: center; }
+.studio .process-note > a { padding: 10px 0; border-bottom: 1px solid #74786665; }
+.studio .step-top { border-bottom: 1px solid #d6d8cc; padding-bottom: 16px; margin-bottom: 20px; }
+.studio .contact-scribble { gap: 0; }
+.studio [data-motion-scene]:not(.scene-in-view) *,
+.studio.page-hidden *, .studio.page-hidden *::before, .studio.page-hidden *::after,
+.studio.motion-paused *::before, .studio.motion-paused *::after,
+.studio.motion-reduced *::before, .studio.motion-reduced *::after { animation-play-state: paused !important; }
+@keyframes weave-turn { to { transform: rotate(360deg); } }
+@keyframes chapter-drift-left {
+  0%,100% { transform: translate(-12px, 8px) rotate(-20deg); }
+  50% { transform: translate(12px, -8px) rotate(-12deg); }
+}
+@keyframes chapter-drift-right {
+  0%,100% { transform: translate(12px, -8px) rotate(20deg); }
+  50% { transform: translate(-12px, 8px) rotate(12deg); }
+}
+@media (max-width: 760px) {
+  .studio .ticker { padding: 22px 0; }
+  .studio .ticker-pair { gap: 22px; padding-right: 22px; }
+  .studio .ticker-pair > span { font-size: 13px; }
+  .studio .ticker-pair i { font-size: 20px; }
+  .studio .intro { padding-top: 58px; }
+  .studio .approach-art { min-height: 0; max-height: none; padding: 10px 28px 48px; }
+  .approach-engraving { max-width: 390px; }
+  .approach-weave path:nth-child(even) { display: none; }
+  .approach-art-index { font-size: 8px; margin-top: -12px; }
+  .approach-art-legend { margin-top: 24px; margin-inline: 6%; font-size: 9px; }
+  .studio .statement { min-height: 360px; gap: 20px; }
+  .studio .statement h2 { font-size: clamp(27px, 7.5vw, 38px); }
+  .chapter-lines-left { left: -66%; top: -26%; }
+  .chapter-lines-right { right: -66%; bottom: -26%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio [data-motion-scene] * { animation: none !important; }
+  .studio [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
