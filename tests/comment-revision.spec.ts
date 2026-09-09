@@ -260,6 +260,13 @@ test("#9 reproduces the official scroll motion and honors reduced motion", async
   await animatedPage.goto(route, { waitUntil: "networkidle" });
   await expect(animatedPage.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "enabled");
 
+  const introTop = await animatedPage.locator(".cr2-iketeru > .cr2-container").evaluate(element => element.getBoundingClientRect().top + scrollY);
+  await animatedPage.evaluate(top => scrollTo({ top: top - innerHeight * .34, behavior: "instant" }), introTop);
+  // The haze must already appear at the user's ABOUT-intro screenshot position.
+  await expect(animatedPage.locator(".cr2-official-blob")).toHaveCSS("opacity", "1");
+  await expect.poll(() => animatedPage.locator(".cr2-official-blob").evaluate(element => Number.parseFloat(getComputedStyle(element).getPropertyValue("--cr2-blob-scale"))))
+    .toBeCloseTo(1, 2);
+
   const definitionTop = await animatedPage.locator(".cr2-official-definition").evaluate((element) => element.getBoundingClientRect().top + scrollY);
   await animatedPage.evaluate((top) => scrollTo(0, top + 650), definitionTop);
   await animatedPage.waitForTimeout(550);

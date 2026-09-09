@@ -1080,8 +1080,10 @@ function CommentRevisionMotion() {
           duration: .5,
           ease: "back.out(1.7)",
           scrollTrigger: {
-            trigger: definition,
-            start: "top 78%",
+            // Reveal the haze while the ABOUT introduction is being read,
+            // rather than waiting for the Definition block to enter the viewport.
+            trigger: aboutIntro ?? definition,
+            start: "top 45%",
             toggleActions: "play none none reverse",
           },
         });
