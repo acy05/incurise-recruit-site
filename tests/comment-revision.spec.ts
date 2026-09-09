@@ -450,7 +450,7 @@ test("adopted E hero retains the approved copy, centered layout and official arr
   }
 });
 
-test("adopted particles are directly drawn circles at a legible size and 2x resolution", async ({ page }) => {
+test("adopted circles match the official opening's apparent particle size at 2x resolution", async ({ page }) => {
   await page.addInitScript(() => {
     const state = window as typeof window & { particleShape: { circles: number; minRadius: number; maxRadius: number; nonCircles: number; squareGrains: number; bitmaps: number } };
     state.particleShape = { circles: 0, minRadius: Infinity, maxRadius: 0, nonCircles: 0, squareGrains: 0, bitmaps: 0 };
@@ -483,9 +483,13 @@ test("adopted particles are directly drawn circles at a legible size and 2x reso
     const shape = () => page.evaluate(() => (window as typeof window & { particleShape: { circles: number; minRadius: number; maxRadius: number; nonCircles: number; squareGrains: number; bitmaps: number } }).particleShape);
     await expect.poll(async () => (await shape()).circles).toBeGreaterThanOrEqual(width < 768 ? 9000 : 18000);
     const result = await shape();
-    expect(result.minRadius).toBeCloseTo(.9, 5);
-    expect(result.maxRadius).toBeGreaterThanOrEqual((width < 768 ? 1.9 : 2.3) * .75);
-    expect(result.maxRadius).toBeLessThan(width < 768 ? 1.75 : 2.1);
+    // Official shader size .75..2.25 (+2 on desktop), projected with FOV100/z300.
+    // The soft reference circle's half-alpha edge is .35 of its quad diameter.
+    const projection = 900 / (2 * Math.tan(50 * Math.PI / 180) * 300) * .35;
+    const sizeOffset = width < 768 ? 0 : 2;
+    expect(result.minRadius).toBeCloseTo((.75 + sizeOffset) * projection, 5);
+    expect(result.maxRadius).toBeLessThanOrEqual((2.25 + sizeOffset) * projection);
+    expect(result.maxRadius).toBeGreaterThan((2.24 + sizeOffset) * projection);
     expect(result.nonCircles).toBe(0);
     expect(result.squareGrains).toBe(0);
     expect(result.bitmaps).toBe(0);

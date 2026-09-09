@@ -23,6 +23,7 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
     if (!canvas || !context) return;
     let width = 0;
     let height = 0;
+    let viewportHeight = window.innerHeight;
     let frame = 0;
     let last = 0;
     let time = timeRef.current;
@@ -132,11 +133,16 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           // Sparse larger foreground grains provide scale; avoid turning every point into noise.
           const size = official ? baseSize * (core ? 1.25 : 1.05) + (!backLayer && i % 17 === 0 ? (mobile ? .9 : 1.25) : 0) : baseSize;
           if (official) {
-            // Draw vector circles directly: shrinking a bitmap to 1px hid its round outline.
-            // Foreground dots remain visibly circular at normal desktop/mobile zoom levels.
+            // Match incurise.co.jp's opening shader (verified 2026-09-09):
+            // psize = (noise + 2) * .75 + uSize; uSize = desktop 2 / mobile 0.
+            // A 100deg vertical FOV at z=300 projects it relative to viewport height.
+            // Its soft circle reaches half alpha at UV radius .35 (border .3).
+            // Use that visible radius for our antialiased vector circles, keeping
+            // the approved motion/opacity and avoiding a new per-particle shimmer.
             const baseRadius = Math.max(backLayer ? 1.2 : (mobile ? 1.9 : 2.3) + depth * .2, size * .8);
-            const radius = baseRadius * .75;
-            // Shrink the circle only; keep its existing opacity rather than brightening small dots.
+            const officialSize = (seed * 2 - 1 + 2) * .75 + (mobile ? 0 : 2);
+            const radius = officialSize * viewportHeight / (2 * Math.tan(50 * Math.PI / 180) * 300) * .35;
+            // Preserve existing opacity independently of the new reference-based size.
             const areaCompensation = Math.min(1, size * size / (Math.PI * baseRadius * baseRadius));
             context.globalAlpha = Math.min(.96, alpha * presence) * Math.sqrt(areaCompensation);
             context.fillStyle = `rgb(${officialColors[colorIndex]})`;
@@ -304,17 +310,20 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       last = performance.now();
       if (!still && inView && !document.hidden) frame = requestAnimationFrame(tick);
     };
-    const resize = new ResizeObserver(() => {
+    const resizeCanvas = () => {
       const box = canvas.getBoundingClientRect();
       width = box.width; height = box.height;
+      viewportHeight = window.innerHeight;
       // Supersample the adopted circles at 2x even on 1x displays, instead of pixel-sized blocks.
       const dpr = palette === "official" && space === "scatter" ? 2 : Math.min(devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
       draw();
-    });
+    };
+    const resize = new ResizeObserver(resizeCanvas);
     resize.observe(canvas);
+    window.addEventListener("resize", resizeCanvas);
     const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; sync(); });
     observer.observe(canvas);
     document.addEventListener("visibilitychange", sync);
@@ -322,6 +331,7 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
     return () => {
       cancelAnimationFrame(frame);
       resize.disconnect(); observer.disconnect();
+      window.removeEventListener("resize", resizeCanvas);
       document.removeEventListener("visibilitychange", sync);
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerdown", move);
