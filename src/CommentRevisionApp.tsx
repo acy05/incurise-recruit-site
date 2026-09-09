@@ -1096,7 +1096,8 @@ function CommentRevisionMotion() {
     const refresh = () => {
       if (disposed) return;
       clearTimeout(refreshTimer);
-      refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 120);
+      // Safe refresh waits for scrolling to finish before resetting pin positions.
+      refreshTimer = setTimeout(() => ScrollTrigger.refresh(true), 120);
     };
     const observer = new ResizeObserver(refresh);
     observer.observe(site);

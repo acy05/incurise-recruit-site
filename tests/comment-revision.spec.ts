@@ -662,3 +662,28 @@ test("scroll motion responds to live reduced-motion and breakpoint changes", asy
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(page.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "enabled");
 });
+
+
+test("layout refresh during navigation does not interrupt smooth scrolling", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(route);
+  await expect(page.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "enabled");
+  await page.evaluate(() => document.fonts.ready);
+  await page.locator(".cr2-header").getByRole("button", { name: "ENTRY", exact: true }).click();
+  // A late-loading asset or an expanding panel requests a layout refresh.
+  await page.locator(".cr2-site").evaluate(site => new Promise<void>(resolve => {
+    const onFrame = () => {
+      if (window.scrollY < 10) { requestAnimationFrame(onFrame); return; }
+      const extra = document.createElement("div");
+      extra.style.height = "1px";
+      site.append(extra);
+      resolve();
+    };
+    requestAnimationFrame(onFrame);
+  }));
+  await expect.poll(() => page.locator("#cr2-entry > .cr2-container").evaluate(anchor => {
+    const header = document.querySelector(".cr2-header")!;
+    return Math.round(anchor.getBoundingClientRect().top - header.getBoundingClientRect().bottom);
+  })).toBe(28);
+});
