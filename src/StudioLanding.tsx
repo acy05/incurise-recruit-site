@@ -714,12 +714,12 @@ export default function StudioLanding() {
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} ISAAC</span>
           <div>
-            <a href="https://incurise.co.jp/" target="_blank" rel="noreferrer">
+            <a href="https://www.isaac-inc.co.jp/" target="_blank" rel="noreferrer">
               運営会社
               <ArrowUpRight size={12} />
             </a>
             <a
-              href="https://incurise.co.jp/privacy-policy/"
+              href="https://www.isaac-inc.co.jp/privacy.php"
               target="_blank"
               rel="noreferrer"
             >
