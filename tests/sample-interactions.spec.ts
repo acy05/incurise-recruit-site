@@ -77,7 +77,7 @@ for (const width of [1440, 390]) {
     await expect(panel).toHaveCSS("transition-duration", "0s");
   });
 
-  test(`next keeps the full workshop composition at ${width}px`, async ({ page }) => {
+  test(`next keeps the workshop compact and uncropped at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("./web-production/samples/next/");
     const visual = page.locator(".next-culture-visual");
@@ -88,9 +88,10 @@ for (const width of [1440, 390]) {
     await expect.poll(() => photo.evaluate(image => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0)).toBe(true);
     const geometry = await photo.evaluate(image => {
       const rect = image.getBoundingClientRect();
-      return { displayed: rect.width / rect.height, original: image.naturalWidth / image.naturalHeight };
+      return { displayed: rect.width / rect.height, original: image.naturalWidth / image.naturalHeight, height: rect.height };
     });
     expect(geometry.displayed).toBeCloseTo(geometry.original, 3);
+    expect(geometry.height).toBeLessThan(450);
     if (width < 761) {
       const imageRect = (await photo.boundingBox())!;
       const caption = (await visual.locator("p").boundingBox())!;

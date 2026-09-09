@@ -57,11 +57,48 @@
   .next-page .ss-footer > div:last-child { margin-top: 24px; }
 }
 
-/* Keep the entire team in frame at every viewport; no crop, pan or zoom. */
-.next-page .next-culture-visual { height: auto; }
-.next-page .next-culture-visual img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: contain; transform: none; }
-.next-page .next-culture-visual::after { background: linear-gradient(0deg, #14271e9c, transparent 40%); }
+/* A compact photo alongside the message keeps the entire team in frame. */
+.next-page .next-culture-visual {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 64px);
+  max-width: 1440px;
+  height: auto;
+  margin-inline: auto;
+  padding: 40px 6vw 0;
+}
+.next-page .next-culture-visual img {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  border-radius: 8px;
+  transform: none;
+}
+.next-page .next-culture-visual p {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  bottom: auto;
+  left: auto;
+  margin: 0;
+  font-size: clamp(28px, 3.2vw, 48px);
+  line-height: 1.15;
+  color: #193d37;
+}
+.next-page .next-culture-visual::after { display: none; }
 @media (max-width: 760px) {
-  .next-page .next-culture-visual p { position: relative; bottom: auto; left: auto; margin: 0; padding: 24px 22px 28px; font-size: clamp(28px, 7vw, 42px); color: #193d37; }
-  .next-page .next-culture-visual::after { display: none; }
+  .next-page .next-culture-visual {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 32px 22px 0;
+  }
+  .next-page .next-culture-visual img { grid-column: 1; justify-self: center; }
+  .next-page .next-culture-visual p { grid-row: 2; font-size: clamp(28px, 7vw, 36px); }
 }
