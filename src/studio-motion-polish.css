@@ -155,7 +155,6 @@
     justify-self: center;
   }
 }
-.studio #contact { scroll-margin-top: 0; }
 
 /* Retargetable expansion keeps neighbouring questions moving with the answer. */
 .studio .faq-answer {

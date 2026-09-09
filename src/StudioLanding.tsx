@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUp,
   ArrowUpRight,
@@ -280,60 +280,75 @@ export default function StudioLanding() {
     return () => {
       document.body.style.overflow = oldOverflow;
       document.removeEventListener("keydown", keydown);
-      menuButton.current?.focus();
+      menuButton.current?.focus({ preventScroll: true });
     };
   }, [menuOpen]);
 
-  // Align to the readable content, independent of section padding or reveal transforms.
-  const contactFrame = useRef(0);
-  const contactRequest = useRef(0);
-  const moveToContact = (animate: boolean) => {
-    const request = ++contactRequest.current;
-    cancelAnimationFrame(contactFrame.current);
-    contactFrame.current = requestAnimationFrame(async () => {
-      // Finish any accordion expansion before measuring the section below it.
-      const transitions = Array.from(root.current?.querySelectorAll<HTMLElement>(".faq-answer") ?? [])
+  useEffect(() => {
+    const container = root.current!;
+    let request = 0;
+    const frame = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    const navigate = async (hash: string, initial = false) => {
+      const current = ++request;
+      let id: string;
+      try { id = decodeURIComponent(hash.slice(1)); } catch { return; }
+      const section = document.getElementById(id);
+      if (!section || !container.contains(section)) return;
+
+      // Let the menu close and fonts / FAQ finish changing the page's layout.
+      await frame();
+      await frame();
+      await document.fonts.ready;
+      const transitions = Array.from(container.querySelectorAll<HTMLElement>(".faq-answer"))
         .flatMap(answer => answer.getAnimations());
       await Promise.allSettled(transitions.map(animation => animation.finished));
-      if (request !== contactRequest.current) return;
-      const contact = root.current?.querySelector<HTMLElement>("#contact");
-      const label = contact?.querySelector<HTMLElement>(".section-label");
-      if (!contact || !label) return;
-      const top = window.scrollY + label.getBoundingClientRect().top - 32;
-      contact.focus({ preventScroll: true });
-      const motionOff = matchMedia("(prefers-reduced-motion: reduce)").matches || root.current?.classList.contains("motion-paused");
-      window.scrollTo({ top: Math.max(0, top), behavior: animate && !motionOff ? "smooth" : "instant" });
-    });
-  };
-  useEffect(() => {
-    let active = true;
-    void document.fonts.ready.then(() => {
-      if (active && location.hash === "#contact") moveToContact(false);
-    });
-    const onHashChange = () => {
-      if (location.hash === "#contact") moveToContact(true);
+      if (current !== request) return;
+
+      const anchor = section.matches("section")
+        ? section.querySelector<HTMLElement>(".section-label, .fd-label") ?? section
+        : section;
+      // offsetTop measures layout before entrance transforms, even on the first visit.
+      let top = 0;
+      for (let node: HTMLElement | null = anchor; node; node = node.offsetParent as HTMLElement | null) {
+        top += node.offsetTop;
+      }
+      // The main site's header scrolls away; all section labels share this inset.
+      top = id === "top" ? 0 : Math.max(0, top - 32);
+      if (!initial && location.hash !== hash) history.pushState(null, "", hash);
+      if (!section.hasAttribute("tabindex")) section.tabIndex = -1;
+      section.focus({ preventScroll: true });
+      const motionOff = matchMedia("(prefers-reduced-motion: reduce)").matches || container.classList.contains("motion-paused");
+      window.scrollTo({ top, behavior: initial || motionOff ? "instant" : "smooth" });
     };
-    window.addEventListener("hashchange", onHashChange);
+    const click = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]");
+      if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+      const url = new URL(link.href);
+      if (!url.hash || url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search) return;
+      event.preventDefault();
+      setMenuOpen(false);
+      void navigate(url.hash);
+    };
+    const hashChange = () => { void navigate(location.hash || "#top", true); };
+    const cancel = () => { request++; };
+    container.addEventListener("click", click);
+    window.addEventListener("hashchange", hashChange);
+    window.addEventListener("wheel", cancel, { passive: true });
+    window.addEventListener("touchstart", cancel, { passive: true });
+    if (location.hash) void navigate(location.hash, true);
     return () => {
-      active = false;
-      contactRequest.current++;
-      cancelAnimationFrame(contactFrame.current);
-      window.removeEventListener("hashchange", onHashChange);
+      request++;
+      container.removeEventListener("click", click);
+      window.removeEventListener("hashchange", hashChange);
+      window.removeEventListener("wheel", cancel);
+      window.removeEventListener("touchstart", cancel);
     };
   }, []);
-  const onContactLink = (event: MouseEvent<HTMLDivElement>) => {
-    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href="#contact"]');
-    if (!link) return;
-    event.preventDefault();
-    if (location.hash !== "#contact") history.pushState(null, "", "#contact");
-    moveToContact(true);
-  };
   const toggleMotion = () => setPaused((current) => !current);
   return (
     <div
       ref={root}
-      onClick={onContactLink}
       className={`studio ${paused ? "motion-paused" : ""} ${reduced ? "motion-reduced" : ""}`}
       id="top"
     >
