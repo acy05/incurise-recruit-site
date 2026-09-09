@@ -585,7 +585,7 @@ test("mobile support can close completely without an empty detail area", async (
   await expect.poll(() => shell.evaluate(el => el.getBoundingClientRect().height)).toBe(0);
   await toggle.press("Enter");
   await expect(shell).toBeVisible();
-  await expect(shell.getByRole("tabpanel")).toContainText("プログラミングスキルを継続的に学ぶ環境を提供しています。");
+  await expect(shell.getByRole("tabpanel")).toContainText("Javaを中心に、入社後3カ月集中して学ぶ。");
   const footerLinks = await page.locator(".cr2-footer-bottom nav a").evaluateAll(nodes => nodes.map(el => ({y: Math.round(el.getBoundingClientRect().y), height:el.getBoundingClientRect().height})));
   expect(new Set(footerLinks.map(link => link.y)).size).toBe(2);
   expect(footerLinks.every(link => link.height >= 44)).toBe(true);
