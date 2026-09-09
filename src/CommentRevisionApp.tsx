@@ -1027,7 +1027,7 @@ function CommentRevisionMotion() {
       // The adopted Hero owns its entrance; keep section scroll motion independent.
 
       gsap.utils.toArray<HTMLElement>(
-        ".cr2-section-heading, .cr2-iketeru-intro, .cr2-iketeru-bridge, .cr2-career-shell, .cr2-support-chapters, .cr2-job-grid, .cr2-selection, .cr2-faq-list, .cr2-form",
+        ".cr2-section-heading, .cr2-career-shell, .cr2-support-chapters, .cr2-job-grid, .cr2-selection, .cr2-faq-list, .cr2-form",
       ).forEach((element) => {
         // Do not hide already-read content when rotating a device or resizing.
         if (revealed.has(element) || element.getBoundingClientRect().bottom < 0) return;
@@ -1040,6 +1040,29 @@ function CommentRevisionMotion() {
           scrollTrigger: { trigger: element, start: "top 88%", once: true },
         });
       });
+
+      // Finish the ABOUT introduction before it reaches the reading position.
+      // Direct scrubbing has no time-based catch-up after a fast scroll or anchor jump.
+      const aboutIntro = site.querySelector<HTMLElement>(".cr2-iketeru > .cr2-container");
+      if (aboutIntro) {
+        const copy = Array.from(aboutIntro.querySelectorAll<HTMLElement>(".cr2-iketeru-intro, .cr2-iketeru-bridge"))
+          .filter((element) => !revealed.has(element) && element.getBoundingClientRect().bottom >= 0);
+        if (copy.length) {
+          gsap.fromTo(copy, { opacity: 0, y: 24 }, {
+            opacity: 1,
+            y: 0,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: aboutIntro,
+              start: "top 90%",
+              end: "top 45%",
+              scrub: true,
+              once: true,
+              onLeave: () => { copy.forEach((element) => revealed.add(element)); },
+            },
+          });
+        }
+      }
 
       const definition = document.querySelector<HTMLElement>(".cr2-official-definition");
       const blob = definition?.querySelector<HTMLElement>(".cr2-official-blob");

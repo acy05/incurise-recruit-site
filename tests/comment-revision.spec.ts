@@ -226,6 +226,34 @@ test("#9 matches the official About Definition structure at desktop and mobile",
   }
 });
 
+test("ABOUT copy finishes at its reading position without a timed catch-up", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(route, { waitUntil: "networkidle" });
+    await expect(page.locator(".cr2-site")).toHaveAttribute("data-motion-ready", "enabled");
+    const result = await page.evaluate(async () => {
+      const container = document.querySelector<HTMLElement>(".cr2-iketeru > .cr2-container")!;
+      const top = container.getBoundingClientRect().top + scrollY;
+      const read = () => Array.from(container.querySelectorAll<HTMLElement>(".cr2-iketeru-intro, .cr2-iketeru-bridge"))
+        .map(element => ({ opacity: Number(getComputedStyle(element).opacity), y: new DOMMatrixReadOnly(getComputedStyle(element).transform).m42 }));
+      const settleScroll = async (y: number) => {
+        scrollTo({ top: y, behavior: "instant" });
+        await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      };
+      // The supplied screenshot places the intro near the upper third.
+      await settleScroll(top - innerHeight * .34);
+      const finished = read();
+      await settleScroll(0);
+      return { finished, returned: read() };
+    });
+    for (const state of [...result.finished, ...result.returned]) {
+      expect(state.opacity).toBe(1);
+      expect(state.y).toBe(0);
+    }
+  }
+});
+
 test("#9 reproduces the official scroll motion and honors reduced motion", async ({ browser }) => {
   const animatedContext = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "no-preference" });
   const animatedPage = await animatedContext.newPage();
