@@ -76,8 +76,9 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
       const mobile = width < 768;
       if (space === "scatter") {
         // Distributed depth layers, not points constrained to a central sculpture.
-        // Fewer, larger circles keep individual outlines visible instead of merging into pixel noise.
-        const count = palette === "official" ? (mobile ? 9000 : 18000) : (mobile ? 14000 : 36000);
+        // Keep the approved field intact; add 50% more samples only to the side currents.
+        const baseCount = mobile ? 9000 : 18000;
+        const count = palette === "official" ? baseCount * 1.5 : (mobile ? 14000 : 36000);
         const reduceMotion = reduced || matchMedia("(prefers-reduced-motion: reduce)").matches;
         const entrance = reduceMotion ? 1 : 1 - Math.pow(1 - Math.min(time / 2.2, 1), 3);
         const displacement = displacementRef.current;
@@ -93,24 +94,25 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
           const seed = points[i].seed;
           const depth = .2 + seed * .8;
           const t = points[i].cloudT;
-          const branch = i % 6;
+          const official = palette === "official";
+          const addedSideParticle = official && i >= baseCount;
+          const branch = addedSideParticle ? (i % 2 === 0 ? 1 : 4) : i % 6;
           const backLayer = i % 5 === 0;
           const phase = time * (backLayer ? .045 : .085);
           const gaussian = points[i].cloudNoise;
-          const official = palette === "official";
-          const core = official && (branch === 1 || branch === 4);
+          const core = official && (branch === 1 || branch === 4) && (!addedSideParticle || i % 4 < 2);
           const thickness = (core ? .018 : .035) + (core ? .055 : .10) * Math.pow(.5 + .5 * Math.sin(t * 16 + branch * 2), 2);
           // Coherent, folded wisps: dense cores, diffuse edges and large negative spaces.
           let x = width * (branch / 5 + .16 * Math.sin(t * 7 + branch * 1.3 + phase) + .055 * Math.sin(t * 21 - branch + phase * .6) + gaussian * thickness) + cameraX * (backLayer ? 5 : 20);
           let y = height * (t * 1.24 - .12 + .055 * Math.sin(t * 12 + branch + phase) + gaussian * .027) + cameraY * (backLayer ? 3 : 12);
-          // Pull two existing wisps into denser side currents, without adding particles.
-          // The other branches keep the open, scattered composition of the approved E study.
-          if (core) {
+          // Mix a dense center and diffuse edges in each side current.
+          // Existing non-core branches retain the approved E composition.
+          if (core || addedSideParticle) {
             const side = branch === 1 ? -1 : 1;
             const sweep = .085 * Math.sin(t * 7 + phase) + .035 * Math.sin(t * 17 - phase * .6);
             x = width * (.5 + side * (.32 + sweep) + gaussian * thickness) + cameraX * (backLayer ? 5 : 20);
           }
-          if (i % 9 === 0) {
+          if (i % 9 === 0 && !addedSideParticle) {
             x = ((t * (width + 80) + time * 2) % (width + 80)) - 40;
             y = (((i * .41421356237) % 1) * (height + 80) + time) % (height + 80) - 40;
           }
@@ -144,7 +146,13 @@ export function GeometricHero({ centerShift = 0, motion = "default", space = "de
             const radius = officialSize * viewportHeight / (2 * Math.tan(50 * Math.PI / 180) * 300) * .35;
             // Preserve existing opacity independently of the new reference-based size.
             const areaCompensation = Math.min(1, size * size / (Math.PI * baseRadius * baseRadius));
-            context.globalAlpha = Math.min(.96, alpha * presence) * Math.sqrt(areaCompensation);
+            // Added particles fade out before the central copy; only side cores
+            // receive the modest contrast lift. Diameter and palette stay unchanged.
+            const sideDistance = Math.abs(x / width - .5);
+            const sideProgress = Math.max(0, Math.min(1, (sideDistance - (mobile ? .26 : .18)) / .18));
+            const sideWeight = sideProgress * sideProgress * (3 - 2 * sideProgress);
+            const densityOpacity = (addedSideParticle ? sideWeight : 1) * (core ? 1 + .18 * sideWeight : 1);
+            context.globalAlpha = Math.min(.96, Math.min(.96, alpha * presence) * Math.sqrt(areaCompensation) * densityOpacity);
             context.fillStyle = `rgb(${officialColors[colorIndex]})`;
             context.beginPath();
             context.arc(x + size / 2, y + size / 2, radius, 0, Math.PI * 2);

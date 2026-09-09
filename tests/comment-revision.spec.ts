@@ -481,7 +481,7 @@ test("adopted circles match the official opening's apparent particle size at 2x 
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(route);
     const shape = () => page.evaluate(() => (window as typeof window & { particleShape: { circles: number; minRadius: number; maxRadius: number; nonCircles: number; squareGrains: number; bitmaps: number } }).particleShape);
-    await expect.poll(async () => (await shape()).circles).toBeGreaterThanOrEqual(width < 768 ? 9000 : 18000);
+    await expect.poll(async () => (await shape()).circles).toBeGreaterThanOrEqual(width < 768 ? 13500 : 27000);
     const result = await shape();
     // Official shader size .75..2.25 (+2 on desktop), projected with FOV100/z300.
     // The soft reference circle's half-alpha edge is .35 of its quad diameter.
