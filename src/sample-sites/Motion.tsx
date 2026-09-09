@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import "./motion.css";
+import { useSampleNavigation } from "./Navigation";
 
 const MotionContext = createContext({ enabled: false, visible: true });
 const preferenceKey = "isaac-sample-motion";
@@ -7,11 +8,12 @@ const revealSelector = [
   "main h2", ".sora-prose > p", ".sora-project-card", ".sora-process li",
   ".sora-journal-row", ".next-person", ".next-values article", ".next-job",
   ".mellow-story > p", ".mellow-story-word", ".mellow-notes-copy article",
-  ".mellow-ritual article", ".mellow-faq details", ".ss-form", "[data-enter]",
+  ".mellow-ritual article", ".mellow-faq .ss-disclosure", ".ss-form", "[data-enter]",
 ].join(",");
 
 export function MotionProvider({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
+  useSampleNavigation(root);
   const [reduced, setReduced] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches);
   const [paused, setPaused] = useState(() => {
     try { return sessionStorage.getItem(preferenceKey) === "off"; } catch { return false; }
