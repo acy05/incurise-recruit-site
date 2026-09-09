@@ -6,7 +6,7 @@ const route = "comment-revision/";
 // Source: Figma 6QM5lCn22AJzsbZPUpV9Sj, checked 2026-09-09.
 test("support descriptions match Figma and its comments without paraphrasing", async ({ page }) => {
   const comments = [
-    [11, "learn", "01", ["プログラミングスキルを継続的に学ぶ環境を提供しています。"]],
+    [null, "learn", "01", ["Javaを中心に、入社後3カ月集中して学ぶ。"]], // Explicit user copy
     [null, "learn", "02", ["プログラミングスキルを継続的に学ぶ環境を提供しています。"]], // Explicit user copy, 2026-09-09
     [15, "learn", "03", ["コンサルタントに求められる基礎・実践スキルを早期習得するための研修が整っています。"]],
     [16, "learn", "04", ["あなたのキャリア形成の後押し役として、役員が直接相談にのります。"]],

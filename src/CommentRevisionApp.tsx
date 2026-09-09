@@ -111,7 +111,7 @@ const supportItems: ReadonlyArray<{
   title: string;
   body: readonly string[];
 }> = [
-  { number: "01", title: "プログラミング研修", body: ["プログラミングスキルを継続的に学ぶ環境を提供しています。"] },
+  { number: "01", title: "プログラミング研修", body: ["Javaを中心に、入社後3カ月集中して学ぶ。"] },
   { number: "02", title: "eラーニング", body: ["プログラミングスキルを継続的に学ぶ環境を提供しています。"] },
   { number: "03", title: "コンサルタント研修", body: ["コンサルタントに求められる基礎・実践スキルを早期習得するための研修が整っています。"] },
   { number: "04", title: "メンター制度", body: ["あなたのキャリア形成の後押し役として、役員が直接相談にのります。"] },
