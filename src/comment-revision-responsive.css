@@ -1,15 +1,27 @@
 /* Mobile/tablet composition. Keep the approved desktop rules at 1100px+ intact. */
+.cr2-site .cr2-footer-label { display: none; }
 @media (max-width: 1099px) {
+  html:has(.cr2-site) { --cr2-header-height: 64px; }
   .cr2-site { --cr2-gutter: clamp(20px, 4vw, 40px); }
-  .cr2-site .cr2-header { padding-inline: var(--cr2-gutter); }
+  .cr2-site .cr2-header { height: var(--cr2-header-height); padding-inline: var(--cr2-gutter); gap: 8px; }
+  .cr2-site .cr2-mobile-menu { inset-block-start: var(--cr2-header-height); }
+  .cr2-site .cr2-brand img { width: 80px; height: 44px; }
+  .cr2-site .cr2-menu-button { border: 0; border-radius: 0; background: transparent; }
   .cr2-site .cr2-entry-button {
-    width: 80px; min-height: 44px; display: inline-flex; align-items: center;
-    justify-content: center; gap: 8px; padding: 10px; border: 0;
-    color: var(--cr2-white); background: var(--cr2-gradient);
-    font: 700 12px/1 "Roboto", sans-serif; cursor: pointer;
+    width: 72px; min-height: 44px; display: inline-flex; align-items: center;
+    justify-content: center; padding: 0 12px; border: 0; border-radius: 0;
+    color: var(--cr2-white); background: var(--cr2-gradient) center / 100% 36px no-repeat;
+    font: 700 11px/1 "Roboto", sans-serif; letter-spacing: .06em; cursor: pointer;
   }
-  .cr2-site .cr2-entry-button .cr2-arrow-asset { width: 14px; height: 14px; }
+  .cr2-site .cr2-entry-button .cr2-arrow-asset { display: none; }
   .cr2-site .cr2-entry-button[inert] { visibility: hidden; }
+  /* Size the opening from its content: a tall phone must not add empty space above it. */
+  .cr2-site .cr2-adopted-hero,
+  .cr2-site .cr2-e-copy { min-height: 0; }
+  .cr2-site .cr2-e-copy { justify-content: flex-start; padding: clamp(40px, 6vw, 64px) var(--cr2-gutter) 96px; }
+  .cr2-site .cr2-e-bottom a { min-width: 0; width: 216px; max-width: 100%; min-height: 52px; margin-top: 24px; padding-inline: 20px; border-color: #0d2b2b80; background: transparent; color: var(--cr2-ink); font-size: 14px; }
+  .cr2-site .cr2-e-bottom a img { width: 22px; filter: brightness(0); opacity: .75; }
+  .cr2-site .cr2-motion-toggle { right: var(--cr2-gutter); bottom: 12px; min-width: 76px; border: 0; border-radius: 0; background: transparent; font-size: 9px; }
   .cr2-site .cr2-official-label { min-height: 40px; gap: 14px; }
   .cr2-site .cr2-official-label em { font-size: 13px; letter-spacing: .04em; }
   .cr2-site .cr2-official-mark { width: 28px; height: 40px; flex-basis: 28px; }
@@ -56,15 +68,23 @@
   .cr2-site .cr2-form-grid { gap: 24px; }
   .cr2-site .cr2-file input { width: 100%; font-size: 13px; overflow: hidden; }
   .cr2-site .cr2-file input::file-selector-button { min-height: 36px; margin-right: 10px; padding: 8px 12px; border: 1px solid var(--cr2-line); background: var(--cr2-soft); color: var(--cr2-ink); }
-  .cr2-site .cr2-footer-top { flex-direction: row; justify-content: space-between; gap: 12px; }
-  .cr2-site .cr2-footer-top > a img { width: 116px; height: 64px; }
-  .cr2-site .cr2-footer-top > div { gap: 16px; }
+  .cr2-site .cr2-footer { display: flex; flex-direction: column; gap: 20px; padding: 24px var(--cr2-gutter) max(24px, env(safe-area-inset-bottom)); border-top: 1px solid #ffffff26; }
+  .cr2-site .cr2-footer-top,
+  .cr2-site .cr2-footer-bottom { display: contents; }
+  .cr2-site .cr2-footer-label { display: inline; }
+  .cr2-site .cr2-footer-top > a { order: 0; display: flex; align-items: center; align-self: flex-start; gap: 12px; }
+  .cr2-site .cr2-footer-top > a img { width: 96px; height: 52px; }
+  .cr2-site .cr2-footer-top > a .cr2-footer-label { font: 700 11px/1.5 "Roboto", sans-serif; letter-spacing: .08em; }
+  .cr2-site .cr2-footer-top > div { order: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .cr2-site .cr2-footer-top > div a { display: flex; justify-content: center; gap: 10px; min-height: 48px; border: 1px solid #ffffff40; font: 500 12px/1.5 "Roboto", sans-serif; }
+  .cr2-site .cr2-footer-top > div a img { width: 24px; height: 24px; }
+  .cr2-site .cr2-footer-bottom nav { order: 1; width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+  .cr2-site .cr2-footer-bottom nav a { min-height: 48px; padding-block: 10px; justify-content: flex-start; border-bottom: 1px solid #ffffff26; font-size: 12px; line-height: 1.6; white-space: normal; }
+  .cr2-site .cr2-footer-bottom > p { order: 3; padding-top: 4px; color: #b7c7c5; font-size: 11px; text-align: left; }
 }
 
 @media (max-width: 767px) {
-  .cr2-site .cr2-adopted-hero,
-  .cr2-site .cr2-e-copy { min-height: clamp(560px, calc(100svh - 70px), 740px); }
-  .cr2-site .cr2-e-copy { padding: 64px var(--cr2-gutter); }
+  html:has(.cr2-site) { --cr2-header-height: 60px; }
   .cr2-site .cr2-e-copy h1 { font-size: clamp(32px, 9.6vw, 58px); line-height: 1.35; }
   .cr2-site .cr2-e-label { font-size: 13px; margin-bottom: 24px; }
   .cr2-site .cr2-e-lead { max-width: 30em; font-size: 14px; line-height: 1.9; font-weight: 400; }
@@ -72,9 +92,7 @@
   .cr2-site .cr2-e-phrase { display: inline-block; max-width: 100%; }
   .cr2-site .cr2-e-lead > span + br + span { margin-top: 8px; }
   .cr2-site .cr2-e-lead > br { display: none; }
-  .cr2-site .cr2-e-bottom a { min-height: 58px; width: min(260px, 100%); margin-top: 28px; }
   .cr2-site .cr2-e-hint { left: var(--cr2-gutter); bottom: 30px; transform: none; font-size: 8px; }
-  .cr2-site .cr2-motion-toggle { right: var(--cr2-gutter); bottom: 16px; }
   .cr2-site .cr2-iketeru-bridge > span { display: block; }
   .cr2-site .cr2-iketeru-who { text-align: left; }
   .cr2-site .cr2-career-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 5px; gap: 4px; }
@@ -94,7 +112,6 @@
   .cr2-site .cr2-selection li { min-height: 64px; flex-direction: row; justify-content: flex-start; gap: 18px; }
   .cr2-site .cr2-selection-number { width: 28px; font-size: 14px; text-align: center; }
   .cr2-site .cr2-selection-arrow { bottom: -17px; }
-  .cr2-site .cr2-footer-bottom nav a { font-size: 11px; }
 }
 
 @media (min-width: 768px) and (max-width: 1099px) {
@@ -117,5 +134,5 @@
   .cr2-site .cr2-form { padding-inline: 16px; }
   .cr2-site .cr2-official-definition-content li { padding: 16px; }
   .cr2-site .cr2-footer-top > div { gap: 8px; }
-  .cr2-site .cr2-footer-bottom nav a { font-size: 10px; }
+  .cr2-site .cr2-footer-bottom nav { column-gap: 16px; }
 }

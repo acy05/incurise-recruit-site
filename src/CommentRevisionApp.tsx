@@ -1004,10 +1004,10 @@ function Footer() {
   return (
     <footer className="cr2-footer">
       <div className="cr2-footer-top">
-        <a href="https://incurise.co.jp/" aria-label="インキュライズ公式サイト"><img src={logo} width="390" height="302" loading="lazy" alt="INCURISE Consulting" /></a>
+        <a href="https://incurise.co.jp/" aria-label="インキュライズ公式サイト"><img src={logo} width="390" height="302" loading="lazy" alt="INCURISE Consulting" /><span className="cr2-footer-label">RECRUIT 2026</span></a>
         <div>
-          <a href="https://www.wantedly.com/companies/company_4522961" target="_blank" rel="noreferrer" aria-label="Wantedly"><img src={wantedly} width="80" height="57" loading="lazy" alt="" /></a>
-          <a href="https://www.notion.so/Incurise-Consulting-1850e0dd05818078a32ff9df118ce9ff" target="_blank" rel="noreferrer" aria-label="Notion"><img src={notion} width="83" height="84" loading="lazy" alt="" /></a>
+          <a href="https://www.wantedly.com/companies/company_4522961" target="_blank" rel="noreferrer" aria-label="Wantedly"><img src={wantedly} width="80" height="57" loading="lazy" alt="" /><span className="cr2-footer-label">Wantedly</span></a>
+          <a href="https://www.notion.so/Incurise-Consulting-1850e0dd05818078a32ff9df118ce9ff" target="_blank" rel="noreferrer" aria-label="Notion"><img src={notion} width="83" height="84" loading="lazy" alt="" /><span className="cr2-footer-label">Notion</span></a>
         </div>
       </div>
       <div className="cr2-footer-bottom">

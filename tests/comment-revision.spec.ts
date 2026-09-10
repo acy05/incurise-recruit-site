@@ -303,6 +303,47 @@ test("responsive composition keeps readable copy and accessible compact controls
   await expect(page.locator('.cr2-entry-button')).not.toHaveAttribute('inert','');
 });
 
+test("compact mobile opening and footer retain clear hierarchy and touch targets", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(route);
+  await page.evaluate(() => document.fonts.ready);
+  for (const width of [320, 390, 600, 820, 1099]) {
+    let firstHeight = 0;
+    for (const height of [844, 1180]) {
+      await page.setViewportSize({ width, height });
+      await expect(page.locator('.cr2-header')).toHaveCSS('height', width < 768 ? '60px' : '64px');
+      const layout = await page.evaluate(() => {
+        const rect = (s: string) => document.querySelector(s)!.getBoundingClientRect();
+        const hero = rect('.cr2-adopted-hero');
+        const footerLinks = [...document.querySelectorAll<HTMLElement>('.cr2-footer a')];
+        return {
+          heroHeight: hero.height,
+          openingGap: rect('.cr2-e-label').top - hero.top,
+          headerHeight: rect('.cr2-header').height,
+          menuInset: parseFloat(getComputedStyle(document.querySelector('.cr2-mobile-menu')!).top),
+          menuRadius: getComputedStyle(document.querySelector('.cr2-menu-button')!).borderRadius,
+          controlsFit: footerLinks.every(e => e.getBoundingClientRect().width >= 44 && e.getBoundingClientRect().height >= 44 && e.scrollWidth <= e.clientWidth + 1),
+          footerOrder: ['.cr2-footer-top > a', '.cr2-footer-bottom nav', '.cr2-footer-top > div', '.cr2-footer-bottom > p'].map(s => rect(s).top),
+          socialLabelsVisible: [...document.querySelectorAll('.cr2-footer-top > div .cr2-footer-label')].every(e => e.getBoundingClientRect().width > 0),
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+      expect(layout.headerHeight).toBe(width < 768 ? 60 : 64);
+      expect(layout.menuInset).toBe(layout.headerHeight);
+      expect(layout.menuRadius).toBe('0px');
+      expect(layout.openingGap).toBeGreaterThanOrEqual(39);
+      expect(layout.openingGap).toBeLessThanOrEqual(65);
+      expect(layout.controlsFit).toBe(true);
+      expect(layout.socialLabelsVisible).toBe(true);
+      expect(layout.footerOrder).toEqual([...layout.footerOrder].sort((a, b) => a - b));
+      expect(layout.overflow).toBe(0);
+      if (firstHeight) expect(layout.heroHeight).toBeCloseTo(firstHeight, 0);
+      firstHeight = layout.heroHeight;
+    }
+  }
+});
+
 test("#9 matches the official About Definition structure at desktop and mobile", async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
@@ -613,7 +654,7 @@ test("adopted E hero retains the approved copy, centered layout and official arr
     expect(headingAngle).toBeCloseTo(-40, 1);
     const cta = page.locator(".cr2-e-bottom a");
     await expect(cta).toHaveAttribute("href", "https://incurise.co.jp/about/");
-    await expect(cta).toHaveCSS("min-height", viewport.width === 1440 ? "64px" : "58px");
+    await expect(cta).toHaveCSS("min-height", viewport.width === 1440 ? "64px" : "52px");
     // Wait for entrance transforms before measuring the optical text group.
     await expect(page.locator(".cr2-e-bottom")).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
     const geometry = await page.evaluate(() => {
@@ -623,10 +664,12 @@ test("adopted E hero retains the approved copy, centered layout and official arr
       return { x: label.x + label.width / 2 - (hero.x + hero.width / 2), y: (label.top + button.bottom) / 2 - (hero.top + hero.height / 2), height: hero.height, topGap: label.top - hero.top };
     });
     expect(Math.abs(geometry.x)).toBeLessThan(.5);
-    expect(Math.abs(geometry.y)).toBeLessThan(.5);
     if (viewport.width === 390) {
-      expect(geometry.height).toBeLessThanOrEqual(740);
-      expect(geometry.topGap).toBeLessThan(190);
+      // Mobile is now content-led, with an explicit short opening gap.
+      expect(geometry.height).toBeLessThanOrEqual(650);
+      expect(geometry.topGap).toBeCloseTo(40, 0);
+    } else {
+      expect(Math.abs(geometry.y)).toBeLessThan(.5);
     }
   }
 });
@@ -803,7 +846,7 @@ test("mobile menu traps focus, restores scroll and closes on desktop resize", as
   await trigger.click();
   await menu.getByRole("button", { name: "03 SUPPORT & BENEFIT", exact: true }).click();
   await expect(page.locator("#cr2-support")).toBeFocused();
-  await expect.poll(() => page.locator("#cr2-support > .cr2-container").evaluate(el => Math.round(el.getBoundingClientRect().top))).toBe(98);
+  await expect.poll(() => page.locator("#cr2-support > .cr2-container").evaluate(el => Math.round(el.getBoundingClientRect().top - document.querySelector('.cr2-header')!.getBoundingClientRect().bottom))).toBe(28);
 });
 
 test("mobile support can close completely without an empty detail area", async ({ page }) => {
@@ -819,7 +862,7 @@ test("mobile support can close completely without an empty detail area", async (
   await expect(shell).toBeVisible();
   await expect(shell.getByRole("tabpanel")).toContainText("Javaを中心に、入社後3カ月集中して学ぶ。");
   const footerLinks = await page.locator(".cr2-footer-bottom nav a").evaluateAll(nodes => nodes.map(el => ({y: Math.round(el.getBoundingClientRect().y), height:el.getBoundingClientRect().height})));
-  expect(new Set(footerLinks.map(link => link.y)).size).toBe(2);
+  expect(new Set(footerLinks.map(link => link.y)).size).toBe(3);
   expect(footerLinks.every(link => link.height >= 44)).toBe(true);
 });
 
