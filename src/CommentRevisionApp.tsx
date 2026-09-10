@@ -448,7 +448,7 @@ function IketeruSection() {
                     <span>{value.qualifier}</span>
                     <em>“<b>IKETERU</b>”</em>
                   </div>
-                  {value.body.map((phrases) => <p key={phrases.join("")}>{phrases.map((phrase, index) => <span className="cr2-definition-phrase" key={index}>{phrase}</span>)}</p>)}
+                  {value.body.map((phrases) => <p key={phrases.join("")}>{phrases.join("")}</p>)}
                 </li>
               ))}
             </ul>
