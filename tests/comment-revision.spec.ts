@@ -305,11 +305,12 @@ test("responsive composition keeps readable copy and accessible compact controls
 
 test("full-viewport mobile opening and compact footer retain clear hierarchy and touch targets", async ({ page }) => {
   test.setTimeout(90_000);
+  await page.setViewportSize({ width: 320, height: 390 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(route);
   await page.evaluate(() => document.fonts.ready);
   for (const width of [320, 390, 600, 820, 1099]) {
-    for (const height of [390, 844, 1180]) {
+    for (const height of [390, 568, 844, 1180]) {
       await page.setViewportSize({ width, height });
       await expect(page.locator('.cr2-header')).toHaveCSS('height', width < 768 ? '60px' : '64px');
       await expect(page.locator('.cr2-e-copy')).toHaveCSS('min-height', `${height - (width < 768 ? 60 : 64)}px`);
@@ -337,15 +338,17 @@ test("full-viewport mobile opening and compact footer retain clear hierarchy and
       expect(layout.headerHeight).toBe(width < 768 ? 60 : 64);
       expect(layout.menuInset).toBe(layout.headerHeight);
       expect(layout.menuRadius).toBe('0px');
-      expect(layout.openingGap).toBeGreaterThanOrEqual(39);
-      expect(layout.openingGap).toBeLessThanOrEqual(65);
+      expect(layout.openingGap).toBeGreaterThanOrEqual(23);
+      // Balance spare space above/below the copy, reserving 56px more below
+      // for the hint and pause control instead of a large empty bottom area.
+      expect(layout.buttonBottomGap - layout.openingGap).toBeCloseTo(56, 0);
       expect(layout.controlsFit).toBe(true);
       expect(layout.socialLabelsVisible).toBe(true);
       expect(layout.footerOrder).toEqual([...layout.footerOrder].sort((a, b) => a - b));
       expect(layout.overflow).toBe(0);
       expect(layout.heroHeight).toBeGreaterThanOrEqual(height - layout.headerHeight - 1);
       expect(layout.aboutTop).toBeGreaterThanOrEqual(height - 1);
-      expect(layout.buttonBottomGap).toBeGreaterThanOrEqual(95);
+      expect(layout.buttonBottomGap).toBeGreaterThanOrEqual(79);
       if (layout.toggleTopGap !== null) expect(layout.toggleTopGap).toBeGreaterThanOrEqual(20);
       expect(layout.hintTopGap).toBeGreaterThanOrEqual(20);
       if (height >= 844) expect(layout.heroHeight + layout.headerHeight).toBeCloseTo(height, 0);
@@ -674,9 +677,9 @@ test("adopted E hero retains the approved copy, centered layout and official arr
     });
     expect(Math.abs(geometry.x)).toBeLessThan(.5);
     if (viewport.width === 390) {
-      // The mobile hero fills the opening while retaining the short top gap.
+      // Fill the viewport with the copy optically centered above bottom controls.
       expect(geometry.height).toBeCloseTo(viewport.height - 60, 0);
-      expect(geometry.topGap).toBeCloseTo(40, 0);
+      expect(geometry.y).toBeCloseTo(-28, 0);
     } else {
       expect(Math.abs(geometry.y)).toBeLessThan(.5);
     }

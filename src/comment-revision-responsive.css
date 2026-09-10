@@ -15,7 +15,8 @@
   }
   .cr2-site .cr2-entry-button .cr2-arrow-asset { display: none; }
   .cr2-site .cr2-entry-button[inert] { visibility: hidden; }
-  /* Fill the opening below the header without adding space above the copy.
+  /* Keep the opening full-height, with the copy optically centered above the
+     bottom controls instead of leaving all spare space below the CTA.
      svh keeps the opening stable as browser chrome retracts; min-height lets
      short landscape screens and enlarged text grow without clipping. */
   .cr2-site .cr2-adopted-hero,
@@ -23,8 +24,14 @@
     min-height: calc(100vh - var(--cr2-header-height));
     min-height: calc(100svh - var(--cr2-header-height));
   }
-  .cr2-site .cr2-e-copy { justify-content: flex-start; padding: clamp(40px, 6vw, 64px) var(--cr2-gutter) 96px; }
-  .cr2-site .cr2-e-bottom a { min-width: 0; width: 216px; max-width: 100%; min-height: 52px; margin-top: 24px; padding-inline: 20px; border-color: #0d2b2b80; background: transparent; color: var(--cr2-ink); font-size: 14px; }
+  .cr2-site .cr2-e-copy {
+    --cr2-hero-copy-gap: clamp(20px, 4svh, 44px);
+    justify-content: center;
+    padding: 24px var(--cr2-gutter) 80px;
+  }
+  .cr2-site .cr2-e-label { margin-bottom: var(--cr2-hero-copy-gap); }
+  .cr2-site .cr2-e-lead { margin-top: var(--cr2-hero-copy-gap); }
+  .cr2-site .cr2-e-bottom a { min-width: 0; width: 216px; max-width: 100%; min-height: 52px; margin-top: var(--cr2-hero-copy-gap); padding-inline: 20px; border-color: #0d2b2b80; background: transparent; color: var(--cr2-ink); font-size: 14px; }
   .cr2-site .cr2-e-bottom a img { width: 22px; filter: brightness(0); opacity: .75; }
   .cr2-site .cr2-motion-toggle { right: var(--cr2-gutter); bottom: 12px; min-width: 76px; border: 0; border-radius: 0; background: transparent; font-size: 9px; }
   .cr2-site .cr2-official-label { min-height: 40px; gap: 14px; }
@@ -91,7 +98,7 @@
 @media (max-width: 767px) {
   html:has(.cr2-site) { --cr2-header-height: 60px; }
   .cr2-site .cr2-e-copy h1 { font-size: clamp(32px, 9.6vw, 58px); line-height: 1.35; }
-  .cr2-site .cr2-e-label { font-size: 13px; margin-bottom: 24px; }
+  .cr2-site .cr2-e-label { font-size: 13px; }
   .cr2-site .cr2-e-lead { max-width: 30em; font-size: 14px; line-height: 1.9; font-weight: 400; }
   .cr2-site .cr2-e-lead > span { display: block; text-wrap: balance; }
   .cr2-site .cr2-e-phrase { display: inline-block; max-width: 100%; }
