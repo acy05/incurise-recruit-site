@@ -85,7 +85,7 @@
 .next-values article::before { content: ""; position: absolute; inset: -1px auto auto 0; height: 3px; width: 38px; background: #e77952; transform: scaleX(0); transform-origin: left; transition: transform 700ms 200ms var(--motion-ease); }
 .next-values article.is-revealed::before { transform: scaleX(1); }
 .next-entry-section { position: relative; isolation: isolate; overflow: hidden; }
-.next-entry-section::before { content: "✳"; position: absolute; z-index: -1; left: -85px; bottom: -210px; color: #bfd46f70; font: 520px/1 Arial,sans-serif; animation: next-orbit 70s linear infinite; }
+.next-entry-mark { width: .742em; height: 1em; pointer-events: none; position: absolute; z-index: -1; left: -85px; bottom: -210px; color: #bfd46f70; font: 520px/1 Arial,sans-serif; animation: next-orbit 70s linear infinite; }
 
 /* Botanical care: slower light and shadow, unhurried imagery and a fine botanical seal. */
 .mellow-hero { isolation: isolate; }

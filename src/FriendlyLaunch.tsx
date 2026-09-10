@@ -1,3 +1,4 @@
+import { AsteriskMark } from "./AsteriskMark";
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import team from "./assets/generated/hero/hero-team.webp";
 import "./friendly-launch.css";
@@ -143,7 +144,7 @@ function WorkCards() {
       <article className="fd-work">
         <div className="fd-work-art sample-site sample-next" aria-hidden="true">
           <div className="sample-nav"><strong>next<span className="next-dot">.</span></strong><div>PEOPLE　 CULTURE <span className="next-entry">ENTRY</span></div></div>
-          <div className="next-copy"><span>YOUR NEXT CHAPTER STARTS HERE.</span><h3>次の自分を、<br /><em>おもしろく。</em></h3><p>まだない答えを、一緒につくろう。</p><span className="next-star">✳</span></div>
+          <div className="next-copy"><span>YOUR NEXT CHAPTER STARTS HERE.</span><h3>次の自分を、<br /><em>おもしろく。</em></h3><p>まだない答えを、一緒につくろう。</p><span className="next-star" aria-hidden="true"><AsteriskMark /></span></div>
           <div className="next-photo"><img src={team} width={1586} height={992} loading="lazy" decoding="async" alt="" /></div>
           <div className="next-bottom"><strong>その一歩が、<br />チームの未来になる。</strong><span>私たちについて知る</span></div>
         </div>

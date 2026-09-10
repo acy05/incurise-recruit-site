@@ -1,3 +1,4 @@
+import { AsteriskMark } from "./AsteriskMark";
 import { useEffect, useRef, useState } from "react";
 
 /* Vector artwork keeps the fine lines sharp at every screen size. */
@@ -69,7 +70,7 @@ export function DesignTicker() {
       <div className="ticker-track">
         {[0, 1].map(group => <div className="ticker-group" key={group}>
           {Array.from({ length: repetitions }, (_, item) => <span className="ticker-pair" key={item}>
-            <span>DESIGN WITH PURPOSE</span><i>✳</i><span>IDEAS INTO IMPACT</span><i>✳</i>
+            <span>DESIGN WITH PURPOSE</span><i><AsteriskMark /></i><span>IDEAS INTO IMPACT</span><i><AsteriskMark /></i>
           </span>)}
         </div>)}
       </div>

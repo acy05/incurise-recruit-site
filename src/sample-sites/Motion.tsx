@@ -1,3 +1,4 @@
+import { AsteriskMark } from "../AsteriskMark";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import "./motion.css";
 import { useSampleNavigation } from "./Navigation";
@@ -162,7 +163,7 @@ export function HeroLines({ first, second }: { first: ReactNode; second: ReactNo
 
 export function MotionMarquee() {
   return <div className="next-marquee" data-scene aria-hidden="true"><div className="next-marquee-track ss-loop">
-    {[0, 1].map(i => <div key={i}><span>MAKE IT TOGETHER.</span><b>✳</b><span>THE NEXT IS YOURS.</span><b>✳</b></div>)}
+    {[0, 1].map(i => <div key={i}><span>MAKE IT TOGETHER.</span><b><AsteriskMark /></b><span>THE NEXT IS YOURS.</span><b><AsteriskMark /></b></div>)}
   </div></div>;
 }
 
