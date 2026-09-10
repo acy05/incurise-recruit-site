@@ -423,7 +423,7 @@ function IketeruSection() {
             インキュライズという社名には、「Incubate（育成・支援）」と「Rise（成長・向上）」の想いが込められています。<br />
             課題をチャンスに変え、可能性を最大限に引き出す。その挑戦を、私たちが全力で支援します。
           </p>
-          <p className="cr2-iketeru-who cr2-definition-mobile-copy">「Incubate（育成・支援）」と「Rise（成長・向上）」の想いを社名に込め、課題をチャンスに変える挑戦を全力で支援します。</p>
+          <p className="cr2-iketeru-who cr2-definition-mobile-copy"><span className="cr2-about-term">「Incubate（育成・支援）」と</span><span className="cr2-about-term">「Rise（成長・向上）」</span>の想いを社名に込め、課題をチャンスに変える挑戦を全力で支援します。</p>
         </header>
 
         <h3 className="cr2-iketeru-bridge"><span>技術力×人間力。</span><span>IKETERU人材を育てる。</span></h3>

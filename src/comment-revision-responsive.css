@@ -43,6 +43,8 @@
   .cr2-site .cr2-section-heading > div:not(.cr2-official-label) { font-size: 15px; line-height: 1.9; max-width: 42em; }
   .cr2-site .cr2-iketeru-intro h2 { font-size: clamp(23px, 6.3vw, 38px); line-height: 1.5; }
   .cr2-site .cr2-iketeru-who { font-size: 15px; line-height: 1.9; text-wrap: pretty; }
+  /* Keep each name and its meaning together; allow wrapping at large text zoom. */
+  .cr2-site .cr2-about-term { display: inline-block; max-width: 100%; }
   .cr2-site .cr2-iketeru-bridge { font-size: clamp(20px, 5.3vw, 28px); line-height: 1.6; letter-spacing: .015em; }
   .cr2-site .cr2-official-definition-wrap { padding-inline: var(--cr2-gutter); }
   .cr2-site .cr2-official-static { max-width: 280px; }

@@ -2,6 +2,23 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const route = "comment-revision/";
+for (const width of [320, 390, 402, 430]) {
+  test(`mobile About name meanings stay together at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 874 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(route);
+    await page.evaluate(() => document.fonts.ready);
+    const copy = page.locator('.cr2-iketeru-who.cr2-definition-mobile-copy');
+    await expect(copy).toHaveText('「Incubate（育成・支援）」と「Rise（成長・向上）」の想いを社名に込め、課題をチャンスに変える挑戦を全力で支援します。');
+    const lines = await copy.locator('.cr2-about-term').evaluateAll(elements => elements.map(element => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      return new Set(Array.from(range.getClientRects(), rect => Math.round(rect.top))).size;
+    }));
+    expect(lines).toEqual([1, 1]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+  });
+}
 // Explicit user revisions take priority, then comments, then uncommented design copy.
 // Source: Figma 6QM5lCn22AJzsbZPUpV9Sj, checked 2026-09-09.
 test("support descriptions match Figma and its comments without paraphrasing", async ({ page }) => {
