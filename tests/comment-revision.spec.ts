@@ -16,6 +16,13 @@ for (const width of [320, 390, 402, 430]) {
       return new Set(Array.from(range.getClientRects(), rect => Math.round(rect.top))).size;
     }));
     expect(lines).toEqual([1, 1]);
+    const phrases = page.locator('.cr2-definition-phrase');
+    expect(await phrases.count()).toBeGreaterThan(50);
+    expect(await phrases.evaluateAll(elements => elements.every(element => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      return new Set(Array.from(range.getClientRects(), rect => Math.round(rect.top))).size === 1;
+    }))).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
   });
 }
