@@ -20,7 +20,7 @@ for (const width of [320, 390, 402, 430]) {
     await expect(paragraphs).toHaveCount(12);
     expect(await paragraphs.evaluateAll(elements => elements.every(element => {
       const style = getComputedStyle(element);
-      return style.textAlign === 'left' && ['normal', '0px'].includes(style.letterSpacing);
+      return style.textAlign === 'left' && ['normal', '0px'].includes(style.letterSpacing) && style.getPropertyValue('text-wrap-style') === 'auto';
     }))).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
   });
