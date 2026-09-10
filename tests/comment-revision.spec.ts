@@ -18,14 +18,10 @@ for (const width of [320, 390, 402, 430]) {
     expect(lines).toEqual([1, 1]);
     const paragraphs = page.locator('.cr2-official-definition-content li > p');
     await expect(paragraphs).toHaveCount(12);
-    const endGaps = await paragraphs.evaluateAll(elements => elements.flatMap(element => {
-      const range = document.createRange();
-      range.selectNodeContents(element);
-      const lines = Array.from(range.getClientRects());
-      return lines.slice(0, -1).map(line => Math.abs(element.getBoundingClientRect().right - line.right));
-    }));
-    expect(endGaps.length).toBeGreaterThan(12);
-    expect(Math.max(...endGaps)).toBeLessThan(2);
+    expect(await paragraphs.evaluateAll(elements => elements.every(element => {
+      const style = getComputedStyle(element);
+      return style.textAlign === 'left' && ['normal', '0px'].includes(style.letterSpacing);
+    }))).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
   });
 }
