@@ -303,22 +303,27 @@ test("responsive composition keeps readable copy and accessible compact controls
   await expect(page.locator('.cr2-entry-button')).not.toHaveAttribute('inert','');
 });
 
-test("compact mobile opening and footer retain clear hierarchy and touch targets", async ({ page }) => {
+test("full-viewport mobile opening and compact footer retain clear hierarchy and touch targets", async ({ page }) => {
   test.setTimeout(90_000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(route);
   await page.evaluate(() => document.fonts.ready);
   for (const width of [320, 390, 600, 820, 1099]) {
-    let firstHeight = 0;
-    for (const height of [844, 1180]) {
+    for (const height of [390, 844, 1180]) {
       await page.setViewportSize({ width, height });
       await expect(page.locator('.cr2-header')).toHaveCSS('height', width < 768 ? '60px' : '64px');
+      await expect(page.locator('.cr2-e-copy')).toHaveCSS('min-height', `${height - (width < 768 ? 60 : 64)}px`);
       const layout = await page.evaluate(() => {
         const rect = (s: string) => document.querySelector(s)!.getBoundingClientRect();
         const hero = rect('.cr2-adopted-hero');
+        const toggle = document.querySelector('.cr2-motion-toggle')?.getBoundingClientRect();
         const footerLinks = [...document.querySelectorAll<HTMLElement>('.cr2-footer a')];
         return {
           heroHeight: hero.height,
+          aboutTop: rect('#cr2-about').top + window.scrollY,
+          buttonBottomGap: hero.bottom - rect('.cr2-e-bottom a').bottom,
+          toggleTopGap: toggle ? toggle.top - rect('.cr2-e-bottom a').bottom : null,
+          hintTopGap: rect('.cr2-e-hint').top - rect('.cr2-e-bottom a').bottom,
           openingGap: rect('.cr2-e-label').top - hero.top,
           headerHeight: rect('.cr2-header').height,
           menuInset: parseFloat(getComputedStyle(document.querySelector('.cr2-mobile-menu')!).top),
@@ -338,8 +343,12 @@ test("compact mobile opening and footer retain clear hierarchy and touch targets
       expect(layout.socialLabelsVisible).toBe(true);
       expect(layout.footerOrder).toEqual([...layout.footerOrder].sort((a, b) => a - b));
       expect(layout.overflow).toBe(0);
-      if (firstHeight) expect(layout.heroHeight).toBeCloseTo(firstHeight, 0);
-      firstHeight = layout.heroHeight;
+      expect(layout.heroHeight).toBeGreaterThanOrEqual(height - layout.headerHeight - 1);
+      expect(layout.aboutTop).toBeGreaterThanOrEqual(height - 1);
+      expect(layout.buttonBottomGap).toBeGreaterThanOrEqual(95);
+      if (layout.toggleTopGap !== null) expect(layout.toggleTopGap).toBeGreaterThanOrEqual(20);
+      expect(layout.hintTopGap).toBeGreaterThanOrEqual(20);
+      if (height >= 844) expect(layout.heroHeight + layout.headerHeight).toBeCloseTo(height, 0);
     }
   }
 });
@@ -665,8 +674,8 @@ test("adopted E hero retains the approved copy, centered layout and official arr
     });
     expect(Math.abs(geometry.x)).toBeLessThan(.5);
     if (viewport.width === 390) {
-      // Mobile is now content-led, with an explicit short opening gap.
-      expect(geometry.height).toBeLessThanOrEqual(650);
+      // The mobile hero fills the opening while retaining the short top gap.
+      expect(geometry.height).toBeCloseTo(viewport.height - 60, 0);
       expect(geometry.topGap).toBeCloseTo(40, 0);
     } else {
       expect(Math.abs(geometry.y)).toBeLessThan(.5);

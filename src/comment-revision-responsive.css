@@ -15,9 +15,14 @@
   }
   .cr2-site .cr2-entry-button .cr2-arrow-asset { display: none; }
   .cr2-site .cr2-entry-button[inert] { visibility: hidden; }
-  /* Size the opening from its content: a tall phone must not add empty space above it. */
+  /* Fill the opening below the header without adding space above the copy.
+     svh keeps the opening stable as browser chrome retracts; min-height lets
+     short landscape screens and enlarged text grow without clipping. */
   .cr2-site .cr2-adopted-hero,
-  .cr2-site .cr2-e-copy { min-height: 0; }
+  .cr2-site .cr2-e-copy {
+    min-height: calc(100vh - var(--cr2-header-height));
+    min-height: calc(100svh - var(--cr2-header-height));
+  }
   .cr2-site .cr2-e-copy { justify-content: flex-start; padding: clamp(40px, 6vw, 64px) var(--cr2-gutter) 96px; }
   .cr2-site .cr2-e-bottom a { min-width: 0; width: 216px; max-width: 100%; min-height: 52px; margin-top: 24px; padding-inline: 20px; border-color: #0d2b2b80; background: transparent; color: var(--cr2-ink); font-size: 14px; }
   .cr2-site .cr2-e-bottom a img { width: 22px; filter: brightness(0); opacity: .75; }
