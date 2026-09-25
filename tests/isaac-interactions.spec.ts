@@ -1,5 +1,22 @@
 import { test, expect } from "@playwright/test";
 
+test("consultation mail opens the requested recipient with the selected content", async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.goto("./web-production/#contact", { waitUntil: "domcontentloaded" });
+  await page.locator("h1").waitFor({ timeout: 120_000 });
+  await page.getByLabel("今のサイトをリニューアル").check();
+  await page.getByLabel("もう少し詳しく 任意").fill("会社サイトの相談です。");
+
+  const href = await page.getByRole("link", { name: "メールで無料相談する" }).getAttribute("href");
+  expect(href).not.toBeNull();
+  const mailto = new URL(href!);
+  expect(mailto.protocol).toBe("mailto:");
+  expect(mailto.pathname).toBe("hp_sales-bounces@isaac-inc.co.jp");
+  expect(mailto.searchParams.get("subject")).toBe("Web制作のご相談");
+  expect(mailto.searchParams.get("body")).toContain("相談したいこと：今のサイトをリニューアル");
+  expect(mailto.searchParams.get("body")).toContain("補足：会社サイトの相談です。");
+});
+
 test("FAQ stays readable when answers are repeatedly opened and closed", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("./web-production/");
