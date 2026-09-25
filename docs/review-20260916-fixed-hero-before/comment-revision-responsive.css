@@ -156,9 +156,8 @@
   .cr2-site .cr2-adopted-hero { overflow: visible; }
   .cr2-site .cr2-adopted-hero .cr2-geometric-background,
   .cr2-site .cr2-adopted-hero .cr2-e-shade {
-    top: calc(-1 * var(--cr2-header-height));
     bottom: auto;
-    height: max(calc(100% + var(--cr2-header-height)), 100dvh);
+    height: max(100%, 100dvh);
   }
 }
 .cr2-site .cr2-header {

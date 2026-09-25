@@ -27,7 +27,7 @@ Contact Form 7で新しいフォームを作り、次のタグ名をそのまま
 
 ## 2. メール設定
 
-- 送信先: `recruit@incurise.co.jp`
+- 送信先: `hp_sales-bounces@isaac-inc.co.jp`
 - From: `incurise.co.jp`ドメインの既存・認証済み固定アドレス（例: `Incurise Recruit <wordpress@incurise.co.jp>`）
 - Reply-To: `[email]`
 - 件名例: `【採用応募】[applicant-name] 様`
@@ -102,7 +102,7 @@ Viteビルド時に環境変数が必要なため、GitHub Actionsのbuild step�
 ## 6. 有効化前の確認
 
 1. テスト用PDFを履歴書・職務経歴書へ1件ずつ添付する。
-2. `recruit@incurise.co.jp`で受信し、3つの添付欄、件名、本文を確認する。
+2. `hp_sales-bounces@isaac-inc.co.jp`で受信し、3つの添付欄、件名、本文を確認する。
 3. メールの返信先が応募者のメールアドレスになることを確認する。
 4. PDF以外、5MB超過、必須ファイルなしがサーバー側でも拒否されることを確認する。
 5. Turnstile期限切れ、spam、`validation_failed`、`mail_failed`、通信失敗の表示を確認する。

@@ -152,15 +152,6 @@
 /* September motion review: preserve type, dimensions and first-viewport layout. */
 .cr2-hero-transition { position: relative; background: #f1f1f1; }
 .cr2-adopted-hero { z-index: 5; }
-@media (prefers-reduced-motion: no-preference) {
-  .cr2-site .cr2-adopted-hero { overflow: visible; }
-  .cr2-site .cr2-adopted-hero .cr2-geometric-background,
-  .cr2-site .cr2-adopted-hero .cr2-e-shade {
-    top: calc(-1 * var(--cr2-header-height));
-    bottom: auto;
-    height: max(calc(100% + var(--cr2-header-height)), 100dvh);
-  }
-}
 .cr2-site .cr2-header {
   transition: transform .75s cubic-bezier(.22, 1, .36, 1), background-color .4s ease;
 }

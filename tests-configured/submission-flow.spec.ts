@@ -139,6 +139,35 @@ test("configured submission posts the exact multipart payload and clears the for
   expect(multipart).toContain("configured-e2e-token");
 });
 
+test("comment revision form uses the configured submission endpoint", async ({ page }) => {
+  let requestCount = 0;
+  let multipart = "";
+  await page.route(cf7Endpoint, async (route) => {
+    requestCount += 1;
+    multipart = route.request().postDataBuffer()?.toString("utf8") ?? "";
+    await fulfillCf7(route, { status: "mail_sent", message: "応募を受け付けました。" });
+  });
+
+  await page.goto("./comment-revision/", { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => document.querySelector("#cr2-entry")?.scrollIntoView());
+  await fillValidApplication(page);
+  await page.getByRole("button", { name: /同意して入力内容の確認へ/ }).click();
+
+  const dialog = page.getByRole("dialog", { name: "入力内容の確認" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByLabel("セキュリティ確認")).toHaveAttribute("data-widget-id", /configured-widget-/);
+  await dialog.getByTestId("cr2-recruit-submit").click();
+
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator(".cr2-form-success")).toContainText("応募を受け付けました。");
+  await expect(page.locator(".cr2-form input[name='name']")).toHaveValue("");
+  expect(requestCount).toBe(1);
+  expect(multipart).toContain('name="applicant-name"');
+  expect(multipart).toContain("山田 太郎");
+  expect(multipart).toContain('name="resume"; filename="resume.pdf"');
+  expect(multipart).toContain('name="_wpcf7_turnstile_response"');
+});
+
 test("an expired Turnstile token disables submission until the widget supplies a fresh token", async ({ page }) => {
   let requestCount = 0;
   await page.route(cf7Endpoint, (route) => {

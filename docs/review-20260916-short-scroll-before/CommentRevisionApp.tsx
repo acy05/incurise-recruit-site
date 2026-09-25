@@ -14,18 +14,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import logo from "./assets/preview/incurise-logo.png";
 import { GeometricHero } from "./GeometricHero";
-import { AdoptedHero, HERO_REVEAL_START, HERO_SCROLL_DISTANCE } from "./AdoptedHero";
+import { AdoptedHero, HERO_REVEAL_START } from "./AdoptedHero";
 import growthArrow from "./assets/preview/growth-arrow.png";
 import buttonArrowDark from "./assets/preview/button-arrow-dark.png";
 import buttonArrowWhite from "./assets/preview/button-arrow-white.png";
 import wantedly from "./assets/preview/wantedly.png";
 import notion from "./assets/preview/notion.png";
-import {
-  parseRecruitEndpoint,
-  submitRecruitApplication,
-  wpcf7FieldToFormField,
-  type RecruitApplication,
-} from "./recruitSubmission";
 
 const navItems = [
   ["ABOUT", "#cr2-about"],
@@ -299,7 +293,7 @@ function Header() {
       const headerHeight = document.querySelector<HTMLElement>(".cr2-header")?.offsetHeight ?? 0;
       // Read the unpinned wrapper: the pinned hero does not move during the reveal.
       const revealStarted = !!(hero && wrapper &&
-        headerHeight - wrapper.getBoundingClientRect().top >= hero.offsetHeight * HERO_SCROLL_DISTANCE * HERO_REVEAL_START);
+        headerHeight - wrapper.getBoundingClientRect().top >= hero.offsetHeight * HERO_REVEAL_START);
       setScrolled(revealStarted);
       if (!revealStarted || open) setHidden(false);
       else if (Math.abs(y - previous) > 6) setHidden(y > previous);
@@ -782,6 +776,21 @@ function FaqSection() {
 }
 
 type FormErrors = Record<string, string>;
+type ApplicationPreview = {
+  name: string;
+  kana: string;
+  birthYear: string;
+  birthMonth: string;
+  birthDay: string;
+  gender: string;
+  phone: string;
+  email: string;
+  address: string;
+  resume?: File;
+  workHistory?: File;
+  otherDocument?: File;
+};
+
 function fileError(file: File | undefined, required: boolean) {
   if (!file) return required ? "PDFファイルを選択してください" : "";
   if (!file.name.toLowerCase().endsWith(".pdf") || (file.type && file.type !== "application/pdf")) return "PDF形式のファイルを選択してください";
@@ -825,7 +834,7 @@ function validateForm(form: HTMLFormElement) {
   return errors;
 }
 
-function createPreview(form: HTMLFormElement): RecruitApplication {
+function createPreview(form: HTMLFormElement): ApplicationPreview {
   const data = new FormData(form);
   const value = (name: string) => String(data.get(name) ?? "").trim();
   return {
@@ -838,71 +847,10 @@ function createPreview(form: HTMLFormElement): RecruitApplication {
     phone: value("phone"),
     email: value("email"),
     address: value("address"),
-    resume: getFile(data, "resume")!,
-    workHistory: getFile(data, "workHistory")!,
+    resume: getFile(data, "resume"),
+    workHistory: getFile(data, "workHistory"),
     otherDocument: getFile(data, "otherDocument"),
   };
-}
-
-declare global {
-  interface Window {
-    turnstile?: {
-      render: (element: HTMLElement, options: Record<string, unknown>) => string;
-      remove: (widgetId: string) => void;
-    };
-  }
-}
-
-function RecruitTurnstile({ siteKey, onToken, onError }: { siteKey: string; onToken: (token: string) => void; onError: (message: string) => void }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    let widgetId = "";
-    let cancelled = false;
-    let interval = 0;
-    let loadTimeout = 0;
-    const render = () => {
-      if (cancelled || !containerRef.current || !window.turnstile || widgetId) return;
-      widgetId = window.turnstile.render(containerRef.current, {
-        sitekey: siteKey,
-        theme: "light",
-        callback: (token: string) => { onError(""); onToken(token); },
-        "expired-callback": () => { onToken(""); onError("セキュリティ確認の有効期限が切れました。もう一度確認してください。"); },
-        "timeout-callback": () => { onToken(""); onError("セキュリティ確認がタイムアウトしました。もう一度お試しください。"); },
-        "error-callback": () => { onToken(""); onError("セキュリティ確認を読み込めませんでした。通信環境を確認してください。"); },
-        "refresh-expired": "auto",
-        "refresh-timeout": "auto",
-      });
-      window.clearInterval(interval);
-      window.clearTimeout(loadTimeout);
-    };
-    interval = window.setInterval(render, 100);
-    loadTimeout = window.setTimeout(() => {
-      if (!widgetId) onError("セキュリティ確認を読み込めませんでした。ページを再読み込みしてください。");
-    }, 10_000);
-    const existing = document.querySelector<HTMLScriptElement>('script[data-recruit-turnstile="true"]');
-    if (existing) {
-      if (window.turnstile) render();
-      else existing.addEventListener("load", render, { once: true });
-    } else {
-      const script = document.createElement("script");
-      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-      script.async = true;
-      script.defer = true;
-      script.dataset.recruitTurnstile = "true";
-      script.addEventListener("load", render, { once: true });
-      script.addEventListener("error", () => onError("セキュリティ確認を読み込めませんでした。通信環境を確認してください。"), { once: true });
-      document.head.append(script);
-    }
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-      window.clearTimeout(loadTimeout);
-      if (widgetId) window.turnstile?.remove(widgetId);
-      onToken("");
-      onError("");
-    };
-  }, [onError, onToken, siteKey]);
-  return <div className="cr2-turnstile" ref={containerRef} aria-label="セキュリティ確認" />;
 }
 
 function formatFile(file?: File) {
@@ -914,22 +862,10 @@ function formatFile(file?: File) {
 function EntrySection() {
   const formRef = useRef<HTMLFormElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  const successRef = useRef<HTMLDivElement>(null);
   const lastFocused = useRef<HTMLElement | null>(null);
-  const submittingRef = useRef(false);
-  const restoreFocusRef = useRef(true);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [preview, setPreview] = useState<RecruitApplication | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const [turnstileAttempt, setTurnstileAttempt] = useState(0);
-  const [turnstileError, setTurnstileError] = useState("");
-  const [submissionError, setSubmissionError] = useState("");
-  const [sentMessage, setSentMessage] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [preview, setPreview] = useState<ApplicationPreview | null>(null);
   const [dirty, setDirty] = useState(false);
-  const endpoint = import.meta.env.VITE_RECRUIT_WPCF7_ENDPOINT;
-  const turnstileSiteKey = import.meta.env.VITE_RECRUIT_TURNSTILE_SITE_KEY;
-  const configured = Boolean(parseRecruitEndpoint(endpoint) && turnstileSiteKey?.trim());
 
   const validateOne = (name: string) => {
     const form = formRef.current;
@@ -955,13 +891,8 @@ function EntrySection() {
       return;
     }
     lastFocused.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    restoreFocusRef.current = true;
-    setSubmissionError("");
     setPreview(createPreview(form));
   };
-
-  useEffect(() => { submittingRef.current = submitting; }, [submitting]);
-  useEffect(() => { if (sentMessage) successRef.current?.focus(); }, [sentMessage]);
 
   useEffect(() => {
     if (!preview) return;
@@ -973,7 +904,6 @@ function EntrySection() {
     const frame = requestAnimationFrame(() => (dialog?.querySelector<HTMLElement>(selector) ?? dialog)?.focus());
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") {
-        if (submittingRef.current) return;
         event.preventDefault();
         setPreview(null);
         return;
@@ -999,8 +929,7 @@ function EntrySection() {
       window.removeEventListener("keydown", onKeyDown);
       unlock();
       if (site) site.inert = false;
-      setTurnstileToken("");
-      if (restoreFocusRef.current) requestAnimationFrame(() => lastFocused.current?.focus());
+      requestAnimationFrame(() => lastFocused.current?.focus());
     };
   }, [preview]);
 
@@ -1024,44 +953,10 @@ function EntrySection() {
     }
   };
 
-  const send = async () => {
-    if (!preview || !configured || !turnstileToken) return;
-    setSubmitting(true);
-    setSubmissionError("");
-    const result = await submitRecruitApplication(preview, turnstileToken, endpoint);
-    setSubmitting(false);
-    if (result.ok) {
-      restoreFocusRef.current = false;
-      formRef.current?.reset();
-      setErrors({});
-      setDirty(false);
-      setPreview(null);
-      setSentMessage(result.message || "応募を受け付けました。担当者よりご連絡します。ありがとうございました。");
-      return;
-    }
-    if (result.kind === "validation" && result.invalidFields?.length) {
-      const mapped: FormErrors = {};
-      result.invalidFields.forEach((item) => {
-        const rawName = wpcf7FieldToFormField[item.field] ?? item.field;
-        mapped[rawName.startsWith("birth") ? "birth" : rawName] = item.message;
-      });
-      restoreFocusRef.current = false;
-      setErrors((current) => ({ ...current, ...mapped }));
-      setPreview(null);
-      const field = Object.keys(mapped)[0];
-      requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>(field === "birth" ? "[name='birthYear']" : `[name='${field}']`)?.focus());
-      return;
-    }
-    setSubmissionError(result.message);
-    setTurnstileToken("");
-    setTurnstileAttempt((attempt) => attempt + 1);
-  };
-
   return (
     <section className="cr2-entry" id="cr2-entry">
       <div className="cr2-container cr2-entry-layout">
         <SectionHeading index="06" label="ENTRY" title={<>ここから、<br />次の成長へ。</>} lead="必要事項と応募書類を入力し、確認画面へ進んでください。" />
-        {sentMessage && <div ref={successRef} className="cr2-form-success" role="status" tabIndex={-1}><strong>応募を受け付けました。</strong><p>{sentMessage}</p></div>}
         <form ref={formRef} className="cr2-form" onSubmit={submit} onBlur={onBlur} onInput={() => setDirty(true)} onChange={() => setDirty(true)} noValidate>
           {Object.keys(errors).length > 1 && (
             <div className="cr2-error-summary" role="alert" tabIndex={-1}>
@@ -1103,13 +998,13 @@ function EntrySection() {
           </fieldset>
           <label className="cr2-privacy"><input name="privacy" type="checkbox" value="accepted" aria-invalid={Boolean(errors.privacy)} aria-describedby={describedBy("privacy")} /><span><a href="https://incurise.co.jp/privacy-policy/" target="_blank" rel="noreferrer">個人情報の取り扱い</a>を確認し、同意します。</span>{error("privacy")}</label>
           <button className="cr2-confirm" type="submit">同意して入力内容の確認へ <ArrowAsset light /></button>
-          <p className="cr2-preview-notice">入力内容やファイルをブラウザに保存しません。送信は確認画面で行います。</p>
+          <p className="cr2-preview-notice">プレビューのため応募情報は送信されません</p>
         </form>
       </div>
       {preview && createPortal(
-        <div className="cr2-modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && !submitting && setPreview(null)}>
+        <div className="cr2-modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setPreview(null)}>
           <div ref={dialogRef} className="cr2-modal" role="dialog" aria-modal="true" aria-labelledby="cr2-modal-title" aria-describedby="cr2-modal-description" tabIndex={-1}>
-            <button type="button" className="cr2-modal-close" onClick={() => setPreview(null)} disabled={submitting} aria-label="確認画面を閉じる"><X aria-hidden="true" /></button>
+            <button type="button" className="cr2-modal-close" onClick={() => setPreview(null)} aria-label="確認画面を閉じる"><X aria-hidden="true" /></button>
             <p>CONFIRM</p>
             <h2 id="cr2-modal-title">入力内容の確認</h2>
             <div id="cr2-modal-description">内容と添付ファイルを確認してください。</div>
@@ -1125,11 +1020,8 @@ function EntrySection() {
               <div><dt>職務経歴書</dt><dd>{formatFile(preview.workHistory)}</dd></div>
               <div><dt>その他書類</dt><dd>{formatFile(preview.otherDocument)}</dd></div>
             </dl>
-            {!configured && <p className="cr2-modal-notice" role="status">応募受付システムの準備中です。入力内容の確認までは利用できます。</p>}
-            {configured && turnstileSiteKey && <RecruitTurnstile key={turnstileAttempt} siteKey={turnstileSiteKey} onToken={setTurnstileToken} onError={setTurnstileError} />}
-            {turnstileError && <p className="cr2-submit-error" role="alert">{turnstileError}</p>}
-            {submissionError && <p className="cr2-submit-error" role="alert">{submissionError}</p>}
-            <div className="cr2-modal-actions"><button type="button" onClick={() => setPreview(null)} disabled={submitting}>修正する</button><button type="button" data-testid="cr2-recruit-submit" onClick={send} disabled={!configured || !turnstileToken || submitting}>{!configured ? "応募する（準備中）" : submitting ? "送信中…" : "応募する"}</button></div>
+            <p className="cr2-modal-notice">プレビューのため応募情報は送信されません</p>
+            <div className="cr2-modal-actions"><button type="button" onClick={() => setPreview(null)}>修正する</button><button type="button" disabled>応募する（プレビュー）</button></div>
           </div>
         </div>, document.body
       )}
@@ -1222,11 +1114,11 @@ function CommentRevisionMotion() {
             "--cr2-blob-scale": desktop ? "1" : "1.25", autoAlpha: 1,
             duration: .5, ease: "back.out(1.7)",
             scrollTrigger: {
-              // Share the shortened hero range so haze still waits for the
-              // diagonal reveal to finish, independent of the full visual height.
+              // The unpinned wrapper's bottom reaches the hero's fixed top at the exact
+              // end of the hero's diagonal reveal. Keep haze hidden until then.
               trigger: heroTransition ?? aboutIntro ?? definition,
               start: () => heroTransition
-                ? `top+=${(heroTransition.querySelector<HTMLElement>(".cr2-adopted-hero")?.offsetHeight ?? 0) * HERO_SCROLL_DISTANCE} ${site.querySelector<HTMLElement>(".cr2-header")?.offsetHeight ?? 0}px`
+                ? `bottom ${site.querySelector<HTMLElement>(".cr2-header")?.offsetHeight ?? 0}px`
                 : "top 45%",
               toggleActions: "play none none reset",
               invalidateOnRefresh: true,

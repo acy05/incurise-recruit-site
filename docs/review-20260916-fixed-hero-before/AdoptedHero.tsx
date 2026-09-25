@@ -6,8 +6,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-export const HERO_REVEAL_START = .04;
-export const HERO_SCROLL_DISTANCE = .55;
+export const HERO_REVEAL_START = .3;
 
 /** Approved spatial study E, isolated from the other comparison routes. */
 export function AdoptedHero() {
@@ -18,38 +17,30 @@ export function AdoptedHero() {
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
-      const headerHeight = () => document.querySelector<HTMLElement>(".cr2-header")?.offsetHeight ?? 0;
-      const syncOverlap = () => {
-        // Bring ABOUT forward by the same amount as the shorter pinned range.
-        // Keep the hero's visual height and initial composition unchanged.
-        gsap.set(hero.closest(".cr2-hero-transition"), {
-          marginBottom: -hero.offsetHeight * (1 - HERO_SCROLL_DISTANCE),
-        });
-      };
-      syncOverlap();
       // The layout/copy retains its approved height, but the outgoing visual
       // must cover tall viewports too. Use pixels so the mask can extend below
       // the layout box without revealing ABOUT at a second, horizontal edge.
       const revealMask = (finished: boolean) => {
-        const offset = headerHeight();
-        const height = Math.max(hero.offsetHeight + offset, window.innerHeight);
-        const upperRight = height * (finished ? -.35 : .35) - offset;
-        const upperLeft = height * (finished ? -.05 : .65) - offset;
-        const lowerLeft = height * (finished ? 1.35 : .65) - offset;
-        const lowerRight = height * (finished ? 1.05 : .35) - offset;
-        return `polygon(0% ${-offset}px,100% ${-offset}px,100% ${upperRight}px,0% ${upperLeft}px,0% ${lowerLeft}px,100% ${lowerRight}px,100% ${height - offset}px,0% ${height - offset}px)`;
+        const height = Math.max(hero.offsetHeight, window.innerHeight);
+        const upperRight = height * (finished ? -.35 : .35);
+        const upperLeft = height * (finished ? -.05 : .65);
+        const lowerLeft = height * (finished ? 1.35 : .65);
+        const lowerRight = height * (finished ? 1.05 : .35);
+        return `polygon(0% 0px,100% 0px,100% ${upperRight}px,0% ${upperLeft}px,0% ${lowerLeft}px,100% ${lowerRight}px,100% ${height}px,0% ${height}px)`;
       };
       // Keep the outgoing surface in view while ABOUT scrolls behind it.
-      // No pin spacing: the next section overlaps the shortened scroll range.
+      // No pin spacing: the original hero height is the transition's scroll distance.
       const timeline = gsap.timeline({ scrollTrigger: {
         trigger: hero,
-        // Pin from the initial position: scrolling changes only the mask.
-        start: () => `top ${headerHeight()}px`,
-        end: () => `+=${hero.offsetHeight * HERO_SCROLL_DISTANCE}`,
+        // Cover the viewport even after the header slides away.
+        start: "top top",
+        end: () => `+=${hero.offsetHeight}`,
         pin: true, pinSpacing: false, scrub: true,
         invalidateOnRefresh: true,
-        onRefreshInit: syncOverlap,
       } });
+      timeline.to(hero.querySelector(".cr2-e-copy"), {
+        scale: .92, opacity: 0, ease: "none", duration: .5,
+      }, 0);
       timeline.fromTo(hero, {
         clipPath: () => revealMask(false),
       }, {

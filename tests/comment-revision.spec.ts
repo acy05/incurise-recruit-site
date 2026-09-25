@@ -789,7 +789,7 @@ test("adopted particle motion pauses, resumes and respects reduced motion", asyn
   expect(hasParticles).toBe(true);
 });
 
-test("form validates, confirms files, and keeps final submission disabled", async ({ page }) => {
+test("form validates, confirms files, and keeps final submission disabled until the backend is configured", async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto(route, { waitUntil: "domcontentloaded" });
   const form = page.locator(".cr2-form");
@@ -815,8 +815,8 @@ test("form validates, confirms files, and keeps final submission disabled", asyn
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText("resume.pdf");
   await expect(dialog).toContainText("work-history.pdf");
-  await expect(dialog.getByText("プレビューのため応募情報は送信されません", { exact: true })).toBeVisible();
-  await expect(dialog.getByRole("button", { name: "応募する（プレビュー）" })).toBeDisabled();
+  await expect(dialog.getByText("応募受付システムの準備中です。入力内容の確認までは利用できます。", { exact: true })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "応募する（準備中）" })).toBeDisabled();
   await expect(page.locator(".cr2-site")).toHaveJSProperty("inert", true);
   expect(await dialog.evaluate((element) => element.parentElement?.parentElement === document.body)).toBe(true);
   await dialog.getByRole("button", { name: "修正する", exact: true }).focus();
