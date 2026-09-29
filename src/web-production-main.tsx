@@ -1,10 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import StudioLanding from "./StudioLanding";
+import IsaacCompleteLanding from "./IsaacCompleteLanding";
 
 createRoot(document.getElementById("web-production-root")!).render(
   <StrictMode>
-    <StudioLanding />
+    <IsaacCompleteLanding />
   </StrictMode>,
 );
