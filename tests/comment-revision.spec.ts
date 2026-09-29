@@ -194,6 +194,7 @@ test("responsive spacing is compact below 1100px and preserves desktop spacing",
       const style = (selector: string) => getComputedStyle(document.querySelector(selector)!);
       const px = (value: string) => Number.parseFloat(value);
       return {
+        compact: matchMedia("(max-width: 1099px)").matches,
         definitionLead: px(style(".cr2-official-definition").marginTop),
         circleMargin: px(style(".cr2-official-static").marginTop),
         contentPadding: px(style(".cr2-official-definition-content").paddingTop),
@@ -210,7 +211,7 @@ test("responsive spacing is compact below 1100px and preserves desktop spacing",
     expect(values.overflow, `${width}px overflow`).toBeLessThanOrEqual(0);
     expect(values.inputMinimum).toBe(52);
     expect(values.entryHeadingMargin).toBe(0);
-    if (width < 1100) {
+    if (values.compact) {
       expect(values.definitionLead).toBeGreaterThanOrEqual(56);
       expect(values.definitionLead).toBeLessThanOrEqual(88);
       expect(values.circleMargin).toBe(0);
