@@ -45,6 +45,8 @@
   .studio .process-grid article:nth-child(even) { padding-right: 0; }
   .studio .section-title { display: block; }
   .studio .section-title > p { margin-top: 22px; }
+  .studio .aftercare-option { grid-template-columns: minmax(0, 1fr); gap: 34px; padding: 38px 34px 28px; }
+  .studio .aftercare-heading > p { max-width: 58em; }
 }
 
 @media (max-width: 480px) {
@@ -67,4 +69,17 @@
   .studio .faq-answer p { padding-left: 0; padding-right: 0; }
   .studio .service-foot br,
   .studio .process-note br { display: none; }
+  .studio .aftercare-option { padding: 30px 22px 24px; }
+  .studio .aftercare-heading h3 { font-size: 26px; }
+  .studio .aftercare-list { grid-template-columns: minmax(0, 1fr); }
+  .studio .aftercare-list article,
+  .studio .aftercare-list article:first-child,
+  .studio .aftercare-list article:last-child {
+    padding: 20px 0;
+    border-left: 0;
+    border-top: 1px solid #d4d2c6;
+  }
+  .studio .aftercare-list article:first-child { border-top: 0; padding-top: 0; }
+  .studio .aftercare-list article > span { margin-bottom: 10px; font-size: 22px; }
+  .studio .aftercare-foot { align-items: flex-start; flex-direction: column; }
 }

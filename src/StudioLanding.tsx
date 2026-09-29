@@ -65,8 +65,8 @@ const faqs = [
     "はい。伝えたい内容の整理や原稿の構成、撮影・素材の準備方法からご相談いただけます。必要な支援の範囲は、お見積もりの際に明確にします。",
   ],
   [
-    "公開後の更新・運用も相談できますか？",
-    "はい。更新しやすい仕組みの導入から、公開後の保守・改善までご相談いただけます。社内の運用体制に合った方法をご提案します。",
+    "公開後の運用やデータ分析も相談できますか？",
+    "はい。更新・保守に加え、アクセス状況の整理や分析、改善提案もご相談いただけます。データ分析と継続改善は、サイト公開後に必要な場合だけ選べる別契約のオプションです。",
   ],
 ];
 const nav = [
@@ -413,29 +413,29 @@ export default function StudioLanding() {
           </div>
           <div className="intro-grid">
             <h2 data-reveal>
-              いいWebは、
+              フルオーダーを、
               <br />
-              いい<span className="orange">対話</span>から。
+              <span className="orange">もっと身近</span>に。
             </h2>
             <div data-reveal>
               <p className="large-copy">
-                つくりたいものが、
+                見た目も、使いやすさも、
                 <br />
-                まだ言葉になっていなくても。
+                貴社のために一から。
               </p>
               <p>
-                「私たちらしさって、なんだろう。」
+                テンプレートに事業を合わせるのではなく、
                 <br />
-                「もっと、サービスの魅力を届けたい。」
+                事業の目的や届けたい相手に合わせて設計します。
                 <br />
-                そんな小さな問いから、私たちの制作は始まります。
+                言葉になっていない段階からご相談ください。
               </p>
               <p>
-                事業を知る。想いを聴く。届け方を考える。
+                ブランドの印象やUIは、人が丁寧に判断する。
                 <br />
-                見た目の美しさと、使う人へのやさしさ。
+                コーディングはAIを活用して効率化する。
                 <br />
-                その両方を大切に、あなたの一歩に伴走します。
+                品質を大切にしながら、工数と納期を抑えます。
               </p>
               <a className="text-link" href="#approach">
                 私たちが大切にしていること
@@ -455,9 +455,9 @@ export default function StudioLanding() {
               ちょうどいいWebを。
             </h2>
             <p>
-              目的に合わせて、ゼロから設計。
+              コーポレート、LP、採用サイト。
               <br />
-              企画から公開、その先までお手伝いします。
+              目的に合わせて、ゼロから設計します。
             </p>
           </div>
           <div className="service-grid">
@@ -489,9 +489,9 @@ export default function StudioLanding() {
           </div>
           <div className="service-foot" data-reveal>
             <span>
-              小さな改善から、事業の立ち上げまで。
+              テンプレートに合わせるのではなく、
               <br className="mobile-only" />
-              ご予算や状況に合わせてご提案します。
+              目的とご予算に合わせて必要な範囲をご提案します。
             </span>
             <a className="text-link" href="#contact">
               こんなこと頼める？と相談する
@@ -505,30 +505,30 @@ export default function StudioLanding() {
               <span>03 / OUR APPROACH</span>
             </div>
             <h2 data-reveal>
-              つくって終わり、
+              人とAI、
               <br />
-              にはしない。
+              それぞれの強みで。
             </h2>
             <p className="approach-lead" data-reveal>
-              ビジネスの視点と、クリエイティブの力。
+              感性と判断は人が。時間のかかる実装はAIで。
               <br />
-              その掛け合わせで、意味のあるWebを。
+              品質とスピードを両立します。
             </p>
             {[
               [
                 "01",
-                "本質から、考える。",
-                "誰に、何を届け、どうなってほしいのか。デザインの前に、事業の目的と課題を一緒に整理します。",
+                "人が、デザインする。",
+                "ブランドの世界観、見た目の印象、使いやすさ。センスと判断が必要な部分は、専任者が丁寧に設計します。",
               ],
               [
                 "02",
-                "らしさを、かたちに。",
-                "言葉、写真、余白、動き。一つひとつに理由を持たせ、あなたの会社ならではの魅力を表現します。",
+                "AIで、実装を速く。",
+                "コーディングや調整にAIを活用し、制作工程を効率化。オリジナルデザインを短い期間で形にします。",
               ],
               [
                 "03",
-                "公開の先も、ともに。",
-                "スマートフォンでの使いやすさや更新性も大切に。公開後の運用・改善まで見据えて設計します。",
+                "動きまで、設計する。",
+                "スクロール演出やアニメーションにも対応。見栄えだけでなく、伝わり方まで考えて実装します。",
               ],
             ].map(([n, t, b]) => (
               <article className="approach-item" key={n} data-reveal>
@@ -583,10 +583,10 @@ export default function StudioLanding() {
               ],
               [
                 "04",
-                "GROW",
-                "ここからが、始まり。",
-                "表示や操作を確認して公開。運用や更新、改善もご相談ください。",
-                "公開・運用",
+                "LAUNCH",
+                "届ける準備を、整える。",
+                "PC・スマートフォンの表示や操作を確認し、公開まで伴走します。",
+                "確認・公開",
               ],
             ].map(([n, en, t, b, tag]) => (
               <article key={n} data-reveal>
@@ -611,6 +611,41 @@ export default function StudioLanding() {
               まずは気軽に相談する
             </a>
           </div>
+          <aside className="aftercare-option" data-reveal aria-labelledby="aftercare-title">
+            <div className="aftercare-heading">
+              <span>OPTION / AFTER LAUNCH</span>
+              <h3 id="aftercare-title">
+                公開後は、
+                <br />
+                データで育てる。
+              </h3>
+              <p>
+                アクセス状況やお問い合わせの動きを整理し、改善の優先順位をご提案します。
+                サイト制作後に、必要な場合だけ選べるオプションです。
+              </p>
+            </div>
+            <div className="aftercare-list">
+              <article>
+                <span>01</span>
+                <h4>データを整える</h4>
+                <p>目的に必要な情報を整理し、定期的に確認できる形へ。</p>
+              </article>
+              <article>
+                <span>02</span>
+                <h4>動きを分析する</h4>
+                <p>アクセスや反応を読み取り、課題と改善の仮説を明確に。</p>
+              </article>
+              <article>
+                <span>03</span>
+                <h4>改善を続ける</h4>
+                <p>優先順位を決め、更新や改修を無理のない範囲で継続。</p>
+              </article>
+            </div>
+            <div className="aftercare-foot">
+              <small>データ分析・改善支援は、Webサイト制作とは別契約のオプションです。</small>
+              <a className="text-link" href="#contact">公開後の改善について相談する</a>
+            </div>
+          </aside>
         </section>
         <section className="statement" data-motion-scene>
           <ChapterArtwork />

@@ -47,14 +47,15 @@ function Friendly({
             いい<span>関係</span>から。
           </h1>
           <p className="fd-c-lead">
-            「こんなこと、できる？」から始めましょう。
+            テンプレートに頼らず、貴社らしさを一から設計。
             <br />
-            まだまとまっていない想いも、一緒にかたちに。
+            デザインは人が、実装はAIで効率化。
             <br />
-            企画も、デザインも、公開のその先も。
+            品質とスピードを両立したWeb制作を。
           </p>
           <div className="fd-c-trust">
-            <span>初回相談無料</span>
+            <span>完全オリジナル</span>
+            <span>初回相談・見積無料</span>
             <span>オンラインで全国対応</span>
           </div>
         </div>
