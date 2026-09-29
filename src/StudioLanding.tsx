@@ -80,6 +80,7 @@ const topics = [
   "今のサイトをリニューアル",
   "まずは相談してみたい",
 ];
+const consultationEmail = "hp_sales-bounces@isaac-inc.co.jp";
 
 function Consultation({
   topic,
@@ -99,6 +100,7 @@ function Consultation({
     clearTimeout(timer.current);
   }, [topic, message]);
   const consultationText = `Web制作のご相談\n相談したいこと：${topic}\n${message ? `補足：${message}` : "詳細はお話ししながら相談したいです。"}`;
+  const consultationMailto = `mailto:${consultationEmail}?subject=${encodeURIComponent("Web制作のご相談")}&body=${encodeURIComponent(consultationText)}`;
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(consultationText);
@@ -155,7 +157,7 @@ function Consultation({
         <span aria-live="polite">
           {copyError
             ? "コピーできませんでした。内容を選択してコピーしてください。"
-            : "コピーした内容を、次のフォームに貼り付けられます。"}
+            : "選択した内容は、メール本文にも自動で反映されます。"}
         </span>
       </div>
       {copyError && (
@@ -174,17 +176,15 @@ function Consultation({
       )}
       <a
         className="button button--orange"
-        href="https://incurise.co.jp/contact/"
-        target="_blank"
-        rel="noreferrer"
+        href={consultationMailto}
       >
-        無料相談へ進む
+        メールで無料相談する
         <ArrowUpRight size={20} />
       </a>
       <p className="contact-note">
-        運営会社の相談フォームが別タブで開きます。
+        メールアプリが開きます。
         <br />
-        このページで入力した内容は自動送信されません。
+        内容をご確認のうえ送信してください。
       </p>
     </div>
   );
