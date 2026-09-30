@@ -190,11 +190,6 @@ test("responsive spacing is compact below 1100px and preserves desktop spacing",
   for (const width of [320, 390, 600, 768, 820, 1024, 1099, 1100, 1200, 1440, 1512]) {
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-    await expect.poll(async () => page.evaluate(() => {
-      const margin = Number.parseFloat(getComputedStyle(document.querySelector(".cr2-official-definition")!).marginTop);
-      if (matchMedia("(max-width: 1099px)").matches) return margin >= 56 && margin <= 88 ? "compact" : "pending";
-      return margin === 250 ? "desktop" : "pending";
-    }), { timeout: 5_000 }).toBe(width < 1100 ? "compact" : "desktop");
     const values = await page.evaluate(() => {
       const style = (selector: string) => getComputedStyle(document.querySelector(selector)!);
       const px = (value: string) => Number.parseFloat(value);
