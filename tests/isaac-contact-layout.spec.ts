@@ -44,17 +44,14 @@ test("desktop contact keeps the keyboard input sequence", async ({ page, browser
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./web-production/#contact");
   await page.locator('.consultation input[type="radio"]:checked').focus();
-  for (const selector of ["#consultation-company", "#consultation-name", "#consultation-phone", "#consultation-website", "#consultation-message", ".copy-button", ".consultation > .button"]) {
+  for (const selector of ["#consultation-company", "#consultation-name", "#consultation-phone", "#consultation-website", "#consultation-message", ".consultation > .button"]) {
     // macOS WebKit uses Option+Tab to include buttons in keyboard navigation.
     await page.keyboard.press(browserName === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
     await expect(page.locator(selector)).toBeFocused();
   }
 });
 
-test("desktop card grows for errors and manual copying without covering controls", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async () => { throw new Error("Clipboard unavailable"); } } });
-  });
+test("desktop card grows for errors without covering the mail action", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 960 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./web-production/#contact");
@@ -66,13 +63,13 @@ test("desktop card grows for errors and manual copying without covering controls
   expect((await form.boundingBox())!.height).toBeGreaterThan(initialHeight);
   const message = "日本語の長いご相談 & 更新・運用のご相談です。".repeat(70).slice(0, 2000);
   await page.locator("#consultation-message").fill(message);
-  await page.getByRole("button", { name: "相談内容をコピー" }).click();
-  await expect(page.locator("#consultation-copy-fallback")).toBeVisible();
-  expect(await page.locator("#consultation-copy-fallback").inputValue()).toContain(message);
+  const body = new URL((await form.getAttribute("action"))!).searchParams.get("body");
+  expect(body).toContain(message);
   const positions = await form.evaluate(el => {
     const box = (selector: string) => el.querySelector(selector)!.getBoundingClientRect();
-    return { fallbackTop: box(".manual-copy").top, noteBottom: box(".contact-note").bottom, formBottom: el.getBoundingClientRect().bottom, fallbackBottom: box(".manual-copy").bottom };
+    return { fieldsBottom: box(".consultation-fields").bottom, messageBottom: box("#consultation-message").bottom, submitTop: box(".button").top, noteTop: box(".contact-note").top, submitBottom: box(".button").bottom, formBottom: el.getBoundingClientRect().bottom, noteBottom: box(".contact-note").bottom };
   });
-  expect(positions.fallbackTop).toBeGreaterThanOrEqual(positions.noteBottom);
-  expect(positions.fallbackBottom).toBeLessThan(positions.formBottom);
+  expect(positions.submitTop).toBeGreaterThan(Math.max(positions.fieldsBottom, positions.messageBottom));
+  expect(positions.noteTop).toBeGreaterThanOrEqual(positions.submitBottom);
+  expect(positions.noteBottom).toBeLessThan(positions.formBottom);
 });

@@ -1,14 +1,9 @@
-import { expect, test, type Page } from "@playwright/test";
-
-async function fillContact(page: Page) {
-  await page.getByLabel("会社名 必須", { exact: true }).fill("株式会社サンプル");
-  await page.getByLabel("担当者名 必須", { exact: true }).fill("山田 太郎");
-  await page.getByLabel("電話番号 必須", { exact: true }).fill("+81 (0)3-1234-5678");
-}
+import { expect, test } from "@playwright/test";
 
 test("required contact fields and optional URL stop invalid mail creation", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./web-production/#contact");
+  await expect(page.locator(".consultation-next, .copy-button, .manual-copy")).toHaveCount(0);
   const send = page.getByRole("button", { name: "メールで無料相談する" });
   const company = page.getByLabel("会社名 必須", { exact: true });
   const name = page.getByLabel("担当者名 必須", { exact: true });
@@ -36,48 +31,6 @@ test("required contact fields and optional URL stop invalid mail creation", asyn
   const body = new URL((await page.locator("form.consultation").getAttribute("action"))!).searchParams.get("body");
   expect(body).not.toContain("HPリンク：");
   await expect(page).toHaveURL(/web-production\/#contact$/);
-});
-
-test("copy shares the mail body and resets after any contact edit", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "clipboard", { configurable: true, value: {
-      writeText: async (text: string) => { (window as unknown as { copiedText: string }).copiedText = text; },
-    } });
-  });
-  await page.goto("./web-production/#contact");
-  await fillContact(page);
-  await page.getByLabel("HPリンク 任意", { exact: true }).fill("https://example.co.jp/?a=1&b=2");
-  await page.getByLabel("もう少し詳しく 任意").fill("運用 & 分析の相談\n「更新」を依頼したいです。");
-  const copy = page.getByRole("button", { name: "相談内容をコピー" });
-  await copy.click();
-  await expect(page.getByRole("button", { name: "コピーしました" })).toBeVisible();
-  const body = new URL((await page.locator("form.consultation").getAttribute("action"))!).searchParams.get("body");
-  expect(await page.evaluate(() => (window as unknown as { copiedText: string }).copiedText)).toBe(body);
-  for (const [label, value] of [["会社名 必須", "株式会社変更"], ["担当者名 必須", "佐藤 花子"], ["電話番号 必須", "090-1234-5678"], ["HPリンク 任意", "https://example.jp/"]]) {
-    await page.getByLabel(label, { exact: true }).fill(value);
-    await expect(copy).toBeVisible();
-    await copy.click();
-    await expect(page.getByRole("button", { name: "コピーしました" })).toBeVisible();
-  }
-});
-
-test("copy failure provides an up-to-date selectable draft", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "clipboard", { configurable: true, value: {
-      writeText: async () => { throw new Error("Clipboard unavailable"); },
-    } });
-  });
-  await page.goto("./web-production/#contact");
-  await fillContact(page);
-  await page.getByRole("button", { name: "相談内容をコピー" }).click();
-  const fallback = page.getByLabel("こちらを選択してコピーしてください");
-  await expect(fallback).toBeVisible();
-  const body = new URL((await page.locator("form.consultation").getAttribute("action"))!).searchParams.get("body");
-  await expect(fallback).toHaveValue(body!);
-  await fallback.focus();
-  expect(await fallback.evaluate((input: HTMLTextAreaElement) => input.selectionEnd - input.selectionStart)).toBe(body!.length);
-  await page.getByLabel("担当者名 必須", { exact: true }).fill("別の担当者");
-  await expect(fallback).toBeHidden();
 });
 
 for (const width of [1440, 1280, 768, 390, 320]) {

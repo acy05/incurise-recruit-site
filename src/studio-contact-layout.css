@@ -5,6 +5,10 @@
 .studio .consultation-column-heading,
 .studio .consultation-divider { display: none; }
 
+@media (max-width: 1023px) {
+  .studio .consultation > .button { margin-top: 24px; }
+}
+
 @media (min-width: 901px) and (max-width: 1023px) {
   .studio .contact { grid-template-columns: minmax(0, 1fr); gap: 36px; }
   .studio .contact .consultation { width: 100%; max-width: 620px; }
@@ -32,9 +36,8 @@
       "fields topics"
       "fields message"
       "divider divider"
-      "copy submit"
-      "copy note"
-      "fallback fallback";
+      ". submit"
+      ". note";
     column-gap: 48px;
     width: 100%;
     max-width: none;
@@ -67,12 +70,10 @@
     border-top: 1px solid #dcded1;
     margin-block: 24px;
   }
-  .studio .consultation-next { grid-area: copy; margin: 0; }
   .studio .consultation > .button {
     grid-area: submit;
     width: 100%;
     justify-self: end;
   }
   .studio .contact-note { grid-area: note; margin: 14px 0 0; }
-  .studio .manual-copy { grid-area: fallback; margin-top: 24px; min-width: 0; }
 }

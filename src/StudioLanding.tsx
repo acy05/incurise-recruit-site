@@ -3,8 +3,6 @@ import {
   ArrowUp,
   ArrowUpRight,
   Check,
-  CheckCheck,
-  Copy,
   Menu,
   Pause,
   Play,
@@ -97,15 +95,6 @@ function Consultation({
   const [phone, setPhone] = useState("");
   const [website, setWebsite] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [copied, setCopied] = useState(false);
-  const [copyError, setCopyError] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
-  useEffect(() => () => clearTimeout(timer.current), []);
-  useEffect(() => {
-    setCopied(false);
-    setCopyError(false);
-    clearTimeout(timer.current);
-  }, [topic, message, company, contactName, phone, website]);
   const consultationText = [
     "Web制作のご相談",
     `会社名：${company.trim()}`,
@@ -116,17 +105,6 @@ function Consultation({
     message.trim() ? `補足：${message.trim()}` : "詳細はお話ししながら相談したいです。",
   ].join("\n");
   const consultationMailto = `mailto:${consultationEmail}?subject=${encodeURIComponent("Web制作のご相談")}&body=${encodeURIComponent(consultationText)}`;
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(consultationText);
-      setCopied(true);
-      setCopyError(false);
-      clearTimeout(timer.current);
-      timer.current = setTimeout(() => setCopied(false), 3000);
-    } catch {
-      setCopyError(true);
-    }
-  };
   return (
     <form
       className="consultation"
@@ -233,31 +211,6 @@ function Consultation({
         />
       </div>
       <div className="consultation-divider" aria-hidden="true" />
-      <div className="consultation-next">
-        <button type="button" className="copy-button" onClick={copy}>
-          {copied ? <CheckCheck size={16} /> : <Copy size={16} />}
-          {copied ? "コピーしました" : "相談内容をコピー"}
-        </button>
-        <span aria-live="polite">
-          {copyError
-            ? "コピーできませんでした。内容を選択してコピーしてください。"
-            : "選択した内容は、メール本文にも自動で反映されます。"}
-        </span>
-      </div>
-      {copyError && (
-        <div className="manual-copy">
-          <label htmlFor="consultation-copy-fallback">
-            こちらを選択してコピーしてください
-          </label>
-          <textarea
-            id="consultation-copy-fallback"
-            readOnly
-            value={consultationText}
-            onFocus={(e) => e.currentTarget.select()}
-            rows={4}
-          />
-        </div>
-      )}
       <button
         type="submit"
         aria-label="メールで無料相談する"
