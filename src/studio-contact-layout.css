@@ -29,8 +29,8 @@
     grid-template-areas:
       "heading heading"
       "title title"
-      "topics fields"
-      "message fields"
+      "fields topics"
+      "fields message"
       "divider divider"
       "copy submit"
       "copy note"
@@ -54,8 +54,8 @@
   .studio .consultation-fields {
     grid-area: fields;
     min-width: 0;
-    padding-left: 24px;
-    border-left: 1px solid #dcded1;
+    padding-right: 24px;
+    border-right: 1px solid #dcded1;
     align-self: stretch;
   }
   .studio .consultation-fields .consultation-field:first-of-type .message-label { margin-top: 0; }
@@ -70,10 +70,9 @@
   .studio .consultation-next { grid-area: copy; margin: 0; }
   .studio .consultation > .button {
     grid-area: submit;
-    /* Match the input edge after the column padding and 1px divider. */
-    width: calc(100% - 25px);
+    width: 100%;
     justify-self: end;
   }
-  .studio .contact-note { grid-area: note; margin: 14px 0 0 25px; }
+  .studio .contact-note { grid-area: note; margin: 14px 0 0; }
   .studio .manual-copy { grid-area: fallback; margin-top: 24px; min-width: 0; }
 }

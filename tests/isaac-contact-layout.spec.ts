@@ -24,10 +24,10 @@ for (const width of [1440, 1280, 1024, 1023, 901, 900, 768, 390, 320]) {
     if (width >= 1024) {
       expect(bounds.padding).toBe("40px");
       expect(bounds.form.width).toBeGreaterThan(width * 0.8);
-      expect(bounds.topics.right).toBeLessThan(bounds.company.left);
+      expect(bounds.company.right).toBeLessThan(bounds.topics.left);
       expect(Math.abs(bounds.topics.left - bounds.message.left)).toBeLessThan(1);
-      expect(Math.abs(bounds.company.left - bounds.submit.left)).toBeLessThan(1);
-      expect(Math.abs(bounds.company.width - bounds.submit.width)).toBeLessThan(1);
+      expect(Math.abs(bounds.message.left - bounds.submit.left)).toBeLessThan(1);
+      expect(Math.abs(bounds.message.width - bounds.submit.width)).toBeLessThan(1);
       expect(bounds.message.height).toBeGreaterThanOrEqual(160);
       expect(bounds.submit.top).toBeGreaterThan(Math.max(bounds.message.bottom, bounds.fields.bottom));
     } else {
