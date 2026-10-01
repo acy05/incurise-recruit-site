@@ -1,0 +1,79 @@
+/* Transparent wrappers keep the existing mobile composition and focus order. */
+.studio .contact-title,
+.studio .consultation-topics,
+.studio .consultation-message { display: contents; }
+.studio .consultation-column-heading,
+.studio .consultation-divider { display: none; }
+
+@media (min-width: 901px) and (max-width: 1023px) {
+  .studio .contact { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .studio .contact .consultation { width: 100%; max-width: 620px; }
+}
+
+@media (min-width: 1024px) {
+  .studio .contact { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .studio .contact-copy {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 48px;
+    align-items: start;
+  }
+  .studio .contact-title { display: block; grid-column: 1; grid-row: 1 / 4; }
+  .studio .contact-copy > p { grid-column: 2; grid-row: 1; margin-top: 0; }
+  .studio .contact-benefits { grid-column: 2; grid-row: 2; margin-top: 24px; }
+  .studio .contact-scribble { grid-column: 2; grid-row: 3; margin-top: 24px; }
+
+  .studio .contact .consultation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "heading heading"
+      "title title"
+      "topics fields"
+      "message fields"
+      "divider divider"
+      "copy submit"
+      "copy note"
+      "fallback fallback";
+    column-gap: 48px;
+    width: 100%;
+    max-width: none;
+    padding: 40px;
+    align-items: start;
+  }
+  .studio .consultation-heading { grid-area: heading; }
+  .studio .consultation > h3 { grid-area: title; }
+  .studio .consultation > h3 br { display: none; }
+  .studio .consultation-column-heading {
+    display: block;
+    margin: 0 0 16px;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  .studio .consultation-topics { display: block; grid-area: topics; min-width: 0; }
+  .studio .consultation-fields {
+    grid-area: fields;
+    min-width: 0;
+    padding-left: 24px;
+    border-left: 1px solid #dcded1;
+    align-self: stretch;
+  }
+  .studio .consultation-fields .consultation-field:first-of-type .message-label { margin-top: 0; }
+  .studio .consultation-message { display: block; grid-area: message; min-width: 0; }
+  .studio .consultation-message > textarea { display: block; min-height: 160px; }
+  .studio .consultation-divider {
+    display: block;
+    grid-area: divider;
+    border-top: 1px solid #dcded1;
+    margin-block: 24px;
+  }
+  .studio .consultation-next { grid-area: copy; margin: 0; }
+  .studio .consultation > .button {
+    grid-area: submit;
+    /* Match the input edge after the column padding and 1px divider. */
+    width: calc(100% - 25px);
+    justify-self: end;
+  }
+  .studio .contact-note { grid-area: note; margin: 14px 0 0 25px; }
+  .studio .manual-copy { grid-area: fallback; margin-top: 24px; min-width: 0; }
+}

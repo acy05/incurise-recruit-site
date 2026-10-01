@@ -18,6 +18,7 @@ import "./studio-polish.css";
 import "./studio-motion-polish.css";
 import "./studio-responsive.css";
 import "./studio-readability.css";
+import "./studio-contact-layout.css";
 
 const services = [
   {
@@ -163,22 +164,26 @@ function Consultation({
         <br />
         考えていますか？
       </h3>
-      <fieldset>
-        <legend>ご相談のきっかけ</legend>
-        {topics.map((t) => (
-          <label key={t} className={topic === t ? "selected" : ""}>
-            <input
-              type="radio"
-              name="topic"
-              checked={topic === t}
-              onChange={() => setTopic(t)}
-            />
-            <span>{t}</span>
-            {topic === t ? <Check size={17} /> : <Plus size={17} />}
-          </label>
-        ))}
-      </fieldset>
+      <div className="consultation-topics">
+        <h4 className="consultation-column-heading">ご相談内容</h4>
+        <fieldset>
+          <legend>ご相談のきっかけ</legend>
+          {topics.map((t) => (
+            <label key={t} className={topic === t ? "selected" : ""}>
+              <input
+                type="radio"
+                name="topic"
+                checked={topic === t}
+                onChange={() => setTopic(t)}
+              />
+              <span>{t}</span>
+              {topic === t ? <Check size={17} /> : <Plus size={17} />}
+            </label>
+          ))}
+        </fieldset>
+      </div>
       <div className="consultation-fields">
+        <h4 className="consultation-column-heading">ご連絡先</h4>
         {[
           { id: "company", label: "会社名", value: company, setValue: setCompany, type: "text", autoComplete: "organization", placeholder: "株式会社サンプル", required: true, maxLength: 150 },
           { id: "name", label: "担当者名", value: contactName, setValue: setContactName, type: "text", autoComplete: "name", placeholder: "山田 太郎", required: true, maxLength: 100 },
@@ -214,17 +219,20 @@ function Consultation({
           </div>
         ))}
       </div>
-      <label className="message-label" htmlFor="consultation-message">
-        もう少し詳しく <span>任意</span>
-      </label>
-      <textarea
-        id="consultation-message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        maxLength={2000}
-        placeholder="例：新サービスのLPをつくりたい。予算や進め方から相談したいです。"
-        rows={3}
-      />
+      <div className="consultation-message">
+        <label className="message-label" htmlFor="consultation-message">
+          もう少し詳しく <span>任意</span>
+        </label>
+        <textarea
+          id="consultation-message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          maxLength={2000}
+          placeholder="例：新サービスのLPをつくりたい。予算や進め方から相談したいです。"
+          rows={3}
+        />
+      </div>
+      <div className="consultation-divider" aria-hidden="true" />
       <div className="consultation-next">
         <button type="button" className="copy-button" onClick={copy}>
           {copied ? <CheckCheck size={16} /> : <Copy size={16} />}
@@ -792,14 +800,16 @@ export default function StudioLanding() {
         </section>
         <section className="contact section-shell" id="contact" tabIndex={-1}>
           <div className="contact-copy">
-            <div className="section-label">
-              <span>06 / LET’S TALK</span>
+            <div className="contact-title">
+              <div className="section-label">
+                <span>06 / LET’S TALK</span>
+              </div>
+              <h2>
+                まずは、
+                <br />
+                話してみませんか<span>？</span>
+              </h2>
             </div>
-            <h2>
-              まずは、
-              <br />
-              話してみませんか<span>？</span>
-            </h2>
             <p>
               うまく説明できなくても大丈夫。
               <br />
