@@ -17,6 +17,7 @@ import FriendlyLaunch from "./FriendlyLaunch";
 import "./studio-polish.css";
 import "./studio-motion-polish.css";
 import "./studio-responsive.css";
+import "./studio-readability.css";
 
 const services = [
   {
@@ -66,7 +67,7 @@ const faqs = [
   ],
   [
     "公開後の運用やデータ分析も相談できますか？",
-    "はい。更新・保守に加え、アクセス状況の整理や分析、改善提案もご相談いただけます。データ分析と継続改善は、サイト公開後に必要な場合だけ選べる別契約のオプションです。",
+    "はい。日々のコンテンツ更新や保守から、アクセス状況の整理・分析、改善提案まで支援します。運用・データ分析・改善支援は、サイト公開後に必要に応じて選べる別契約のサービスです。",
   ],
 ];
 const nav = [
@@ -90,6 +91,11 @@ function Consultation({
   setTopic: (topic: string) => void;
 }) {
   const [message, setMessage] = useState("");
+  const [company, setCompany] = useState("");
+  const [contactName, setContactName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [website, setWebsite] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>();
@@ -98,8 +104,16 @@ function Consultation({
     setCopied(false);
     setCopyError(false);
     clearTimeout(timer.current);
-  }, [topic, message]);
-  const consultationText = `Web制作のご相談\n相談したいこと：${topic}\n${message ? `補足：${message}` : "詳細はお話ししながら相談したいです。"}`;
+  }, [topic, message, company, contactName, phone, website]);
+  const consultationText = [
+    "Web制作のご相談",
+    `会社名：${company.trim()}`,
+    `担当者名：${contactName.trim()}`,
+    `電話番号：${phone.trim()}`,
+    ...(website.trim() ? [`HPリンク：${website.trim()}`] : []),
+    `相談したいこと：${topic}`,
+    message.trim() ? `補足：${message.trim()}` : "詳細はお話ししながら相談したいです。",
+  ].join("\n");
   const consultationMailto = `mailto:${consultationEmail}?subject=${encodeURIComponent("Web制作のご相談")}&body=${encodeURIComponent(consultationText)}`;
   const copy = async () => {
     try {
@@ -113,7 +127,33 @@ function Consultation({
     }
   };
   return (
-    <div className="consultation">
+    <form
+      className="consultation"
+      action={consultationMailto}
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const errors: Record<string, string> = {};
+        let firstInvalid: HTMLInputElement | undefined;
+        form.querySelectorAll<HTMLInputElement>(".consultation-field input").forEach((input) => {
+          input.setCustomValidity(input.required && !input.value.trim() ? "この項目を入力してください。" : "");
+          if (!input.validity.valid) {
+            errors[input.name] = input.validity.typeMismatch
+              ? "https://example.co.jp/ のようなURLを入力してください。"
+              : "この項目を入力してください。";
+            firstInvalid ??= input;
+          }
+        });
+        setFieldErrors(errors);
+        if (firstInvalid) {
+          firstInvalid.focus({ preventScroll: true });
+          firstInvalid.scrollIntoView({ block: "center", behavior: "instant" });
+          return;
+        }
+        window.location.href = consultationMailto;
+      }}
+    >
       <div className="consultation-heading">
         <span className="status-dot" />
         LET’S START A CONVERSATION
@@ -138,6 +178,42 @@ function Consultation({
           </label>
         ))}
       </fieldset>
+      <div className="consultation-fields">
+        {[
+          { id: "company", label: "会社名", value: company, setValue: setCompany, type: "text", autoComplete: "organization", placeholder: "株式会社サンプル", required: true, maxLength: 150 },
+          { id: "name", label: "担当者名", value: contactName, setValue: setContactName, type: "text", autoComplete: "name", placeholder: "山田 太郎", required: true, maxLength: 100 },
+          { id: "phone", label: "電話番号", value: phone, setValue: setPhone, type: "tel", autoComplete: "tel", placeholder: "03-1234-5678", required: true, maxLength: 50 },
+          { id: "website", label: "HPリンク", value: website, setValue: setWebsite, type: "url", autoComplete: "url", placeholder: "https://example.co.jp/", required: false, maxLength: 2000 },
+        ].map((field) => (
+          <div className="consultation-field" key={field.id}>
+            <label className="message-label" htmlFor={`consultation-${field.id}`}>
+              {field.label} <span>{field.required ? "必須" : "任意"}</span>
+            </label>
+            <input
+              id={`consultation-${field.id}`}
+              name={field.id}
+              type={field.type}
+              autoComplete={field.autoComplete}
+              required={field.required}
+              maxLength={field.maxLength}
+              placeholder={field.placeholder}
+              value={field.value}
+              aria-invalid={Boolean(fieldErrors[field.id])}
+              aria-describedby={fieldErrors[field.id] ? `consultation-${field.id}-error` : undefined}
+              onChange={(event) => {
+                event.currentTarget.setCustomValidity("");
+                setFieldErrors((errors) => ({ ...errors, [field.id]: "" }));
+                field.setValue(event.target.value);
+              }}
+            />
+            {fieldErrors[field.id] && (
+              <p className="consultation-field-error" id={`consultation-${field.id}-error`} role="alert">
+                {fieldErrors[field.id]}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
       <label className="message-label" htmlFor="consultation-message">
         もう少し詳しく <span>任意</span>
       </label>
@@ -174,19 +250,20 @@ function Consultation({
           />
         </div>
       )}
-      <a
+      <button
+        type="submit"
+        aria-label="メールで無料相談する"
         className="button button--orange"
-        href={consultationMailto}
       >
-        メールで無料相談する
+        <span className="consultation-submit-text"><span>メールで</span><span>無料相談する</span></span>
         <ArrowUpRight size={20} />
-      </a>
+      </button>
       <p className="contact-note">
         メールアプリが開きます。
         <br />
         内容をご確認のうえ送信してください。
       </p>
-    </div>
+    </form>
   );
 }
 
@@ -613,37 +690,36 @@ export default function StudioLanding() {
           </div>
           <aside className="aftercare-option" data-reveal aria-labelledby="aftercare-title">
             <div className="aftercare-heading">
-              <span>OPTION / AFTER LAUNCH</span>
+              <span>OTHER SERVICES / AFTER LAUNCH</span>
               <h3 id="aftercare-title">
-                公開後は、
+                公開後も、
                 <br />
-                データで育てる。
+                <span className="aftercare-title-part">運用とデータで</span><span className="aftercare-title-part">育てる。</span>
               </h3>
               <p>
-                アクセス状況やお問い合わせの動きを整理し、改善の優先順位をご提案します。
-                サイト制作後に、必要な場合だけ選べるオプションです。
+                約40年にわたる企業支援・データ分析の経験を生かし、Webサイト公開後の運用から分析・改善まで支援します。
               </p>
             </div>
             <div className="aftercare-list">
               <article>
                 <span>01</span>
-                <h4>データを整える</h4>
-                <p>目的に必要な情報を整理し、定期的に確認できる形へ。</p>
+                <h4>運用・更新</h4>
+                <p>公開後のコンテンツ更新や保守など、日々のサイト運用を支援します。</p>
               </article>
               <article>
                 <span>02</span>
-                <h4>動きを分析する</h4>
-                <p>アクセスや反応を読み取り、課題と改善の仮説を明確に。</p>
+                <h4>データ分析</h4>
+                <p>アクセスやお問い合わせの状況を整理し、課題や改善のヒントを見つけます。</p>
               </article>
               <article>
                 <span>03</span>
-                <h4>改善を続ける</h4>
-                <p>優先順位を決め、更新や改修を無理のない範囲で継続。</p>
+                <h4>改善提案</h4>
+                <p>分析結果から優先順位を考え、サイトの更新・改修につなげます。</p>
               </article>
             </div>
             <div className="aftercare-foot">
-              <small>データ分析・改善支援は、Webサイト制作とは別契約のオプションです。</small>
-              <a className="text-link" href="#contact">公開後の改善について相談する</a>
+              <small>運用・データ分析・改善支援は、サイト制作後に必要に応じて選べる別契約のサービスです。</small>
+              <a className="text-link" href="#contact">公開後の運用・改善について相談する</a>
             </div>
           </aside>
         </section>

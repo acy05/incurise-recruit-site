@@ -70,18 +70,19 @@ function Friendly({
           </h2>
           <div className="fd-c-choices" role="group" aria-label="相談テーマ">
             {[
-              "新しくサイトをつくりたい",
-              "今のサイトをもっと良くしたい",
-              "まずは、相談してみたい",
-            ].map((text, i) => (
+              ["新しくサイトを", "つくりたい"],
+              ["今のサイトを", "もっと良くしたい"],
+              ["まずは、", "相談してみたい"],
+            ].map((parts, i) => (
               <button
-                key={text}
+                key={parts.join("")}
                 type="button"
+                aria-label={parts.join("")}
                 aria-pressed={theme === i}
                 onClick={() => setTheme(i)}
               >
                 <span aria-hidden="true">0{i + 1}</span>
-                {text}
+                <span className="fd-c-choice-text">{parts.map(part => <span key={part}>{part}</span>)}</span>
                 <b aria-hidden="true">{theme === i ? "✓" : ""}</b>
               </button>
             ))}

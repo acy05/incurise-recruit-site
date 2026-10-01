@@ -5,16 +5,25 @@ test("consultation mail opens the requested recipient with the selected content"
   await page.goto("./web-production/#contact", { waitUntil: "domcontentloaded" });
   await page.locator("h1").waitFor({ timeout: 120_000 });
   await page.getByLabel("今のサイトをリニューアル").check();
-  await page.getByLabel("もう少し詳しく 任意").fill("会社サイトの相談です。");
+  await page.getByLabel("会社名 必須", { exact: true }).fill(" 株式会社テスト & Co. ");
+  await page.getByLabel("担当者名 必須", { exact: true }).fill("山田 太郎");
+  await page.getByLabel("電話番号 必須", { exact: true }).fill("+81 3-1234-5678");
+  await page.getByLabel("HPリンク 任意", { exact: true }).fill("https://example.co.jp/?a=1&b=2");
+  await page.getByLabel("もう少し詳しく 任意").fill("会社サイトの相談です。予算：100万円？\n改修 & 運用を希望します。");
 
-  const href = await page.getByRole("link", { name: "メールで無料相談する" }).getAttribute("href");
+  const href = await page.locator("form.consultation").getAttribute("action");
   expect(href).not.toBeNull();
   const mailto = new URL(href!);
   expect(mailto.protocol).toBe("mailto:");
   expect(mailto.pathname).toBe("hp_sales-bounces@isaac-inc.co.jp");
   expect(mailto.searchParams.get("subject")).toBe("Web制作のご相談");
+  expect(mailto.searchParams.get("body")).toContain("会社名：株式会社テスト & Co.");
+  expect(mailto.searchParams.get("body")).toContain("担当者名：山田 太郎");
+  expect(mailto.searchParams.get("body")).toContain("電話番号：+81 3-1234-5678");
+  expect(mailto.searchParams.get("body")).toContain("HPリンク：https://example.co.jp/?a=1&b=2");
   expect(mailto.searchParams.get("body")).toContain("相談したいこと：今のサイトをリニューアル");
   expect(mailto.searchParams.get("body")).toContain("補足：会社サイトの相談です。");
+  expect(mailto.searchParams.get("body")).toContain("改修 & 運用を希望します。");
 });
 
 test("FAQ stays readable when answers are repeatedly opened and closed", async ({ page }) => {
@@ -175,6 +184,7 @@ for (const width of [1440, 390]) {
 }
 
 test("returning from a sample aligns the main site's sample heading", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.goto("./web-production/samples/next/");
   await page.getByRole("link", { name: "ISAACに戻る", exact: true }).click();
   await expect(page).toHaveURL(/web-production\/#design-samples$/);

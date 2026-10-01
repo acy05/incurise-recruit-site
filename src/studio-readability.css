@@ -1,0 +1,157 @@
+/* Reading sizes for the main site only; the miniature sample sites keep their scale. */
+.studio .fd-c-lead,
+.studio .fd-d-intro > p,
+.studio .intro-grid > div > p:not(.large-copy),
+.studio .section-title > p,
+.studio .service-card > p,
+.studio .approach-lead,
+.studio .approach-item p,
+.studio .process-grid article > p:not(.step-en),
+.studio .process-note > p,
+.studio .aftercare-heading > p,
+.studio .aftercare-list p,
+.studio .faq-heading > p,
+.studio .faq-answer p,
+.studio .contact-copy > p {
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.studio .fd-c-choices button,
+.studio .fd-cta,
+.studio .fd-c-chat .fd-cta,
+.studio .fd-d-intro .fd-cta,
+.studio .header-contact,
+.studio .service-consult,
+.studio .faq-list button,
+.studio .consultation fieldset label,
+.studio .consultation > .button,
+.studio .copy-button {
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.studio .desktop-nav,
+.studio .text-link,
+.studio .fd-c-trust span,
+.studio .fd-c-chat > small,
+.studio .fd-c-foot > span,
+.studio .fd-work > footer a,
+.studio .sample-open > span,
+.studio .fd-d-foot,
+.studio .service-card h4,
+.studio .tags span,
+.studio .service-foot > span,
+.studio .service-foot a,
+.studio .step-tag,
+.studio .process-note a,
+.studio .aftercare-foot small,
+.studio .contact-benefits,
+.studio .consultation fieldset legend,
+.studio .message-label,
+.studio .message-label > span,
+.studio .consultation-next > span,
+.studio .contact-note,
+.studio .manual-copy label,
+.studio .footer-top > a:last-child,
+.studio .footer-bottom,
+.studio .footer-bottom > div,
+.studio .footer-bottom > span:last-child {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.studio .section-label,
+.studio .fd-label,
+.studio .fd-c-chat-head,
+.studio .fd-c-chat-head > span:last-child,
+.studio .fd-c-choices button > span,
+.studio .brand > span,
+.studio .launch-sections .fd-work > footer > span,
+.studio .service-meta,
+.studio .service-meta span:last-child,
+.studio .step-en,
+.studio .process-note > span,
+.studio .aftercare-heading > span,
+.studio .faq-list button > span,
+.studio .approach-item > span,
+.studio .consultation-heading,
+.studio .statement > p,
+.studio .statement > span,
+.studio .approach-art-index,
+.studio .approach-art-legend,
+.studio .motion-control span {
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.studio .service-consult { font-size: 16px; }
+.studio .fd-c-choices button > .fd-c-choice-text {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 16px;
+  color: inherit;
+}
+.studio .aftercare-list h4 { font-size: 18px; line-height: 1.6; }
+.studio .fd-c-choice-text > span,
+.studio .aftercare-title-part,
+.studio .consultation-submit-text > span { display: inline-block; }
+.studio .consultation-submit-text { min-width: 0; }
+.studio .fd-d-intro > p,
+.studio .fd-d-foot,
+.studio .aftercare-heading > p,
+.studio .aftercare-list p,
+.studio .aftercare-foot small,
+.studio .consultation-next > span,
+.studio .contact-note { color: #625e54; }
+.studio .service-meta,
+.studio .fd-work > footer > span,
+.studio .footer-bottom { color: #666357; }
+.studio .message-label > span { color: #69695d; }
+.studio .process-grid article > p:not(.step-en),
+.studio .faq-heading > p,
+.studio .faq-answer p,
+.studio .contact-copy > p { color: #606356; }
+.studio .consultation .message-label { align-items: baseline; flex-wrap: wrap; }
+.studio .consultation input[type="radio"] { accent-color: #c84c31; width: 16px; height: 16px; }
+.studio .consultation-field input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 48px;
+  margin: 0;
+  padding: 11px 12px;
+  background: #fffefa;
+  border: 1px solid #dcded1;
+  border-radius: 8px;
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.8;
+}
+.studio .consultation textarea { font-size: 16px; line-height: 1.8; }
+.studio .consultation-field input::placeholder,
+.studio .consultation textarea::placeholder { color: #736e62; }
+.studio .consultation-field input[aria-invalid="true"] { border-color: #a7462f; }
+.studio .consultation-field-error { margin-top: 8px; font-size: 14px; line-height: 1.8; color: #a7462f; }
+.studio .consultation > .button { width: 100%; cursor: pointer; }
+.studio .consultation { align-self: start; }
+.studio .consultation-next { align-items: flex-start; }
+.studio .copy-button { flex-shrink: 0; }
+.studio .aftercare-foot { align-items: flex-start; }
+.studio .aftercare-foot > a { flex-shrink: 0; }
+.studio .fd-d-foot > span { min-width: 0; }
+
+@media (min-width: 901px) and (max-width: 1100px) {
+  .studio .desktop-nav { gap: 16px; }
+  .studio .brand { gap: 12px; }
+  .studio .brand > span { padding-left: 12px; }
+}
+
+@media (max-width: 600px) {
+  .studio .consultation-next { flex-direction: column; gap: 10px; }
+  .studio .aftercare-foot { flex-direction: column; gap: 18px; }
+  .studio .aftercare-foot > a { flex-shrink: 1; }
+}
